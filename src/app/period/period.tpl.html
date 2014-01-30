@@ -1,0 +1,83 @@
+<div class="modal-header">
+    <h3>Period: {{info.selectedPeriod.period}}</h3>
+</div>
+<div class="modal-body">
+
+    <form name="form" class="css-form" novalidate>
+        <p>
+            Select the period (time range) to visualize in the timeline
+            or create a new period:
+        </p>
+
+        <select ng-model="info.selectedPeriod"
+                ng-options="v as v.period for v in info.periods"
+                ng-change="change()"
+                id="period-select">
+        </select>
+        <!--<br/>selectedPeriod: <pre>{{info.selectedPeriod | json}}</pre>-->
+        <!--<br/>periods: <pre>{{info.periods | json}}</pre>-->
+
+        <div ng-show="isCreating()">
+            <label class="text">
+                Name for the new period:
+                <input type="text" ng-model="info.newName" required>
+            </label>
+        </div>
+
+        <table>
+            <tr>
+                <td style="text-align: center">
+                    Start: {{info.selectedPeriod.start | date:'yyyy-MM-dd'}}
+                </td>
+                <td></td>
+                <td style="text-align: center">
+                    End: {{info.selectedPeriod.end | date:'yyyy-MM-dd'}}
+                </td>
+            </tr>
+            <tr style="vertical-align: top">
+                <td>
+                    <div class="well well-small pull-left" ng-model="info.selectedPeriod.start">
+                        <datepicker show-weeks="false" max="info.selectedPeriod.end">
+                        </datepicker>
+                    </div>
+                </td>
+                <td style="vertical-align: middle">
+                    <i class="icon-arrow-right"></i>
+                </td>
+                <td>
+                    <div class="well well-small pull-left" ng-model="info.selectedPeriod.end">
+                        <datepicker show-weeks="false" min="info.selectedPeriod.start">
+                        </datepicker>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="modal-footer" ng-controller="UtilCtrl">
+    <button ng-show="!isCreating()"
+            class="btn btn-primary" ng-click="set()"
+            ng-disabled="isUnchanged()"
+            title="Applies the changes in the timeline"
+            >Apply</button>
+
+    <button ng-show="!isCreating()"
+            class="btn btn-primary" ng-click="setDefault()"
+            ng-disabled="isCreating()"
+            title="Sets this period as the default"
+            >Set default</button>
+
+    <button ng-show="!isCreating()"
+            class="btn btn-warning" ng-click="delete()"
+            ng-disabled="cannotDelete()"
+            title="Deletes this period from the database"
+            >Delete...</button>
+
+    <button ng-show="isCreating()"
+            class="btn btn-primary" ng-click="create()"
+            ng-disabled="isInvalid()"
+            title="Add the new period to the database"
+            >Create</button>
+
+    <button class="btn" ng-click="cancel()">Cancel</button>
+</div>

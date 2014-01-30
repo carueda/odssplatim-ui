@@ -1,0 +1,46 @@
+<div class="modal-header">
+    <h3>Platform options</h3>
+</div>
+<div class="modal-body">
+    <form name="form" class="css-form" novalidate>
+        <p>
+        By default, all platforms are displayed in the timeline
+        but the following filters can be used to select the desired platforms.
+        </p>
+        <br/>
+
+        <label class="checkbox">
+            <input type="checkbox" ng-model="platformOptions.onlyWithTokens"
+                   value="tokens">
+            Only platforms having tokens
+        </label>
+
+        <label class="checkbox">
+            <input type="checkbox" ng-model="platformOptions.onlyWithTypes"
+                   value="types"/>
+            Only platforms of these types:
+        </label>
+
+        <div>
+            <ul>
+                <li ng-repeat="pt in platformOptions.platformTypes">
+                    <label class="checkbox">
+                        <input type="checkbox" ng-model="platformOptions.selectedTypes[pt]"
+                               value="platformOptions.selectedTypes[pt]"
+                               ng-disabled="!platformOptions.onlyWithTypes"/>
+                        {{pt}}
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+        <!--<pre>platformOptions: {{platformOptions | json}}</pre>-->
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="set()"
+            ng-disabled="isUnchanged() || !isValid()">Apply</button>
+    <button class="btn btn-primary" ng-click="reset()"
+            ng-disabled="isUnchanged() || !isValid()">Reset</button>
+    <button class="btn" ng-click="cancel()">Cancel</button>
+</div>

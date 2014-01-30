@@ -1,0 +1,177 @@
+
+div.odssplatim {
+    /* overall defs for the widget */
+
+    line-height: 1; /* override bootstrap's value of 20px; which makes the
+                     * contents of the tokens to get positioned too low. */
+}
+
+input.text {
+    margin-bottom:12px;  padding: .4em; font-size: 10px;
+    /*width: 160px;*/
+}
+
+fieldset { padding:0; border:0; margin-top:10px; }
+.ui-dialog .ui-state-error { padding: .3em; }
+.validateTips { border: 1px solid transparent; padding: 0.3em; }
+
+
+/* links.timeline adjustments: */
+div.timeline-event-content {
+    margin: 0px;
+    top: 0px;
+    text-align: center;
+    vertical-align: top;
+}
+
+        /* Custom styles for the Timeline */
+    div.timeline-frame {
+        border-color: #5D99C3;
+
+        border-radius: 5px;
+        -moz-border-radius: 5px; /* For Firefox 3.6 and older */
+    }
+    div.timeline-axis {
+        border-color: #5D99C3;
+
+        background-color: #5D99C3;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5D99C3', endColorstr='#3A6DA0'); /* for IE */
+        background: -webkit-gradient(linear, left top, left bottom, from(#5D99C3), to(#3A6DA0)); /* for webkit browsers */
+        background: -moz-linear-gradient(top,  #5D99C3,  #3A6DA0); /* for firefox 3.6+ */
+        /*background-image: url(codebase/imgs_glossy/top-days-bg.png);*/
+    }
+
+    div.timeline-axis-grid {
+    }
+    div.timeline-groups-axis {
+        border-color: #5D99C3;
+        background-color: #EEEEEE;
+    }
+    div.timeline-axis-text {
+        color: white;
+    }
+    div.timeline-groups-text {
+        color: #4D4D4D;
+    }
+
+
+
+div.timeline-event-range {
+
+    /*height: 13px;*/
+    /*background-image: url(codebase/imgs_glossy/event-bg.png);*/
+
+    height: 14px;
+    background-color: #FDF3D5;
+    /*background: url(../img/resize_dots.png) 10% repeat-y, url(../img/resize_dots.png) 90% repeat-y, #FDF3D5;*/
+
+    /*border: 1px solid #FFBD51;*/
+    border: 1px solid #000000;
+
+    /*border-left-style: none;*/
+    /*border-right-style: none;*/
+
+    cursor: pointer;
+    border-radius: 0px;
+    -moz-border-radius: 0px;  /* For Firefox 3.6 and older */
+}.timeline-event-range:hover {
+   box-shadow: 0 0 5px gray;
+}
+
+div.timeline-event-range-drag-left {
+    z-index: 100;
+    background: url(../img/resize_dots.png), repeat-y, repeat-x;
+}
+div.timeline-event-range-drag-right {
+    z-index: 100;
+    background: url(../img/resize_dots.png), repeat-y, repeat-x;
+}
+
+
+div.status_new {
+    font-weight: bold;
+    color: red;
+    border-color: red;
+    border-width: 2px;
+}
+
+div.status_saved {
+    color: mediumblue;
+    border-color: mediumblue;
+}
+
+div.status_modified {
+    font-weight: bold;
+    color: mediumblue;
+    border-color: mediumblue;
+    border-width: 2px;
+}
+
+
+div.timeline-navigation-delete {
+    visibility: hidden;
+}
+
+div.timeline-event-selected {
+    z-index: 99;
+    /*border-color: black;*/
+    /*box-shadow: 0 0 10px gray;*/
+}
+
+div.backgroud-block {
+    border: 1px;
+    /*border-color: black;*/
+    border-style: solid;
+    cursor: none;
+    /*box-shadow: 5px 5px 5px lightgray;*/
+}
+
+div.backgroud-block-selected {
+    box-shadow:         5px 5px 5px lightgray;
+    -moz-box-shadow:    5px 5px 5px lightgray;
+    -webkit-box-shadow: 5px 5px 5px lightgray;
+}
+
+
+div.block-selected {
+    border-color: black;
+    box-shadow: 0 0 10px gray;
+}
+
+div.timeline-event-box {
+    border-radius: 0px;
+    -moz-border-radius: 0px; /* For Firefox 3.6 and older */
+}
+
+div.block-body {
+    /*border-left-style: dotted;*/
+    /*border-right-style: dotted;*/
+}
+
+
+div.ui-tooltip {
+    max-width: 700px;
+}
+
+/* see dateclasses.js */
+div.timeline-axis-grid-weekends {
+    background-color: #F7F7F7;
+}
+div.timeline-axis-grid-holiday {
+    background-color: #e9fff5;
+}
+
+
+.modal {
+    width: 700px;
+}
+.modal-backdrop, .modal-backdrop.fade.in {
+    opacity: 0.5;
+}
+.well {
+    margin-bottom: 0;
+}
+
+#period-select {
+    width: 600px;
+}

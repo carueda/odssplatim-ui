@@ -1,0 +1,49 @@
+<div style="width: 100%">
+    <div ng-controller="MainCtrl">
+        <div class="btn-group">
+        <button class="btn btn-small" ng-click="refresh()"
+                title="Reloads the timeline (discarding all unsaved changes, if any)"
+                >Refresh</button>
+        <button class="btn btn-small" ng-controller="PlatformCtrl" ng-click="open()"
+                title="Platform options"
+                >Platform</button>
+        <button class="btn btn-small" ng-controller="PeriodCtrl" ng-click="open()"
+                title="Allows to visualize a pre-defined period or create a new period"
+                >Period</button>
+        <button class="btn btn-small" ng-click="save()"
+                title="Saves all new and modified tokens"
+                >Save</button>
+        <button class="btn btn-small" ng-show="showVersions" ng-click="showVersions()"
+                title="Revision history"
+                >Versions</button>
+        </div>
+        <span ng-show="currentVersion"
+              title="{{currentVersion.saved}} (by {{currentVersion.author}})"
+              >Last edit {{currentVersion.saved}}</span>
+
+
+        <div style="position:absolute; top:10px; right:0; width:450px;">
+            <div style="background-color: orange; position:absolute; left:0;"
+               ng-show="activities.any()">
+              <div ng-bind="activities.any()"></div>
+            </div>
+        </div>
+        <div id="error" style="color: #CC0000" ng-show="errors.any()">
+            <div ng-bind="errors.any()"></div>
+        </div>
+    </div>
+
+    <div ng-controller="TimelineCtrl" id="timelines"></div>
+
+    <div ng-controller="MainCtrl" ng-show="debug">
+        <div id="logarea" style="color: blue; background-color: #f8fff7">
+        </div>
+
+        <button class="btn btn-mini"
+                ng-click="debug.collapsed = !debug.collapsed">Model</button>
+        <div collapse="debug.collapsed">
+            <pre>{{debug.model | json}}</pre>
+        </div>
+    </div>
+
+</div>

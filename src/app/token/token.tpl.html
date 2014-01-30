@@ -1,0 +1,83 @@
+<div class="modal-header">
+    <h3>Token on timeline for platform '{{token.platform_name}}'</h3>
+</div>
+<div class="modal-body">
+    <!-- TODO: move customized styles to app.css -->
+
+    <form name="form" class="css-form" novalidate>
+        <table>
+            <tr style="vertical-align: top;">
+                <td>
+                    <label class="text">
+                        State:
+                        <input type="text" style="width:100px;"
+                               ng-model="token.state">
+                    </label>
+                </td>
+                <td>
+                    <label class="textarea">
+                        Description:
+                        <textarea rows="1" style="width:400px;"
+                                  ng-model="token.description">
+                        </textarea>
+                    </label>
+                </td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td style="text-align: center">
+                    Start: {{token.start | date:'medium'}}
+                </td>
+                <td></td>
+                <td style="text-align: center">
+                    End: {{token.end | date:'medium'}}
+                </td>
+            </tr>
+            <tr style="vertical-align: top">
+                <td>
+                    <div class="well well-small pull-left" ng-model="token.start">
+                        <datepicker show-weeks="false" max="token.end">
+                        </datepicker>
+                    </div>
+                </td>
+                <td style="vertical-align: middle">
+                    <i class="icon-arrow-right"></i>
+                </td>
+                <td>
+                    <div class="well well-small pull-left" ng-model="token.end">
+                        <datepicker show-weeks="false" min="token.start">
+                        </datepicker>
+                    </div>
+                </td>
+            </tr>
+            <tr style="vertical-align: top">
+                <td>
+                    <div ng-model="token.start" class="well well-small"
+                         style="margin-left: auto; margin-right: auto;width: 11em">
+                        <timepicker show-meridian="false">
+                        </timepicker>
+                    </div>
+                </td>
+                <td></td>
+                <td>
+                    <div ng-model="token.end" class="well well-small"
+                         style="margin-left: auto; margin-right: auto;width: 11em">
+                        <timepicker show-meridian="false">
+                        </timepicker>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="modal-footer" ng-controller="UtilCtrl">
+    <button class="btn btn-primary" ng-click="set()"
+            ng-disabled="isUnchanged() || !isValid()">Apply</button>
+    <button class="btn btn-primary" ng-click="reset()"
+            ng-disabled="isUnchanged() || !isValid()">Reset</button>
+    <button class="btn btn-warning" ng-click="delete()"
+            >Delete</button>
+    <button class="btn" ng-click="cancel()">Cancel</button>
+</div>
