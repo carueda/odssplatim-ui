@@ -60,20 +60,21 @@ needed resources, in this case by pointing to concatenated/minified files for
 these resources. For a version pointing to all resources individually,
 see `src/webapp/odss/index-odssplatim.html`.
 
-## Local testing ##
+## Local testing - development ##
 
 The module itself can be launched outside of the main ODSS application as
 follows:
 
-- Mainly for development mode, open `src/app/index.html` in your browser.
-For convenience, a local http server can be run as follows:
+- Use and run a local http server, for example:
 ```shell
-$ node scripts/web-server.js
+$ npm install http-server -g
+$ http-server
+Starting up http-server, serving ./ on port: 8080
+Hit CTRL-C to stop the server
 ```
-Then open http://localhost:8000/src/app/index.html in your browser.
+Then open http://localhost:8080/src/app/index.html in your browser.
 
-- For the minified form, open http://localhost:8000/bin/index.html in your
-browser.
+- For the minified form, open http://localhost:8080/bin/index.html.
 
 
 ## History ##
