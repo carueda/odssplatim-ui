@@ -55,16 +55,6 @@ module.exports = function(grunt) {
           }
         ]
       },
-      vendor_underscore: {
-        files: [
-          {
-            cwd: 'vendor/underscore',
-            src: [ '*.map' ],
-            dest: 'bin/js',
-            expand: true
-          }
-        ]
-      },
 
       common_links: {
         files: [
@@ -113,7 +103,7 @@ module.exports = function(grunt) {
       vendor_js: {
         src: [
           'vendor/moment/min/moment.min.js',
-          'vendor/underscore/underscore-min.js',
+          'vendor/lodash/dist/lodash.min.js',
           'vendor/angular/angular.min.js',
           'vendor/angular-sanitize/angular-sanitize.min.js',
           'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js'
