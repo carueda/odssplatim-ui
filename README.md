@@ -77,6 +77,20 @@ Then open http://localhost:8080/src/app/index.html in your browser.
 - For the minified form, open http://localhost:8080/bin/index.html.
 
 
+## Noteworthy changes ##
+
+-2014-08-04: code review and adjustments toward preparations for upgrading
+underlying dependencies, and implementation of new enhacements.
+
+- 2014-03-10: because of css conflicts (that need some more investigation) revert to include
+platform timeline widget via iframe.
+
+- 2014-01-17: fix url for retrieval of platforms
+
+- 2013-11-25 - platform timeline editor UI now fully integrated from initial development
+  in original odssplatim-ui https://github.com/carueda/odssplatim-ui/tree/b1b8b2b7
+
+
 ## History ##
 
 This module was first based on JQuery, but then converted to AngularJS.
