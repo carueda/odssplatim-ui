@@ -54,7 +54,7 @@ function TimelineWidget(container, tokenForm) {
         }, 2 * 1000);
     }
 
-    this.timeline = new links.Timeline(container);
+    self.timeline = new links.Timeline(container);
 
     addAddListener();
     addChangeListener();
@@ -74,34 +74,34 @@ function TimelineWidget(container, tokenForm) {
     }
 
 
-    this.reinit = function(holidays) {
+    self.reinit = function(holidays) {
         self.timeline.deleteAllItems();
         data.lenght = 0;
         groups = {};
         if (self.dc !== undefined) {
             self.dc.destroy();
         }
-        self.dc = new DateHighlighter(this.timeline, holidays)
+        self.dc = new DateHighlighter(self.timeline, holidays)
     };
 
 
-    this.draw = function() {
+    self.draw = function() {
         self.timeline.draw(data, options);
     };
 
 
-    this.adjustVisibleChartRange = function() {
+    self.adjustVisibleChartRange = function() {
         self.timeline.setVisibleChartRangeAuto();
 //        var dr = self.timeline.getDataRange();
 //        console.log("adjustVisibleChartRange: dr = " + JSON.stringify(dr));
 //        self.timeline.setVisibleChartRange(dr.start, dr.end, true);
     };
 
-    this.getVisibleChartRange = function() {
+    self.getVisibleChartRange = function() {
         return self.timeline.getVisibleChartRange();
     };
 
-    this.setVisibleChartRange = function(startDate, endDate) {
+    self.setVisibleChartRange = function(startDate, endDate) {
         if (startDate === undefined || endDate === undefined) {
             self.timeline.setVisibleChartRangeAuto();
             self.redraw();
@@ -112,7 +112,7 @@ function TimelineWidget(container, tokenForm) {
         updateDateHighlights();
     };
 
-    this.addGroup = function(tml) {
+    self.addGroup = function(tml) {
         var platform_id = tml.platform_id;
         if (platform_id in groups) {
             console.log("addGroup: already added: " + platform_id);
@@ -139,7 +139,7 @@ function TimelineWidget(container, tokenForm) {
         logarea.html(tablify(groups[platform_id].tml));
     }
 
-    this.addToken = function(token) {
+    self.addToken = function(token) {
 
         //console.log("addToken: " + JSON.stringify(token));
 
@@ -163,7 +163,7 @@ function TimelineWidget(container, tokenForm) {
         data.push(body);
     };
 
-    this.redraw = function() {
+    self.redraw = function() {
         self.timeline.redraw();
         updateDateHighlights();
     };
@@ -235,7 +235,7 @@ function TimelineWidget(container, tokenForm) {
         links.events.addListener(self.timeline, 'change', onChange);
     }
 
-    this.updateStatus = function(index, tokenInfo, status) {
+    self.updateStatus = function(index, tokenInfo, status) {
         tokenInfo.status = status;
 
         var bodyBlock  = data[index];
@@ -264,7 +264,7 @@ function TimelineWidget(container, tokenForm) {
         console.log("modified status set to: " + tokenInfo.status);
     };
 
-    this.removeToken = function(tokenInfo, index, row) {
+    self.removeToken = function(tokenInfo, index, row) {
         self.timeline.deleteItem(row);
         console.log("token at index " +index+ " removed");
     };

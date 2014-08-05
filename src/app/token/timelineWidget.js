@@ -12,7 +12,6 @@ function timelineWidgetFactory(service) {
         showForm: function(args) {
             console.log("showForm: args=", args);
             var token = args.tokenInfo;
-            console.log("showForm: token=", token);
             service.editToken(token, args.row);
         }
     };
@@ -20,7 +19,18 @@ function timelineWidgetFactory(service) {
     var timelineWidget = new TimelineWidget(elm, tokenForm);
     timelineWidget.draw();
 
-    return timelineWidget;
+    return {
+        reinit:                    timelineWidget.reinit,
+        setVisibleChartRange:      timelineWidget.setVisibleChartRange,
+        adjustVisibleChartRange:   timelineWidget.adjustVisibleChartRange,
+        addGroup:                  timelineWidget.addGroup,
+        addToken:                  timelineWidget.addToken,
+        removeToken:               timelineWidget.removeToken,
+        data:                      timelineWidget.data,
+        updateStatus:              timelineWidget.updateStatus,
+        updateStatusModified:      timelineWidget.updateStatusModified,
+        redraw:                    timelineWidget.redraw
+    };
 }
 
 })();
