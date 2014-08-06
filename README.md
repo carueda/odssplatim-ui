@@ -9,22 +9,10 @@ share this information with features including options to enter typical
 platform schedules, navigation with zoom in/out, and versioning.
 
 
-## Install dependencies ##
+## Development ##
 
 It is assumed that [Bower](http://bower.io/) and [Node.js](http://nodejs.org/)
 are already installed in your system.
-
-### Web app dependencies ###
-
-The dependencies for the web application (AngularJS, MomentJS, etc,) are not
-kept under version control but can be installed as follows:
-
-```shell
-$ bower install
-```
-This installs the dependencies under `vendor/`.
-
-### Development dependencies ###
 
 ```shell
 $ npm install
@@ -34,6 +22,13 @@ This installs the dependencies under `node_modules/` and also generates
 so they are not only fetched in a single request, but the caching also facilitates
 the deployment of this module along with the main ODSS application without
 having to adjust any paths for the templates.
+
+
+```shell
+$ bower install
+```
+This installs the dependencies for the web application (AngularJS, MomentJS, etc.)
+under `vendor/`.
 
 ## Configure the module ##
 
@@ -55,17 +50,17 @@ editor application, so it will include all supporting resources.
 ## Running ##
 
 At this point the module should be fully enabled in the main ODSS application.
-In concrete, the main index file, `src/webapp/odss/index.html`, includes the
-needed resources, in this case by pointing to concatenated/minified files for
-these resources. For a version pointing to all resources individually,
-see `src/webapp/odss/index-odssplatim.html`.
+In concrete, the main index file, `src/app/index.min.html`, includes
+all the needed resources, in this case by pointing to concatenated/minified
+files for these resources. For a version pointing to all non-minified
+resources individually, see `src/app/index.html`.
 
-## Local testing - development ##
+## Local testing ##
 
 The module itself can be launched outside of the main ODSS application as
 follows:
 
-- Use and run a local http server, for example:
+- Run some local http server to serve this directory, for example:
 ```shell
 $ npm install http-server -g
 $ http-server
@@ -74,7 +69,7 @@ Hit CTRL-C to stop the server
 ```
 Then open http://localhost:8080/src/app/index.html in your browser.
 
-- For the minified form, open http://localhost:8080/bin/index.html.
+- For the minified form (after running `grunt`), open http://localhost:8080/bin/index.html.
 
 
 ## Noteworthy changes ##
