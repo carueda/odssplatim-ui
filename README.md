@@ -79,7 +79,7 @@ Then open http://localhost:8080/src/app/index.html in your browser.
 
 ## Noteworthy changes ##
 
--2014-08-04: code review and adjustments toward preparations for upgrading
+-2014-08-06: code review and adjustments toward preparations for upgrading
 underlying dependencies, and implementation of new enhacements.
 
 - 2014-03-10: because of css conflicts (that need some more investigation) revert to include
