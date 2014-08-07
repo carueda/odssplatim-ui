@@ -139,6 +139,6 @@ module.exports = function(grunt) {
   // project configuration:
   grunt.initConfig(taskConfig);
 
-  grunt.registerTask('default', ['concat', 'copy']);
+  grunt.registerTask('default', ['ngtemplates', 'concat', 'copy']);
 
 };
