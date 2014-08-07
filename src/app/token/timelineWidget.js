@@ -344,13 +344,8 @@ function TimelineWidget(container, tokenForm) {
     function formattedGroup(platform_id) {
         platform_id = strip(platform_id);
         var platform_name = groups[platform_id].tml.platform_name;
-
-        // no tooltip for now
-        return "<div id='" +platform_id+ "'>" + platform_name + "</div>";
-
-//        var tooltip = tablify(groups[platform_id].tml);
-//        return "<div title='" +tooltip+ "'"
-//             + " id='" +platform_id+ "'>" + platform_name + "</div>";
+        var tooltip = platform_name; // todo more tooltip info?
+        return "<div id='" +platform_id+ "' title='" +tooltip+ "'>" + platform_name + "</div>";
     }
 
     function pushBlockDummy(platform_id) {
@@ -361,13 +356,8 @@ function TimelineWidget(container, tokenForm) {
     }
 
     function getTokenContent(token) {
-
-        return token.state;
-
-//        var tooltip = tablify(token);
-//        //console.log("tootip = " + tooltip);
-//        var content = "<div title='" +tooltip+ "'>" +token.state+ "</div>";
-//        return content;
+        var tooltip = token.description;
+        return "<div title='" +tooltip+ "'>" +token.state+ "</div>";
     }
 
 }
