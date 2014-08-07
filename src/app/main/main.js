@@ -133,7 +133,7 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
 
         var skipped = 0;
         var toBeSaved = [];
-        _.each(timelineWidget.data, function(tokenInfo, index) {
+        _.each(timelineWidget.getData(), function(tokenInfo, index) {
             if (isNewOrModifiedToken(tokenInfo)) {
                 if (isOkToBeSaved(tokenInfo)) {
                     toBeSaved.push({tokenInfo: tokenInfo, index: index});

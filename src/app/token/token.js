@@ -37,26 +37,27 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
         });
 
         modalInstance.result.then(function (token) {
-            var row = $scope.info.row;
-            console.log('Token dialog accepted:', token, "row=", row);
+            console.log('Token dialog accepted:', token);
 
-            var platform = platimModel.byPlat[token.platform_id];
-
-            var ptoken = _.find(platform.tokens, function(t) {
-                return t.token_id === token.token_id
-            });
-
-            timelineWidget.data[row] = _.extend(token, {
+            var updatedToken = _.extend(token, {
                 state:         token.state,
                 description:   token.description,
                 start:         moment(token.start).toDate(),
                 end :          moment(token.end).toDate(),
                 content:       token.state
             });
-            timelineWidget.updateStatusModified(row);
-            console.log('timelineWidget data[row]', timelineWidget.data[row]);
+            if (true) { // chap-links timeline
+                var row = $scope.info.row;
+                timelineWidget.getData()[row] = updatedToken;
+                timelineWidget.updateStatusModified(row);
+                console.log('updatedToken', updatedToken);
+                timelineWidget.redraw();
+            }
+            else {  // when using visJS
+                timelineWidget.getDataSet().update(updatedToken);
+                timelineWidget.updateStatusModified(undefined, token);
+            }
 
-            timelineWidget.redraw();
 
         }, function () {
             console.log('Token dialog dismissed');

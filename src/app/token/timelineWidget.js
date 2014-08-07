@@ -21,12 +21,13 @@ function timelineWidgetFactory(service) {
 
     return {
         reinit:                    timelineWidget.reinit,
+        getVisibleChartRange:      timelineWidget.getVisibleChartRange,
         setVisibleChartRange:      timelineWidget.setVisibleChartRange,
         adjustVisibleChartRange:   timelineWidget.adjustVisibleChartRange,
         addGroup:                  timelineWidget.addGroup,
         addToken:                  timelineWidget.addToken,
         removeToken:               timelineWidget.removeToken,
-        data:                      timelineWidget.data,
+        getData:                   function() { return timelineWidget.data; },
         updateStatus:              timelineWidget.updateStatus,
         updateStatusModified:      timelineWidget.updateStatusModified,
         redraw:                    timelineWidget.redraw
