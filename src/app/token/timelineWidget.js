@@ -223,7 +223,9 @@ function TimelineWidget(container, tokenForm) {
              * properties or other elements in a flexible way; have to resort
              * to capture elements in the html snippet.
              */
-            element.platform_id   = element.group.match(/id='(.*)'/)[1];
+            // platform_id is the div id in the group, example:
+            //  group: "<div id='52332831cda0edd756000001' title='Martin (ship; trackingDBID: 2201)' ...>Martin</div>"
+            element.platform_id   = element.group.match(/div id=('|")([^'"]*)('|")/)[2];
             element.platform_name = strip(element.group);
 
             element.content       = "";  // to force missing info --skip save, etc
