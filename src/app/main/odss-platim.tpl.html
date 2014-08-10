@@ -22,11 +22,7 @@
               >Last edit {{currentVersion.saved}}</span>
 
 
-        <div style="position:absolute; top:10px; right:0; width:450px;">
-            <div style="background-color: orange; position:absolute; left:0;"
-               ng-show="activities.any()">
-              <div ng-bind="activities.any()"></div>
-            </div>
+        <div class="status" ng-show="activities.any()" ng-bind="activities.any()">
         </div>
         <div id="error" style="color: #CC0000" ng-show="errors.any()">
             <div ng-bind="errors.any()"></div>

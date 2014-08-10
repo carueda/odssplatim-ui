@@ -173,3 +173,19 @@ div.timeline-axis-grid-holiday {
 #period-select {
     width: 600px;
 }
+
+
+div.status {
+    position:absolute;
+    top:2px;
+    width:20em;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    font-size: smaller;
+    background-color: #fff3dd;
+    /*border: 1px solid #8cacbb;*/
+    padding: 3px;
+    padding-left: 8px;
+}
