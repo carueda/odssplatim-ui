@@ -45,14 +45,14 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
        end:    undefined
     };
 
+    var createPeriod = periods_plus_create["--create period--"] = {
+       _id:    "--create period--",
+       period:   "--create period--"
+    };
     var dr = timelineWidget.getVisibleChartRange();
     if (dr !== undefined) {
-        periods_plus_create["--create period--"] = {
-           _id:    "--create period--",
-           period:   "--create period--",
-           start:  moment(dr.start).toDate(),
-           end:    moment(dr.end).toDate()
-        };
+       createPeriod['start'] = moment(dr.start).toDate();
+       createPeriod['end']   = moment(dr.end).toDate();
     }
 
     var selectedPeriod;
@@ -136,7 +136,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
 
     $scope.isInvalid = function() {
         return $scope.isCreating() &&
-            ($scope.info.newName == ""
+            ($scope.info.newName === undefined || $scope.info.newName.trim().length == 0
              || $scope.info.selectedPeriod.start.getTime() > $scope.info.selectedPeriod.end.getTime());
     };
 
