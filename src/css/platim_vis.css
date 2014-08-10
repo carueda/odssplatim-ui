@@ -1,0 +1,73 @@
+/* ********************* <vis> ********************* */
+/* include after regular platim.css
+   Under preparation
+*/
+
+/*
+    div.vis.timeline.root {
+        background-color: #4181AE !important;
+    }
+*/
+    div.timeaxis.foreground {
+        border-color: #5D99C3;
+
+        background-color: #5D99C3;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5D99C3', endColorstr='#3A6DA0'); /* for IE */
+        background: -webkit-gradient(linear, left top, left bottom, from(#5D99C3), to(#3A6DA0)); /* for webkit browsers */
+        background: -moz-linear-gradient(top,  #5D99C3,  #3A6DA0); /* for firefox 3.6+ */
+        /*background-image: url(codebase/imgs_glossy/top-days-bg.png);*/
+    }
+    div.text.major {
+        color: #ffffff !important;
+    }
+    div.text.minor {
+        color: #ffffff !important;
+    }
+    .groupCol0 {
+        /*background-color: #ffffff;*/
+    }
+    /*.groupCol0:hover { background-color: #fff4e0; }*/
+
+    .groupCol1 {
+        /*background-color: #f9f9f9;*/
+        background-color: rgba(244, 244, 244, 0.4);
+    }
+    /*.groupCol1:hover{ background-color: rgba(178, 181, 140, 0.49); }*/
+
+/*
+    .vis.timeline .item.range .content {
+      overflow: visible;
+    }
+*/
+
+div.range {
+    background-color: #FDF3D5 !important;
+    border: 1px solid #000000;
+    cursor: pointer;
+    border-radius: 0px;
+    -moz-border-radius: 0px;  /* For Firefox 3.6 and older */
+}.range:hover {
+   box-shadow: 0 0 5px gray;
+}
+
+div.status_new {
+    font-weight: bold;
+    color: red !important;
+    border-color: red !important;
+    border-width: 2px !important;
+}
+
+div.status_saved {
+    color: mediumblue !important;
+    border-color: mediumblue !important;
+}
+
+div.status_modified {
+    font-weight: bold !important;
+    color: mediumblue !important;
+    border-color: mediumblue !important;
+    border-width: 2px !important;
+}
+
+
+/* ********************* </vis> ********************* */
