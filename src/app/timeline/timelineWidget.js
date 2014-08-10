@@ -255,8 +255,8 @@ function timelineWidgetFactory(service, vis) {
     }
 
     function removeToken(tokenInfo, index, row) {
-        timeline.deleteItem(row);
-        console.log("token at index " +index+ " removed");
+        console.log("removeToken", tokenInfo);
+        items.remove(tokenInfo.id);
     }
 
     function addSelectListener() {
