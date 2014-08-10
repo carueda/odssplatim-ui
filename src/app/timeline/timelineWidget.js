@@ -129,14 +129,21 @@ function timelineWidgetFactory(service, vis) {
         var platform_id   = tml.platform_id;
         var platform_name = tml.platform_name;
 
-        var content =  "<div id='" +platform_id+ "'>" + platform_name + "</div>";
+        var trackingDBID = tml.trackingDBID ? ("; trackingDBID: " +tml.trackingDBID) : "";
+        var tooltip = platform_name + " (" +tml.typeName + trackingDBID+ ")";
+        var content = "<div id='" +platform_id+ "'";
+        content += " tooltip='" +tooltip+ "'";
+        if (tml.color) {
+            content += " style='color: " +tml.color+ "'";
+        }
+        content += ">" + platform_name + "</div>";
 
         var className = "groupCol" + (groups.get().length % 2);
         groups.add({
             id:         platform_id,
             content:    content,
             className:  className,
-            title:      platform_id,
+            title:      tooltip,
 
             platform_name: platform_name
         });
