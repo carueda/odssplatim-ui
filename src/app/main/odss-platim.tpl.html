@@ -1,5 +1,5 @@
-<div style="width: 100%">
-    <div ng-controller="MainCtrl">
+<div style="width: 100%" ng-controller="MainCtrl">
+    <div>
         <div class="btn-group">
             <button class="btn btn-small" ng-click="refresh()"
                     title="Reloads the timeline (discarding all unsaved changes, if any)"
@@ -31,7 +31,7 @@
 
     <div ng-controller="TimelineCtrl" id="timelines"></div>
 
-    <div ng-controller="MainCtrl" ng-show="debug">
+    <div ng-show="debug">
         <div id="logarea" style="color: blue; background-color: #f8fff7">
         </div>
 
