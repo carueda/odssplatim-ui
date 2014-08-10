@@ -1,5 +1,7 @@
 'use strict';
 
+var gTimeline = undefined;
+
 (function() {
 
 angular.module('odssPlatimApp.timelineWidget', [])
@@ -10,7 +12,7 @@ timelineWidgetFactory.$inject = ['service', 'vis'];
 function timelineWidgetFactory(service, vis) {
     var tokenForm = {
         showForm: function(args) {
-            console.log("showForm: args=", args);
+            //console.log("showForm: args=", args);
             var token = args.tokenInfo;
             service.editToken(token, args.row);
         }
@@ -57,22 +59,22 @@ function timelineWidgetFactory(service, vis) {
         }, 2 * 1000);
     }
 
-    var data = [];
-    //var groups = {};
     var groups = new vis.DataSet();
+    var items  = new vis.DataSet();
 
-    var items = new vis.DataSet(data);
     var timeline = new vis.Timeline(container);
     timeline.setOptions(options);
     timeline.setGroups(groups);
     timeline.setItems(items);
 
-    console.log("timeline", timeline);
+    console.log("CREATED timeline", timeline);
+    gTimeline = timeline;
 
     addSelectListener();
 
     return {
         reinit:                    reinit,
+        getVisibleChartRange:      getVisibleChartRange,
         setVisibleChartRange:      setVisibleChartRange,
         adjustVisibleChartRange:   adjustVisibleChartRange,
         addGroup:                  addGroup,
@@ -107,12 +109,11 @@ function timelineWidgetFactory(service, vis) {
 
     function reinit(holidays) {
         items.clear();
-        data.lenght = 0;
         groups.clear();
     }
 
     function adjustVisibleChartRange() {
-        timeline.setVisibleChartRangeAuto();
+        timeline.fit();
 //        var dr = timeline.getDataRange();
 //        console.log("adjustVisibleChartRange: dr = " + JSON.stringify(dr));
 //        timeline.setVisibleChartRange(dr.start, dr.end, true);
@@ -120,6 +121,10 @@ function timelineWidgetFactory(service, vis) {
 
     function setVisibleChartRange(startDate, endDate) {
         timeline.setWindow(startDate, endDate);
+    }
+
+    function getVisibleChartRange() {
+        timeline.getWindow();
     }
 
     function addGroup(tml) {
@@ -133,10 +138,19 @@ function timelineWidgetFactory(service, vis) {
         var tooltip = platform_name + " (" +tml.typeName + trackingDBID+ ")";
         var content = "<div id='" +platform_id+ "'";
         content += " tooltip='" +tooltip+ "'";
+        content += ">" ;
+
+        content += '<span';
         if (tml.color) {
-            content += " style='color: " +tml.color+ "'";
+            content += " style='color: " +tml.color+ "; font-size: smaller'";
         }
-        content += ">" + platform_name + "</div>";
+        content += ">" ;
+        content += '<span class="fa fa-circle fa-fw"></span>';
+        content += "</span> " ;
+
+        content += platform_name ;
+
+        content += "</div>";
 
         var className = "groupCol" + (groups.get().length % 2);
         groups.add({
@@ -157,9 +171,6 @@ function timelineWidgetFactory(service, vis) {
     }
 
     function addToken(token) {
-
-        //console.log("addToken: " + JSON.stringify(token));
-
         var body = {
             'id':             token._id,
             'className':      token.status + " " + "block-body",
@@ -177,20 +188,16 @@ function timelineWidgetFactory(service, vis) {
 
             'status':         token.status
         };
-
-        //console.log("addToken: body= " + JSON.stringify(body));
-
-        //data.push(body);
+        //console.log("addToken: body", body);
         items.add(body)
     }
 
     function redraw() {
-        //timeline.fit();
         timeline.redraw();
     }
 
     function onAdd(item, callback) {
-        console.log("onAdd=", item);
+        //console.log("onAdd=", item);
 
         item.platform_id   = item.group;
         item.platform_name = groups.get(item.platform_id).platform_name;
@@ -200,72 +207,57 @@ function timelineWidgetFactory(service, vis) {
         item.status        = "status_new";
         item.className     = item.status + " " + "block-body";
 
-        console.log("ADD: item=", item);
-
         callback(item);
-        //redraw();
     }
 
     function onUpdate(item, callback) {
-        console.log("onUpdate=", item);
-        //updateStatusModified(undefined, item);
-
-        var row = 2; // TODO remove
-
+        //console.log("onUpdate=", item);
         tokenForm.showForm({
             tokenInfo: item,
-            row:       row
+            row:       2  // TODO remove
         });
-
         callback(item);
-        //redraw();
     }
 
     function onMove(item, callback) {
-        console.log("onMove=", item);
-        updateStatusModified(undefined, item);
+        //console.log("onMove=", item);
+        updateStatusModified(item);
         callback(item);
-        //redraw();
     }
 
-    function updateStatus(index, tokenInfo, status) {
+    function updateStatus(tokenInfo, status) {
         tokenInfo.status = status;
         tokenInfo .className = "block-body"  + " " + status;
-
-        //timeline.redraw();
     }
 
-    function updateStatusModified(index, tokenInfo) {
-        if (tokenInfo === undefined) {
-            tokenInfo = data[index];
-        }
+    function updateStatusModified(tokenInfo) {
         if (tokenInfo.status === "status_new") {
             return;
         }
         else if (tokenInfo.status === "status_saved") {
-            updateStatus(index, tokenInfo, "status_modified");
+            updateStatus(tokenInfo, "status_modified");
         }
         else if (tokenInfo.status.match(/.*_modified/)) {
             return;
         }
         else {
-            updateStatus(index, tokenInfo, tokenInfo.status + "_modified");
+            updateStatus(tokenInfo, tokenInfo.status + "_modified");
         }
         console.log("modified status set to: " + tokenInfo.status);
     }
 
-    function removeToken(tokenInfo, index, row) {
+    function removeToken(tokenInfo) {
         console.log("removeToken", tokenInfo);
         items.remove(tokenInfo.id);
     }
 
     function addSelectListener() {
         var onSelect = function(properties) {
-            console.log("onSelect=", properties);
+            //console.log("onSelect=", properties);
             if (properties.items && properties.items.length > 0) {
                 var item = properties.items[0];
                 logarea.html(tablify(item));
-                console.log("SELECT: item=", item);
+                //console.log("SELECT: item=", item);
             }
             else {
                 logarea.html("");
