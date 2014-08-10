@@ -1,5 +1,7 @@
 var odssplatimConfig = {
 
+    useVis: true,   // temporary
+
     // odssplatim-rest endpoint URL.
     rest: "/odss/platim",
 

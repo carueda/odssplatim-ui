@@ -169,7 +169,10 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
             var tokenInfo = elm.tokenInfo;
             var index     = elm.index;
             service.saveToken(tokenInfo, index, function(index, tokenInfo) {
-                timelineWidget.updateStatus(index, tokenInfo, "status_saved");
+                if (odssplatimConfig.useVis)
+                    timelineWidget.updateStatus(tokenInfo, "status_saved");
+                else
+                    timelineWidget.updateStatus(index, tokenInfo, "status_saved");
                 doList(ii + 1);
             });
         }

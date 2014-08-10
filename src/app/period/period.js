@@ -46,12 +46,14 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
     };
 
     var dr = timelineWidget.getVisibleChartRange();
-    periods_plus_create["--create period--"] = {
-       _id:    "--create period--",
-       period:   "--create period--",
-       start:  moment(dr.start).toDate(),
-       end:    moment(dr.end).toDate()
-    };
+    if (dr !== undefined) {
+        periods_plus_create["--create period--"] = {
+           _id:    "--create period--",
+           period:   "--create period--",
+           start:  moment(dr.start).toDate(),
+           end:    moment(dr.end).toDate()
+        };
+    }
 
     var selectedPeriod;
     if (platimModel.periods[platimModel.selectedPeriodId]) {
