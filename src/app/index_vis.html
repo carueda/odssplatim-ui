@@ -6,8 +6,8 @@
 
     <link rel="stylesheet" href="../../vendor/bootstrap-css/css/bootstrap.css">
     <link rel="stylesheet" href="../../vendor/font-awesome/css/font-awesome.css">
-    <link rel='stylesheet' href='../common/links/timeline.css'>
-    <!--<link rel="stylesheet" href="../../vendor/vis/dist/vis.css">-->
+    <!--<link rel='stylesheet' href='../common/links/timeline.css'>-->
+    <link rel="stylesheet" href="../../vendor/vis/dist/vis.css">
     <link rel='stylesheet' href='../css/platim.css'>
     <link rel='stylesheet' href='../css/platim_vis.css'>
 
@@ -21,18 +21,19 @@
     <script src="../../vendor/angular-sanitize/angular-sanitize.js"></script>
     <script src="../../vendor/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 
-    <script src="../common/links/timeline.js"></script>
-    <!--<script src="../../vendor/vis/dist/vis.js"></script>-->
+    <!--<script src="../common/links/timeline.js"></script>-->
+    <script src="../../vendor/vis/dist/vis.js"></script>
 
     <script src='../common/utils/miscutils.js' charset="utf-8"></script>
 
     <script src='config.js' charset="utf-8"></script>
     <script src='app.js' charset="utf-8"></script>
-    <script src='constants.js' charset="utf-8"></script>
+    <!--<script src='constants.js' charset="utf-8"></script>-->
+    <script src='constants_vis.js' charset="utf-8"></script>
     <script src='services.js' charset="utf-8"></script>
     <script src='platform/platform.js' charset="utf-8"></script>
-    <!--<script src='timeline/timelineWidget.js' charset="utf-8"></script>-->
-    <script src='token/timelineWidget.js' charset="utf-8"></script>
+    <script src='timeline/timelineWidget.js' charset="utf-8"></script>
+    <!--<script src='token/timelineWidget.js' charset="utf-8"></script>-->
     <script src='token/token.js' charset="utf-8"></script>
     <script src='period/period.js' charset="utf-8"></script>
     <script src='util/util.js' charset="utf-8"></script>
@@ -41,6 +42,9 @@
     <script src='model.js' charset="utf-8"></script>
     <script src='templates.js' charset="utf-8"></script>
 
+    <script>
+        odssplatimConfig.useVis = true;
+    </script>
 </head>
 
 <body style="margin: 15px">
