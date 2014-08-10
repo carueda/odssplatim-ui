@@ -10,7 +10,7 @@ timelineWidgetFactory.$inject = ['service'];
 function timelineWidgetFactory(service) {
     var tokenForm = {
         showForm: function(args) {
-            console.log("showForm: args=", args);
+            //console.log("showForm: args=", args);
             var token = args.tokenInfo;
             service.editToken(token, args.row);
         }
@@ -151,7 +151,7 @@ function TimelineWidget(container, tokenForm) {
     self.addGroup = function(tml) {
         var platform_id = tml.platform_id;
         if (platform_id in groups) {
-            console.log("addGroup: already added: " + platform_id);
+            //console.log("addGroup: already added: " + platform_id);
             return;
         }
 
@@ -216,7 +216,7 @@ function TimelineWidget(container, tokenForm) {
             var row = getSelectedRow();
             var element = data[row];
 
-            console.log("ADD: row=" +row+ " element=" +JSON.stringify(element));
+            //console.log("ADD: row=" +row+ " element=" +JSON.stringify(element));
 
             /*
              * too bad groups in links's timeline cannot be associated with
@@ -231,7 +231,7 @@ function TimelineWidget(container, tokenForm) {
             element.status        = "status_new";
             element.className     = element.status + " " + "block-body";
 
-            console.log("ADD: element=" +JSON.stringify(element));
+            //console.log("ADD: element=" +JSON.stringify(element));
 
             self.redraw();
         };
@@ -246,7 +246,7 @@ function TimelineWidget(container, tokenForm) {
 
             var row = getSelectedRow();
             var element = data[row];
-            console.log("data[row] = " + JSON.stringify(element));
+            //console.log("data[row] = " + JSON.stringify(element));
             if (element == undefined) {
                 return;
             }
@@ -254,7 +254,7 @@ function TimelineWidget(container, tokenForm) {
             var index = row;
             var tokenInfo = element;
 
-            console.log("tokenInfo: " + JSON.stringify(tokenInfo));
+            //console.log("tokenInfo: " + JSON.stringify(tokenInfo));
 
             var bodyBlock  = data[index];
 
@@ -310,7 +310,7 @@ function TimelineWidget(container, tokenForm) {
         var onEdit = function(event) {
             var row = getSelectedRow();
             var element = data[row];
-            console.log("EDIT: " + row + ": " + JSON.stringify(element));
+            //console.log("EDIT: " + row + ": " + JSON.stringify(element));
 
             self.tokenForm.showForm({
                 tokenInfo: element,
@@ -330,7 +330,7 @@ function TimelineWidget(container, tokenForm) {
 
                 logarea.html(tablify(element));
 
-                console.log("SELECT: row=" + row + ": " + JSON.stringify(element));
+                //console.log("SELECT: row=" + row + ": " + JSON.stringify(element));
                 self.timeline.selectItem(row);
             }
             else {

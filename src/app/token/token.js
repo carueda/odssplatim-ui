@@ -15,7 +15,7 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
         row: undefined
     };
     $scope.$on('editToken', function(event, token, row) {
-        console.log('editToken:', token);
+        //console.log('editToken:', token);
         $scope.$apply(function() {
             $scope.info.token = token;
             $scope.info.row = row;
@@ -37,7 +37,7 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
         });
 
         modalInstance.result.then(function (token) {
-            console.log('Token dialog accepted:', token);
+            //console.log('Token dialog accepted:', token);
 
             var updatedToken = _.extend(token, {
                 state:         token.state,
@@ -54,13 +54,13 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
                 var row = $scope.info.row;
                 timelineWidget.getData()[row] = updatedToken;
                 timelineWidget.updateStatusModified(row);
-                console.log('updatedToken', updatedToken);
+                //console.log('updatedToken', updatedToken);
                 timelineWidget.redraw();
             }
 
 
         }, function () {
-            console.log('Token dialog dismissed');
+            //console.log('Token dialog dismissed');
         });
     };
 }
@@ -78,7 +78,7 @@ function TokenInstanceCtrl($scope, $modalInstance, info, service, timelineWidget
     };
 
     $scope.delete = function() {
-        console.log("delete:", info);
+        //console.log("delete:", info);
         if (info.token.token_id === undefined) {
             // not in database; just remove token from timeline
             if (odssplatimConfig.useVis)
