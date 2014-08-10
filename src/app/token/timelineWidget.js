@@ -343,9 +343,18 @@ function TimelineWidget(container, tokenForm) {
 
     function formattedGroup(platform_id) {
         platform_id = strip(platform_id);
-        var platform_name = groups[platform_id].tml.platform_name;
-        var tooltip = platform_name; // todo more tooltip info?
-        return "<div id='" +platform_id+ "' title='" +tooltip+ "'>" + platform_name + "</div>";
+        var tml = groups[platform_id].tml;
+        //console.log("tml", tml);
+        var platform_name = tml.platform_name;
+        var trackingDBID = tml.trackingDBID ? ("; trackingDBID: " +tml.trackingDBID) : "";
+        var tooltip = platform_name + " (" +tml.typeName + trackingDBID+ ")";
+        var res = "<div id='" +platform_id+ "'";
+        res += " title='" +tooltip+ "'";
+        if (tml.color) {
+            res += " style='color: " +tml.color+ "'";
+        }
+        res += ">" + platform_name + "</div>";
+        return res;
     }
 
     function pushBlockDummy(platform_id) {
