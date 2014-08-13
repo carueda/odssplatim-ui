@@ -67,14 +67,17 @@ $ http-server
 Starting up http-server, serving ./ on port: 8080
 Hit CTRL-C to stop the server
 ```
-Then open http://localhost:8080/src/app/index.html in your browser.
+Then open [http://localhost:8080/src/app/](http://localhost:8080/src/app/) in your browser.
 
-- For the minified form (after running `grunt`), open http://localhost:8080/bin/index.html.
+- For the minified form (after running `grunt`), open
+[http://localhost:8080/bin/](http://localhost:8080/bin/).
 
 
 ## Noteworthy changes ##
 
--2014-08-06: code review and adjustments toward preparations for upgrading
+- 2014-08-12: vis.js based implementation proving to be much easier given its better design.
+
+- 2014-08-06: code review and adjustments toward preparations for upgrading
 underlying dependencies, and implementation of new enhacements.
 
 - 2014-03-10: because of css conflicts (that need some more investigation) revert to include
@@ -83,7 +86,7 @@ platform timeline widget via iframe.
 - 2014-01-17: fix url for retrieval of platforms
 
 - 2013-11-25 - platform timeline editor UI now fully integrated from initial development
-  in original odssplatim-ui https://github.com/carueda/odssplatim-ui/tree/b1b8b2b7
+  in original odssplatim-ui https://github.com/carueda/odssplatim-ui-original/tree/b1b8b2b7
 
 
 ## History ##
