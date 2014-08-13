@@ -28,7 +28,7 @@ function PlatformCtrl($scope, $modal, platimModel, service) {
             platimModel.platformOptions = $scope.platformOptions = platformOptions;
             service.platformOptionsUpdated();
         }, function () {
-            console.log('Platform dialog dismissed');
+            //console.log('Platform dialog dismissed');
         });
     };
 }
