@@ -6,6 +6,8 @@ angular.module('odssPlatimApp.util', [])
     .controller('UtilCtrl', UtilCtrl)
     .controller('ConfirmInstanceCtrl', ConfirmInstanceCtrl)
     .factory('status', status)
+    .factory('focus', focus)
+    .directive('focusOn', focusOn)
 ;
 
 UtilCtrl.$inject = ['$scope', '$modal'];
@@ -107,6 +109,25 @@ function status() {
             }
         };
     }
+}
+
+// focus http://stackoverflow.com/a/18295416/830737
+focus.$inject = ['$rootScope', '$timeout'];
+function focus($rootScope, $timeout) {
+    return function(name) {
+        $timeout(function (){
+            $rootScope.$broadcast('focusOn', name);
+        });
+    }
+}
+function focusOn() {
+    return function(scope, elem, attr) {
+        scope.$on('focusOn', function(e, name) {
+            if(name === attr.focusOn) {
+                elem[0].focus();
+            }
+        });
+    };
 }
 
 })();

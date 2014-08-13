@@ -8,19 +8,25 @@
         <table>
             <tr style="vertical-align: top;">
                 <td>
-                    <label class="text">
+                    <label class="text" for="state">
                         State:
-                        <input type="text" style="width:100px;"
-                               ng-model="token.state">
                     </label>
                 </td>
                 <td>
-                    <label class="textarea">
+                    <input id="state" type="text" style="width:400px;"
+                           ng-model="token.state" focus-on="token_form_activation">
+                </td>
+            </tr>
+            <tr style="vertical-align: top;">
+                <td>
+                    <label class="textarea" for="description">
                         Description:
-                        <textarea rows="1" style="width:400px;"
-                                  ng-model="token.description">
-                        </textarea>
                     </label>
+                </td>
+                <td>
+                    <textarea id="description" rows="2" style="width:400px;"
+                              ng-model="token.description">
+                    </textarea>
                 </td>
             </tr>
         </table>

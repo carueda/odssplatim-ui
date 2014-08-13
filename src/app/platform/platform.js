@@ -33,9 +33,9 @@ function PlatformCtrl($scope, $modal, platimModel, service) {
     };
 }
 
-PlatformInstanceCtrl.$inject = ['$scope', '$modalInstance', 'platformOptions'];
+PlatformInstanceCtrl.$inject = ['$scope', '$modalInstance', 'platformOptions', 'focus'];
 
-function PlatformInstanceCtrl($scope, $modalInstance, platformOptions) {
+function PlatformInstanceCtrl($scope, $modalInstance, platformOptions, focus) {
 
     $scope.master          = angular.copy(platformOptions);
     $scope.platformOptions = angular.copy(platformOptions);
@@ -62,6 +62,8 @@ function PlatformInstanceCtrl($scope, $modalInstance, platformOptions) {
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
+
+    focus("platform_form_activation");
 }
 
 })();

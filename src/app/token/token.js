@@ -65,9 +65,9 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
     };
 }
 
-TokenInstanceCtrl.$inject = ['$scope', '$modalInstance', 'info', 'service', 'timelineWidget'];
+TokenInstanceCtrl.$inject = ['$scope', '$modalInstance', 'info', 'service', 'timelineWidget', 'focus'];
 
-function TokenInstanceCtrl($scope, $modalInstance, info, service, timelineWidget) {
+function TokenInstanceCtrl($scope, $modalInstance, info, service, timelineWidget, focus) {
 
     $scope.master = angular.copy(info.token);
     $scope.token  = angular.copy(info.token);
@@ -121,6 +121,8 @@ function TokenInstanceCtrl($scope, $modalInstance, info, service, timelineWidget
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
+
+    focus("token_form_activation");
 }
 
 })();

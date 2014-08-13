@@ -12,7 +12,8 @@
         <select ng-model="info.selectedPeriod"
                 ng-options="v as v.period for v in info.periods"
                 ng-change="change()"
-                id="period-select">
+                id="period-select"
+                focus-on="period_form_activation">
         </select>
         <!--<br/>selectedPeriod: <pre>{{info.selectedPeriod | json}}</pre>-->
         <!--<br/>periods: <pre>{{info.periods | json}}</pre>-->

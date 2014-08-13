@@ -34,9 +34,9 @@ function PeriodCtrl($scope, $modal, $timeout, platimModel, service) {
     };
 }
 
-PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'platimModel', 'service', 'timelineWidget'];
+PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'platimModel', 'service', 'timelineWidget', 'focus'];
 
-function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timelineWidget) {
+function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timelineWidget, focus) {
     var periods_plus_create = platimModel.periods;
     periods_plus_create["--all tokens--"] = {
        _id:    "--all tokens--",
@@ -150,6 +150,8 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
+
+    focus("period_form_activation");
 }
 
 })();
