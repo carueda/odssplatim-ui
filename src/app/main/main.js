@@ -1,6 +1,6 @@
-'use strict';
 
 (function() {
+'use strict';
 
 angular.module('odssPlatimApp.main', [])
     .controller('MainCtrl', MainCtrl) ;
@@ -100,10 +100,15 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
      * Called to reflect the selection options in the widget.
      */
     var platformOptionsUpdated = function() {
-        var selectedPlatforms = platimModel.getSelectedPlatforms();
-        timelineWidget.reinit(platimModel.holidays);
-        _.each(selectedPlatforms, insertTimeline);
-        timelineWidget.redraw();
+        var actId = status.activities.add("updating display...");
+        setTimeout(function() {
+            var selectedPlatforms = platimModel.getSelectedPlatforms();
+            timelineWidget.reinit(platimModel.holidays);
+            _.each(selectedPlatforms, insertTimeline);
+            timelineWidget.redraw();
+            status.activities.remove(actId);
+            $scope.$digest();
+        }, 10);
     };
 
     $scope.$on('platformOptionsUpdated', platformOptionsUpdated);
