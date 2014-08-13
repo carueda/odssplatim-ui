@@ -178,7 +178,7 @@ function timelineWidgetFactory(service, vis) {
             'start':          parseDate(token.start),
             'end':            parseDate(token.end),
             'group':          token.platform_id,
-            'title':          token.description,
+            'title':          token.description !== undefined ? token.description : token.state,
 
             'token_id':       token._id,
             'platform_id':    token.platform_id,
@@ -227,7 +227,8 @@ function timelineWidgetFactory(service, vis) {
 
     function updateStatus(tokenInfo, status) {
         tokenInfo.status = status;
-        tokenInfo .className = "block-body"  + " " + status;
+        tokenInfo.className = "block-body"  + " " + status;
+        items.update(tokenInfo)
     }
 
     function updateStatusModified(tokenInfo) {
@@ -255,8 +256,8 @@ function timelineWidgetFactory(service, vis) {
         var onSelect = function(properties) {
             //console.log("onSelect=", properties);
             if (properties.items && properties.items.length > 0) {
-                var item = properties.items[0];
-                logarea.html(tablify(item));
+                var selected = _.map(properties.items, function(itemId) { return items.get(itemId) });
+                logarea.html(tablify(selected));
                 //console.log("SELECT: item=", item);
             }
             else {
