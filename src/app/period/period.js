@@ -1,6 +1,5 @@
-'use strict';
-
 (function() {
+'use strict';
 
 /**
  * Dispatches the Period form.
@@ -25,11 +24,11 @@ function PeriodCtrl($scope, $modal, $timeout, platimModel, service) {
         });
 
         modalInstance.result.then(function (selectedPeriod) {
-            console.log('Period dialog accepted:', selectedPeriod);
+            //console.log('Period dialog accepted:', selectedPeriod);
             platimModel.selectedPeriodId = selectedPeriod._id;
             service.periodSelected();
         }, function () {
-            console.log('Period dialog dismissed');
+            //console.log('Period dialog dismissed');
         });
     };
 }
@@ -69,13 +68,13 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
         selectedPeriod:  selectedPeriod,
         newName:         ""  // when creating a new period
     };
-    console.log("info:", info);
+    //console.log("info:", info);
 
     $scope.info = info;
     $scope.master = angular.copy(info);
 
     $scope.change = function() {
-        console.log("change:", $scope.info.selectedPeriod);
+        //console.log("change:", $scope.info.selectedPeriod);
     };
 
     $scope.set = function() {
@@ -88,7 +87,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
     };
 
     $scope.create = function() {
-        console.log("create:", $scope.info);
+        //console.log("create:", $scope.info);
         var newPeriodInfo = {
             period:  $scope.info.newName,
             start: moment($scope.info.selectedPeriod.start).format("YYYY-MM-DD"),
@@ -101,7 +100,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
     };
 
     $scope.setDefault = function() {
-        console.log("setDefault:", $scope.info.selectedPeriod);
+        //console.log("setDefault:", $scope.info.selectedPeriod);
         var _id = $scope.info.selectedPeriod._id;
         if ( _id === "--all tokens--") {
             _id = undefined;
@@ -112,7 +111,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
     };
 
     $scope.delete = function() {
-        console.log("delete:", $scope.info.selectedPeriod);
+        //console.log("delete:", $scope.info.selectedPeriod);
 
         var periodInfo = $scope.info.selectedPeriod;
         service.confirm({
