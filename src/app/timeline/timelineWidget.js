@@ -65,8 +65,10 @@ function timelineWidgetFactory(service, vis) {
 
     var timeline = new vis.Timeline(container);
     timeline.setOptions(options);
-    timeline.setGroups(groups);
-    timeline.setItems(items);
+    timeline.setGroups([]);
+    timeline.setItems([]);
+    // Note: we set the datasets themselves (groups, items) when redrawing.
+    // This is mainly to improve rendering performance a bit.
 
     //console.log("CREATED timeline", timeline);
     gTW.timeline = timeline;
@@ -98,19 +100,9 @@ function timelineWidgetFactory(service, vis) {
         return items.get();
     }
 
-    function getSelectedRow() {
-        var row = undefined;
-        var sel = timeline.getSelection();
-        if (sel.length) {
-            if (sel[0].row != undefined) {
-                row = sel[0].row;
-            }
-        }
-        return row;
-    }
-
-
     function reinit(holidays) {
+        timeline.setGroups([]);
+        timeline.setItems([]);
         items.clear();
         groups.clear();
     }
@@ -192,18 +184,20 @@ function timelineWidgetFactory(service, vis) {
             'status':         token.status
         };
         //console.log("addToken: body", body);
-        items.add(body)
+        items.add(body);
     }
 
     function redraw() {
+        timeline.setGroups(groups);
+        timeline.setItems(items);
         refreshShading();
         timeline.redraw();
     }
 
     function refreshShading() {
-        var gs = timeline.itemSet.getGroups().get({order: groupOrder});
-        //console.log("refreshShading: gs", gs);
-        _.each(gs, function(grp, idx) {
+        var ordered = groups.get({order: groupOrder});
+        //console.log("refreshShading: ordered", ordered);
+        _.each(ordered, function(grp, idx) {
             var className = "groupCol" + (idx % 2);
             groups.update({id: grp.id, className: className});
         });
@@ -257,7 +251,7 @@ function timelineWidgetFactory(service, vis) {
     function updateStatus(tokenInfo, status) {
         tokenInfo.status = status;
         tokenInfo.className = "block-body"  + " " + status;
-        items.update(tokenInfo)
+        items.update(tokenInfo);
     }
 
     function updateStatusModified(tokenInfo) {
