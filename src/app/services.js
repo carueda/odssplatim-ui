@@ -1,6 +1,5 @@
-'use strict';
-
 (function() {
+'use strict';
 
 angular.module('odssPlatimApp.services', [])
     .factory('service', service);
@@ -27,30 +26,26 @@ function service($rootScope, $http, platimModel, status) {
     var getAllPlatforms = function(fns) {
         var actId = activities.add("retrieving platforms");
         var url = odssplatimConfig.platformsUrl;
-        console.log("GET " + url);
+        //console.log("GET " + url);
         $http.get(url)
             .success(function(res, status, headers, config) {
                 activities.remove(actId);
                 //console.log("getAllPlatforms: " + JSON.stringify(res));
 
-                _.each(res, function(elm) {
+                var tmls = _.map(res, function(elm) {
                     var platform_id = elm._id;
                     var tml = _.extend({
                         platform_id:   platform_id,
                         platform_name: elm.name
                     }, elm);
                     tml = _.omit(tml, '_id', 'name');
-
-                    if (!_.contains(platimModel.platformOptions.platformTypes, tml.typeName)) {
-                        platimModel.platformOptions.platformTypes.push(tml.typeName)
-                    }
-
                     tml.tokens = [];
-                    platimModel.byPlat[platform_id] = tml;
+                    return tml;
                 });
+                platimModel.setAllPlatforms(tmls);
 
-                fns.gotPlatforms(_.values(platimModel.byPlat));
-                getHolidays(fns);
+                fns.gotPlatforms(tmls);
+                getSelectedPlatforms(fns);
             })
 
             .error(httpErrorHandler(actId))
@@ -58,12 +53,40 @@ function service($rootScope, $http, platimModel, status) {
     };
 
     /**
+     * Retrieves the selected platforms.
+     * @param fns  Callback functions
+     */
+    function getSelectedPlatforms(fns) {
+        var url = odssplatimConfig.rest + "/prefs/selectedPlatforms";
+        //console.log("GET " + url);
+        var actId = activities.add('retrieving selected platforms');
+        $http.get(url)
+            .success(function(res, status, headers, config) {
+                activities.remove(actId);
+                //console.log("getSelectedPlatforms: res", res.selectedPlatforms);
+                platimModel.setSelectedPlatforms(res.selectedPlatforms);
+                fns.gotSelectedPlatforms(res);
+                getHolidays(fns);
+            })
+            .error(function(data, status, headers, config) {
+                if (status == 404) {
+                    activities.remove(actId);
+                    fns.gotSelectedPlatforms();
+                    getHolidays(fns);
+                }
+                else {
+                    httpErrorHandler(actId)(data, status, headers, config)
+                }
+            });
+    }
+
+    /**
      * Retrieves the holidays.
      * @param fns  Callback functions
      */
     var getHolidays = function(fns) {
         var url = odssplatimConfig.rest + "/periods/holidays";
-        console.log("GET " + url);
+        //console.log("GET " + url);
         var actId = activities.add('retrieving holidays');
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -90,7 +113,7 @@ function service($rootScope, $http, platimModel, status) {
      */
     var refreshTimelines = function(fns) {
         var url = odssplatimConfig.rest + "/tokens/timelines";
-        console.log("GET " + url);
+        //console.log("GET " + url);
         var actId = activities.add('retrieving timelines');
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -147,7 +170,7 @@ function service($rootScope, $http, platimModel, status) {
             //console.log("getting tokens for " + platform_name + " (" +platform_id+ ")");
 
             var url = odssplatimConfig.rest + "/tokens/timelines/" + platform_id;
-            console.log("GET " + url);
+            //console.log("GET " + url);
             var actId = activities.add("getting tokens for " + platform_name);
             $http.get(url)
                 .success(function(tokens, status, headers, config) {
@@ -183,7 +206,7 @@ function service($rootScope, $http, platimModel, status) {
      */
     var refreshPeriods = function(fns) {
         var url = odssplatimConfig.rest + "/periods";
-        console.log("GET " + url);
+        //console.log("GET " + url);
         var actId = activities.add("refreshing periods");
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -205,7 +228,7 @@ function service($rootScope, $http, platimModel, status) {
      */
     var getDefaultPeriodId = function(fns) {
         var url = odssplatimConfig.rest + "/periods/default";
-        console.log("GET " + url);
+        //console.log("GET " + url);
         var actId = activities.add("getting default period");
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -372,6 +395,21 @@ function service($rootScope, $http, platimModel, status) {
             .error(httpErrorHandler(actId));
     };
 
+    function savePlatformOptions(selectedPlatforms, successFn) {
+        var actId = activities.add("saving platform options...");
+        //console.log("savePlatformOptions", selectedPlatforms);
+        var url = odssplatimConfig.rest + "/prefs/selectedPlatforms";
+        var data = {selectedPlatforms: _.map(selectedPlatforms, "platform_id")};
+        //console.log("POST " + url);
+        $http.post(url, data)
+            .success(function(res, status, headers, config) {
+                platimModel.setSelectedPlatforms(data.selectedPlatforms);
+                activities.remove(actId);
+                successFn();
+            })
+            .error(httpErrorHandler(actId));
+    }
+
     /**
      * Returns a customized error handler for an http request.
      *
@@ -419,6 +457,8 @@ function service($rootScope, $http, platimModel, status) {
         periodSelected: function() {
             $rootScope.$broadcast('periodSelected');
         },
+
+        savePlatformOptions: savePlatformOptions,
 
         setDefaultPeriodId:  setDefaultPeriodId,
         addPeriod:           addPeriod,

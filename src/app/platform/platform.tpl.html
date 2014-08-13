@@ -1,35 +1,28 @@
 <div class="modal-header">
-    <h3>Platform options</h3>
+    <h3>Select the platforms to include in timeline</h3>
 </div>
 <div class="modal-body">
     <form name="form" class="css-form" novalidate>
-        <p>
-        By default, all platforms are displayed in the timeline
-        but the following filters can be used to select the desired platforms.
-        </p>
-        <br/>
-
-        <label class="checkbox">
-            <input type="checkbox" ng-model="platformOptions.onlyWithTokens"
-                   value="tokens">
-            Only platforms having tokens
-        </label>
-
-        <label class="checkbox">
-            <input type="checkbox" ng-model="platformOptions.onlyWithTypes"
-                   value="types"/>
-            Only platforms of these types:
-        </label>
-
         <div>
             <ul>
-                <li ng-repeat="pt in platformOptions.platformTypes">
-                    <label class="checkbox">
-                        <input type="checkbox" ng-model="platformOptions.selectedTypes[pt]"
-                               value="platformOptions.selectedTypes[pt]"
-                               ng-disabled="!platformOptions.onlyWithTypes"/>
-                        {{pt}}
-                    </label>
+                <li ng-repeat="(pt, tmls) in platformOptions.byPlatformType">
+                    <span style="font-style: italic">{{pt}}</span>
+                    <ul>
+                        <li ng-repeat="tml in tmls">
+                            <label class="checkbox" title="{{tml.platform_name}} - (trackingDBID={{tml.trackingDBID}})">
+
+                                <span ng-show="tml.color" style="color: {{tml.color}}; font-size: x-small">
+                                    <span class="fa fa-circle fa-fw"></span>
+                                </span>
+
+                                <input type="checkbox" ng-model="platformOptions.selectedPlatforms[tml.platform_id]"
+                                       value="platformOptions.selectedPlatforms[tml.platform_id]"/>
+                                {{tml.platform_name}}
+                                <!-- show some more info for diagnostics mainly because there are duplicate names -->
+                                <span style="color: lightgray; font-weight: lighter"> ({{tml.trackingDBID}})</span>
+                            </label>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>

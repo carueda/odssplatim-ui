@@ -1,4 +1,3 @@
-
 (function() {
 'use strict';
 
@@ -76,12 +75,13 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
         timelineWidget.reinit();
         service.refresh({
             gotPlatforms:         gotPlatforms,
+            gotSelectedPlatforms: function(tmls) {},
             gotTimelines:         gotTimelines,
             gotTokens:            gotTokens,
             gotPeriods:           gotPeriods,
             gotDefaultPeriodId:   gotDefaultPeriodId,
             gotHolidays:          gotHolidays,
-            refreshComplete:      platformOptionsUpdated
+            refreshComplete:      refreshComplete
         });
     };
 
@@ -104,12 +104,21 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
         setTimeout(function() {
             var selectedPlatforms = platimModel.getSelectedPlatforms();
             timelineWidget.reinit(platimModel.holidays);
+            //console.log("selectedPlatforms", selectedPlatforms);
             _.each(selectedPlatforms, insertTimeline);
             timelineWidget.redraw();
             status.activities.remove(actId);
             $scope.$digest();
+            service.savePlatformOptions(selectedPlatforms, function() {
+                //$scope.$digest();
+            });
         }, 10);
     };
+
+    function refreshComplete() {
+        console.log("refreshing... done.");
+        platformOptionsUpdated();
+    }
 
     $scope.$on('platformOptionsUpdated', platformOptionsUpdated);
 

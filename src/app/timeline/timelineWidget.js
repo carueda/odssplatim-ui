@@ -137,7 +137,7 @@ function timelineWidgetFactory(service, vis) {
 
         content += '<span';
         if (tml.color) {
-            content += " style='color: " +tml.color+ "; font-size: smaller'";
+            content += " style='color: " +tml.color+ "; font-size: x-small'";
         }
         content += ">" ;
         content += '<span class="fa fa-circle fa-fw"></span>';

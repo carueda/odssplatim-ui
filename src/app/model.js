@@ -1,6 +1,5 @@
-'use strict';
-
 (function() {
+'use strict';
 
     var model = {
 
@@ -9,10 +8,13 @@
         platform_ids: [],
 
         platformOptions: {
-            platformTypes:   [],
-            onlyWithTokens:  true,
-            onlyWithTypes:   false,
-            selectedTypes:   {}
+
+            selectedPlatforms:      {}
+
+            // cbtree preparations
+            ,allSelected:               false
+            ,selectedPlatformTypes:     {}
+            ,platformTypeIndeterminate: {}
         },
 
         holidays: [],
@@ -21,36 +23,66 @@
     };
 
     /**
-     * Gets the selected platform types.
+     * Called to update the model with all retrieved platforms.
      */
-    model.getSelectedTypes = function() {
-        var platformTypes = model.platformOptions.platformTypes;
-        var selectedTypes = model.platformOptions.selectedTypes;
-        var selected = _.filter(platformTypes,
-                                function (pt) { return selectedTypes[pt]; });
-        return selected;
+    model.setAllPlatforms = function(tmls) {
+        //console.log("setAllPlatforms", tmls);
+
+        model.byPlat = {};
+        var byPlatformType = model.platformOptions.byPlatformType = {};
+
+        var selectedPlatformTypes     = model.platformOptions.selectedPlatformTypes = {};
+        model.platformOptions.allSelected = false;
+        var platformTypeIndeterminate = model.platformOptions.platformTypeIndeterminate = {};
+
+        _.each(tmls, function(tml) {
+            var typeName = tml.typeName;
+
+            if (byPlatformType[typeName] === undefined) {
+                byPlatformType[typeName] = [];
+            }
+            byPlatformType[typeName].push(tml);
+            model.byPlat[tml.platform_id] = tml;
+
+            selectedPlatformTypes[typeName] = false;
+            platformTypeIndeterminate[typeName] = false;
+        });
+
+        // sort the elements by typeName by platform_name:
+        _.each(byPlatformType, function(tmls, typeName) {
+            model.platformOptions.byPlatformType[typeName] = _.sortBy(tmls, 'platform_name');
+        })
+    };
+
+    model.setSelectedPlatforms = function(selectedPlatforms) {
+        //console.log("setSelectedPlatforms", selectedPlatforms);
+        model.platformOptions.selectedPlatforms = {};
+        _.each(selectedPlatforms, function(platform_id) {
+            model.platformOptions.selectedPlatforms[platform_id] = true;
+        });
+        //console.log("model.platformOptions.selectedPlatforms", model.platformOptions.selectedPlatforms);
     };
 
     /**
      * Gets the platforms selected according to the platform options.
      */
     model.getSelectedPlatforms = function() {
-        var platforms = _.values(model.byPlat);
-
-        var onlyWithTokens = model.platformOptions.onlyWithTokens;
-        var onlyWithTypes = model.platformOptions.onlyWithTypes;
-        var selected = model.getSelectedTypes();
-
-        return _.filter(platforms, function(tml) {
-            if (onlyWithTokens && tml.tokens.length == 0) {
-                return false;
+        //console.log("getSelectedPlatforms");
+        var selectedPlatforms = [];
+        _.each(model.platformOptions.selectedPlatforms, function(selected, platform_id) {
+            if (selected && model.byPlat[platform_id]) {
+                selectedPlatforms.push(model.byPlat[platform_id]);
             }
-            if (onlyWithTypes) {
-                return _.indexOf(selected, tml.typeName) >= 0;
-
-            }
-            return true;
         });
+        if (selectedPlatforms.length == 0) {
+            // else: show only platforms with tokens:
+            _.each(model.byPlat, function(tml, platform_id) {
+                if (tml.tokens.length > 0) {
+                    selectedPlatforms.push(model.byPlat[platform_id]);
+                }
+            });
+        }
+        return selectedPlatforms;
     };
 
     /**

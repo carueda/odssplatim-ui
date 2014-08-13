@@ -1,6 +1,5 @@
-'use strict';
-
 (function() {
+'use strict';
 
 angular.module('odssPlatimApp.platform', [])
     .controller('PlatformCtrl', PlatformCtrl)
@@ -13,7 +12,7 @@ function PlatformCtrl($scope, $modal, platimModel, service) {
     $scope.open = function () {
 
         $scope.platformOptions = platimModel.platformOptions;
-        console.log("$scope.platformOptions:", $scope.platformOptions);
+        //console.log("$scope.platformOptions:", $scope.platformOptions);
 
         var modalInstance = $modal.open({
             templateUrl: 'platform/platform.tpl.html',
@@ -51,21 +50,11 @@ function PlatformInstanceCtrl($scope, $modalInstance, platformOptions) {
     };
 
     $scope.isValid = function() {
-        return !$scope.platformOptions.onlyWithTypes
-            || _.any(_.values($scope.platformOptions.selectedTypes));
+        return true;
     };
 
     $scope.isUnchanged = function() {
-        if ($scope.platformOptions.onlyWithTypes !== $scope.master.onlyWithTypes) {
-            return false;
-        }
-        if ($scope.platformOptions.onlyWithTokens !== $scope.master.onlyWithTokens) {
-            return false;
-        }
-        if ($scope.platformOptions.onlyWithTypes === $scope.master.onlyWithTypes) {
-            return angular.equals($scope.platformOptions.selectedTypes, $scope.master.selectedTypes);
-        }
-        return true;
+        return _.isEqual($scope.platformOptions.selectedPlatforms, $scope.master.selectedPlatforms);
     };
 
     $scope.reset();
