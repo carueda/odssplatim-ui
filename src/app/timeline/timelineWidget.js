@@ -1,8 +1,8 @@
-'use strict';
-
-var gTimeline = undefined;
+// temporary: a global object for debugging purposes in browser console
+var gTW = {};
 
 (function() {
+'use strict';
 
 angular.module('odssPlatimApp.timelineWidget', [])
     .factory('timelineWidget', timelineWidgetFactory);
@@ -43,6 +43,7 @@ function timelineWidgetFactory(service, vis) {
         ,onAdd:       onAdd
         ,onUpdate:    onUpdate
         ,onMove:      onMove
+        ,groupOrder:  groupOrder
 
     };
 
@@ -67,8 +68,10 @@ function timelineWidgetFactory(service, vis) {
     timeline.setGroups(groups);
     timeline.setItems(items);
 
-    console.log("CREATED timeline", timeline);
-    gTimeline = timeline;
+    //console.log("CREATED timeline", timeline);
+    gTW.timeline = timeline;
+    gTW.groups = groups;
+    gTW.items = items;
 
     addSelectListener();
 
@@ -152,15 +155,15 @@ function timelineWidgetFactory(service, vis) {
 
         content += "</div>";
 
-        var className = "groupCol" + (groups.get().length % 2);
         groups.add({
             id:         platform_id,
             content:    content,
-            className:  className,
             title:      tooltip,
 
-            platform_name: platform_name
+            platform_name: platform_name,
+            typeName:      tml.typeName
         });
+        // note: refreshShading will set the CSS class.
 
         setTimeout(function() {
             var elm = angular.element(document.getElementById(platform_id));
@@ -193,7 +196,17 @@ function timelineWidgetFactory(service, vis) {
     }
 
     function redraw() {
+        refreshShading();
         timeline.redraw();
+    }
+
+    function refreshShading() {
+        var gs = timeline.itemSet.getGroups().get({order: groupOrder});
+        //console.log("refreshShading: gs", gs);
+        _.each(gs, function(grp, idx) {
+            var className = "groupCol" + (idx % 2);
+            groups.update({id: grp.id, className: className});
+        });
     }
 
     function onAdd(item, callback) {
@@ -223,6 +236,22 @@ function timelineWidgetFactory(service, vis) {
         //console.log("onMove=", item);
         updateStatusModified(item);
         callback(item);
+    }
+
+    function groupOrder(item1, item2) {
+        if (item1.typeName < item2.typeName) {
+            return -1;
+        }
+        if (item1.typeName > item2.typeName) {
+            return +1;
+        }
+        if (item1.platform_name < item2.platform_name) {
+            return -1;
+        }
+        if (item1.platform_name > item2.platform_name) {
+            return +1;
+        }
+        return 0;
     }
 
     function updateStatus(tokenInfo, status) {
