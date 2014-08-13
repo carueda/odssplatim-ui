@@ -2,7 +2,7 @@ var gulp     = require('gulp');
 var gutil    = require('gulp-util');
 var concat   = require('gulp-concat');
 var rename   = require('gulp-rename');
-var clean    = require('gulp-clean');
+var rimraf   = require('rimraf');
 var zip      = require('gulp-zip');
 var ngtemplates = require('gulp-angular-templatecache');
 
@@ -11,9 +11,9 @@ var bower = require('./bower');
 var appname = bower.name;
 var version = bower.version;
 
-var distDest = 'dist/' + appname;
+var distDest = './dist/' + appname;
 var zipfile = appname + '-' + version + '.zip';
-var zipDest = 'dist';
+var zipDest = './dist';
 
 gutil.log("building " +appname+ " version " +version);
 
@@ -114,17 +114,14 @@ gulp.task('platim_index', function() {
 /////////////////
 // clean
 
-gulp.task('clean', function() {
-  return gulp.src([distDest], {read: false})
-    .pipe(clean());
+gulp.task('clean', function (cb) {
+    rimraf(distDest, cb);
 });
-gulp.task('clean-dist', function() {
-  return gulp.src(['dist'], {read: false})
-    .pipe(clean());
+gulp.task('clean-dist', function (cb) {
+    rimraf('./dist', cb);
 });
-gulp.task('clean-vendor', function() {
-  return gulp.src(['dist'], {read: false})
-    .pipe(clean());
+gulp.task('clean-vendor', function (cb) {
+    rimraf('./vendor', cb);
 });
 gulp.task('clean-all', ['clean', 'clean-dist', 'clean-vendor']);
 
