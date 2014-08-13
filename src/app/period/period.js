@@ -137,6 +137,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
     $scope.isInvalid = function() {
         return $scope.isCreating() &&
             ($scope.info.newName === undefined || $scope.info.newName.trim().length == 0
+             || $scope.info.selectedPeriod.start === undefined || $scope.info.selectedPeriod.end === undefined
              || $scope.info.selectedPeriod.start.getTime() > $scope.info.selectedPeriod.end.getTime());
     };
 
