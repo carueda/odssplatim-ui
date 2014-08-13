@@ -73,4 +73,19 @@ div.status_modified {
 }
 
 
+.vis.timeline .item.selected {
+  /*border-color: #FFC200 !important;*/
+  background-color: #FFF785 !important;
+}
+.vis.timeline .item.range .drag-left {
+    background: url(../img/resize_dots.png);
+    background-repeat: repeat-y;
+}
+.vis.timeline .item.range .drag-right {
+    background: url(../img/resize_dots.png);
+    background-position: 20px 0;
+    background-repeat: repeat-y;
+}
+
+
 /* ********************* </vis> ********************* */
