@@ -21,8 +21,9 @@
               title="{{currentVersion.saved}} (by {{currentVersion.author}})"
               >Last edit {{currentVersion.saved}}</span>
 
-
-        <div class="status" ng-show="activities.any()" ng-bind="activities.any()">
+        <div class="status" ng-show="activities.any()" >
+            <span class="fa fa-spinner fa-spin"></span>
+            <span ng-bind="activities.any()"></span>
         </div>
         <div id="error" style="color: #CC0000" ng-show="errors.any()">
             <div ng-bind="errors.any()"></div>
