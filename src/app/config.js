@@ -1,12 +1,10 @@
 var odssplatimConfig = {
 
-    useVis: false,   // temporary
-
-    // odssplatim-rest endpoint URL.
+    // odssplatim-rest endpoint URL
     rest: "/odss/platim",
 
-    //rest: "http://localhost:3000"
-
-    // URL to get platforms
+    // URL to get platform information
     platformsUrl: "/odss/platforms"
+
+    , useVis: true   // internal -- to be removed
 };
