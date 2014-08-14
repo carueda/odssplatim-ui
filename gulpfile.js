@@ -51,7 +51,8 @@ gulp.task('copy', function () {
         .pipe(gulp.dest(distDest)),
 
       gulp.src([
-              'vendor/bootstrap-css/css/bootstrap.css',
+              'vendor/bootstrap-css/css/**',
+              'vendor/bootstrap-css/img/**',
               'vendor/font-awesome/css/**',
               'vendor/font-awesome/fonts/**',
               'vendor/vis/dist/vis.css'
@@ -74,9 +75,6 @@ gulp.task('copy', function () {
               'src/css/**/*.css'
             ])
         .pipe(gulp.dest(distDest + '/css')),
-
-      gulp.src(['**'], {cwd: 'vendor/bootstrap/img'})
-        .pipe(gulp.dest(distDest + '/img')),
 
       gulp.src(['**'], {cwd: 'src/img'})
         .pipe(gulp.dest(distDest + '/img')),
