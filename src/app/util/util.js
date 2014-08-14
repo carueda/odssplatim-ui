@@ -14,7 +14,7 @@ UtilCtrl.$inject = ['$scope', '$modal'];
 
 function UtilCtrl($scope, $modal) {
     $scope.$on('confirm', function(event, info) {
-        console.log("UtilCtrl.confirm:", info);
+        //console.log("UtilCtrl.confirm:", info);
         $scope.info = info;
         $scope.open();
     });
@@ -33,10 +33,10 @@ function UtilCtrl($scope, $modal) {
         });
 
         modalInstance.result.then(function() {
-            console.log('Confirmation accepted', arguments);
+            //console.log('Confirmation accepted', arguments);
             $scope.info.ok()
         }, function () {
-            console.log('Confirmation dismissed', arguments);
+            //console.log('Confirmation dismissed', arguments);
         });
     };
 }

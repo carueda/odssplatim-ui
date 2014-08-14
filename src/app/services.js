@@ -465,7 +465,7 @@ function service($rootScope, $http, platimModel, status) {
         removePeriod:        removePeriod,
 
         confirm: function(info) {
-            console.log("service: confirm: ", info);
+            //console.log("service: confirm: ", info);
             $rootScope.$broadcast('confirm', info);
         }
 
