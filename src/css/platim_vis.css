@@ -46,7 +46,7 @@ div.range {
     cursor: pointer;
     padding-left: 0 !important;
     padding-right: 0 !important;
-    text-align: center;
+    text-align: left;  /* center not handled well by vis.js */
     border-radius: 0px;
     -moz-border-radius: 0px;  /* For Firefox 3.6 and older */
 }.range:hover {
