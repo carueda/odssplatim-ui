@@ -36,7 +36,7 @@
         var platformTypeIndeterminate = model.platformOptions.platformTypeIndeterminate = {};
 
         _.each(tmls, function(tml) {
-            var typeName = tml.typeName;
+            var typeName = tml.typeName !== undefined ? tml.typeName.toLowerCase() : "?";
 
             if (byPlatformType[typeName] === undefined) {
                 byPlatformType[typeName] = [];
