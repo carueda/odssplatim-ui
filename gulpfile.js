@@ -92,6 +92,8 @@ gulp.task('copy', function () {
         .pipe(gulp.dest(distDest)),
 
       gulp.src(['**/*tpl.html'], {cwd: 'src/app'})
+        .pipe(replace(/@@appname/g, appname))
+        .pipe(replace(/@@version/g, version))
         .pipe(gulp.dest(distDest)),
 
       //gulp.src('src/app/index.min.html')
