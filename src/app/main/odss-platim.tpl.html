@@ -1,5 +1,6 @@
 <div style="width: 100%" ng-controller="MainCtrl">
-    <div>
+    <div class="navbar">
+        <div class="pull-left">
         <div class="btn-group">
             <button class="btn btn-small" ng-click="refresh()"
                     title="Reloads the timeline (discarding all unsaved changes, if any)"
@@ -17,17 +18,17 @@
                     title="Revision history"
                     >Versions</button>
         </div>
-        <span ng-show="currentVersion"
-              title="{{currentVersion.saved}} (by {{currentVersion.author}})"
-              >Last edit {{currentVersion.saved}}</span>
-
-        <div class="status" ng-show="activities.any()" >
-            <span class="fa fa-spinner fa-spin"></span>
-            <span ng-bind="activities.any()"></span>
         </div>
-        <div id="error" style="color: #CC0000" ng-show="errors.any()">
-            <div ng-bind="errors.any()"></div>
+        <div class="pull-right">
+            <span style="color: lightgray; text-align: right">@@appname @@version</span>
         </div>
+    </div>
+    <div class="status" ng-show="activities.any()" >
+        <span class="fa fa-spinner fa-spin"></span>
+        <span ng-bind="activities.any()"></span>
+    </div>
+    <div id="error" style="color: #CC0000" ng-show="errors.any()">
+        <div ng-bind="errors.any()"></div>
     </div>
 
     <div ng-controller="TimelineCtrl" id="timelines"></div>
