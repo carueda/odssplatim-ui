@@ -2,6 +2,7 @@ node_modules/
 bower_components/
 vendor/
 src/app/templates.js
+dist/
 bin/
 build/
 .DS_Store

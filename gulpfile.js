@@ -1,9 +1,10 @@
 var gulp     = require('gulp');
 var gutil    = require('gulp-util');
-var concat   = require('gulp-concat');
 var rename   = require('gulp-rename');
 var rimraf   = require('rimraf');
 var zip      = require('gulp-zip');
+var replace  = require('gulp-replace');
+var merge    = require('merge-stream');
 var ngtemplates = require('gulp-angular-templatecache');
 
 // some properties
@@ -17,120 +18,94 @@ var zipDest = './dist';
 
 gutil.log("building " +appname+ " version " +version);
 
-/////////////////
+////////////////////////////////////////////////////////////////////////////
 // tasks
 
-gulp.task('default', ['ngtemplates', 'concat', 'copy']);
+gulp.task('default', ['dist']);
 
-/////////////////
-// ngtemplates
-
-gulp.task('ngtemplates', function () {
-    return gulp.src('**/*.tpl.html', {cwd: 'src/app/'})
-        .pipe(ngtemplates('templates.js', {module: 'odssPlatimApp.templates'}))
-        .pipe(gulp.dest('src/app'));
-});
-
-/////////////////
-// concat
-
-gulp.task('concat', ['concat_vendor_js', 'concat_vendor_css', 'concat_js', 'concat_css']);
-
-gulp.task('concat_vendor_js', function() {
-  gulp.src([
-          'vendor/moment/min/moment.min.js',
-          'vendor/lodash/dist/lodash.min.js',
-          'vendor/angular/angular.min.js',
-          'vendor/angular-sanitize/angular-sanitize.min.js',
-          'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
-          'vendor/vis/dist/vis.js'
-        ])
-    .pipe(concat('odssplatim_vendor.js'))
-    .pipe(gulp.dest(distDest + '/js/'))
-});
-
-gulp.task('concat_vendor_css', function() {
-  gulp.src([
-          'vendor/bootstrap-css/css/bootstrap.min.css',
-          'vendor/font-awesome/css/font-awesome.min.css',
-          'vendor/vis/dist/vis.css'
-        ])
-    .pipe(concat('odssplatim_vendor.css'))
-    .pipe(gulp.dest(distDest + '/css/'))
-});
-
-gulp.task('concat_js', function() {
-  gulp.src([
-          'src/common/**/*.js',
-          'src/app/**/*.js',
-          '!' + distDest + '/js/odssplatim.js'
-        ])
-    .pipe(concat('odssplatim.js'))
-    .pipe(gulp.dest(distDest + '/js/'))
-});
-
-gulp.task('concat_css', function() {
-  gulp.src([
-          'src/common/links/timeline.css',
-          'src/css/**/*.css'
-        ])
-    .pipe(concat('odssplatim.css'))
-    .pipe(gulp.dest(distDest + '/css/'))
-});
-
-
-/////////////////
-// copy
-
-gulp.task('copy', ['vendor_bootstrap', 'vendor_font_awesome', 'common_links',
-                   'platim_img', 'platim_views', 'platim_index']);
-
-gulp.task('vendor_bootstrap', function() {
-  gulp.src(['**'], {cwd: 'vendor/bootstrap/img'})
-    .pipe(gulp.dest(distDest + '/img/'))
-});
-gulp.task('vendor_font_awesome', function() {
-  gulp.src(['**'], {cwd: 'vendor/font-awesome/fonts'})
-    .pipe(gulp.dest(distDest + '/fonts/'))
-});
-gulp.task('common_links', function() {
-  gulp.src(['img/**'], {cwd: 'src/common/links'})
-    .pipe(gulp.dest(distDest + '/css/'))
-});
-gulp.task('platim_img', function() {
-  gulp.src(['**'], {cwd: 'src/img'})
-    .pipe(gulp.dest(distDest + '/img/'))
-});
-gulp.task('platim_views', function() {   // in case of not using the templates file
-  gulp.src(['**/*tpl.html'], {cwd: 'src/app'})
-    .pipe(gulp.dest(distDest + '/'))
-});
-gulp.task('platim_index', function() {
-  gulp.src('src/app/index.min.html')
-    .pipe(rename('index.html'))
-    .pipe(gulp.dest(distDest + '/'))
-});
-
-/////////////////
-// clean
-
-gulp.task('clean', function (cb) {
-    rimraf(distDest, cb);
-});
-gulp.task('clean-dist', function (cb) {
-    rimraf('./dist', cb);
-});
-gulp.task('clean-vendor', function (cb) {
-    rimraf('./vendor', cb);
-});
-gulp.task('clean-all', ['clean', 'clean-dist', 'clean-vendor']);
-
-/////////////////
-// dist
-
-gulp.task('dist', ['default'], function() {
+gulp.task('dist', ['build'], function() {
   return gulp.src([distDest + '/**'])
     .pipe(zip(zipfile))
     .pipe(gulp.dest(zipDest));
 });
 
+gulp.task('build', ['ngtemplates', 'copy']);
+
+gulp.task('ngtemplates', function() {
+    return gulp.src('**/*.tpl.html', {cwd: 'src/app/'})
+        .pipe(ngtemplates('templates.js', {module: 'odssPlatimApp.templates'}))
+        .pipe(gulp.dest('src/app'));
+});
+
+gulp.task('copy', function () {
+    return merge(
+
+      gulp.src([
+              'vendor/moment/moment.js',
+              'vendor/lodash/dist/lodash.js',
+              'vendor/angular/angular.js',
+              'vendor/angular-sanitize/angular-sanitize.js',
+              'vendor/angular-bootstrap/ui-bootstrap-tpls.js',
+              'vendor/vis/dist/vis.js'
+            ], {base: '.'})
+        .pipe(gulp.dest(distDest)),
+
+      gulp.src([
+              'vendor/bootstrap-css/css/bootstrap.css',
+              'vendor/font-awesome/css/**',
+              'vendor/font-awesome/fonts/**',
+              'vendor/vis/dist/vis.css'
+            ], {base: '.'})
+        .pipe(gulp.dest(distDest)),
+
+      gulp.src([
+              'src/app/**/*.js',
+              '!src/app/constants_links.js',
+              '!src/app/token/timelineWidget.js'
+            ])
+        .pipe(gulp.dest(distDest)),
+
+      gulp.src([
+              'src/common/utils/**/*.js'
+            ], {base: 'src'})
+        .pipe(gulp.dest(distDest)),
+
+      gulp.src([
+              'src/css/**/*.css'
+            ])
+        .pipe(gulp.dest(distDest + '/css')),
+
+      gulp.src(['**'], {cwd: 'vendor/bootstrap/img'})
+        .pipe(gulp.dest(distDest + '/img')),
+
+      gulp.src(['**'], {cwd: 'src/img'})
+        .pipe(gulp.dest(distDest + '/img')),
+
+      gulp.src('src/app/index.html')
+        .pipe(replace(/\.\.\/\.\.\/vendor\//g, 'vendor/'))
+        .pipe(replace(/\.\.\/css\//g, 'css/'))
+        .pipe(replace(/\.\.\/common\//g, 'common/'))
+        .pipe(replace(/src='([a-z])/g, "src='$1"))
+        .pipe(replace(/@@appname/g, appname))
+        .pipe(replace(/@@version/g, version))
+        //.pipe(rename('index_dev.html'))
+        .pipe(gulp.dest(distDest)),
+
+      gulp.src(['**/*tpl.html'], {cwd: 'src/app'})
+        .pipe(gulp.dest(distDest)),
+
+      //gulp.src('src/app/index.min.html')
+      //  .pipe(rename('index.html'))
+      //  .pipe(gulp.dest(distDest)),
+
+      gulp.src('src/app/index_links.html')
+        .pipe(gulp.dest(distDest))
+    )
+});
+
+/////////////////
+// clean
+gulp.task('clean',        function (cb) { rimraf(distDest, cb); });
+gulp.task('clean-dist',   function (cb) { rimraf('./dist', cb); });
+gulp.task('clean-vendor', function (cb) { rimraf('./vendor', cb); });
+gulp.task('clean-all', ['clean', 'clean-dist', 'clean-vendor']);

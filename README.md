@@ -17,14 +17,14 @@ In general:
 ```shell
 $ npm install
 $ bower install
-$ gulp dist
+$ gulp
 ```
 
 - `npm install` installs dependencies.
 
 - `bower install` installs web application dependencies.
 
-- `gulp dist` generates a distribution of the module as a standalone application.
+- `gulp` generates a distribution of the module as a standalone application.
 Default configuration should be OK for the ODSS application, but can be adjusted
 as needed (see below).
 
@@ -32,7 +32,7 @@ as needed (see below).
 
 Either for standalone deployment or embedded inclusion in ODSS, `src/app/config.js`
 is used to configure this module. This configuration consists of indicating the
-platform time editor REST endpoint URL and the URL to retrieve platform information.
+platform timeline editor REST endpoint URL and the URL to retrieve platform information.
 The default values (`"/odss/platim"` and `"/odss/platforms"`, respectively)
 should be OK for the ODSS application.
 
@@ -47,6 +47,9 @@ Starting up http-server, serving ./ on port: 8080
 Hit CTRL-C to stop the server
 ```
 Then open [http://localhost:8080/src/app/](http://localhost:8080/src/app/) in your browser.
+
+To test the standalone version created by `gulp`,
+open [http://localhost:8080/dist/odssplatim-ui/](http://localhost:8080/dist/odssplatim-ui/).
 
 
 ## Noteworthy changes ##
