@@ -166,6 +166,11 @@ function timelineWidgetFactory(service, vis) {
     }
 
     function addToken(token) {
+        var tooltip = token.state;
+        if (token.description !== undefined) {
+            tooltip += " - " + token.description;
+        }
+
         var body = {
             'id':             token._id,
             'className':      token.status + " " + "block-body",
@@ -173,7 +178,7 @@ function timelineWidgetFactory(service, vis) {
             'start':          parseDate(token.start),
             'end':            parseDate(token.end),
             'group':          token.platform_id,
-            'title':          token.description !== undefined ? token.description : token.state,
+            'title':          tooltip,
 
             'token_id':       token._id,
             'platform_id':    token.platform_id,
