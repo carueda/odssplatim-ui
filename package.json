@@ -8,10 +8,11 @@
   "devDependencies": {
     "gulp": "^3.8.7",
     "gulp-angular-templatecache": "^1.3.0",
-    "gulp-concat": "^2.3.4",
     "gulp-rename": "^1.2.0",
+    "gulp-replace": "^0.4.0",
     "gulp-util": "^3.0.0",
     "gulp-zip": "^1.0.0",
+    "merge-stream": "^0.1.5",
     "rimraf": "^2.2.8"
   }
 }
