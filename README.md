@@ -39,9 +39,9 @@ should be OK for the ODSS application.
 
 ## Local testing ##
 
-Run some local http server to serve this directory, for example:
+Run some local http server to serve this directory, for example,
+using [http-server](https://github.com/nodeapps/http-server):
 ```shell
-$ npm install http-server -g
 $ http-server
 Starting up http-server, serving ./ on port: 8080
 Hit CTRL-C to stop the server
@@ -54,7 +54,13 @@ open [http://localhost:8080/dist/odssplatim-ui/](http://localhost:8080/dist/odss
 
 ## Noteworthy changes ##
 
-- 2014-08-12: vis.js based implementation proving to be much easier given its better design.
+- 2014-08-12: 
+  - platform dialog now allows to individually select the platforms to be included in the widget 
+  - platform selection is (automatically) saved so is preserved across sessions
+  - selected platforms are now grouped by type and sorted alphabetically
+  - token tooltip with name and description
+  - colored bullets next to platform names
+  - internal: now using [vis.js](visjs.org) for the timeline widget itself
 
 - 2014-08-06: code review and adjustments toward preparations for upgrading
 underlying dependencies, and implementation of new enhacements.
