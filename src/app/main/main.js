@@ -98,8 +98,9 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
 
     /**
      * Called to reflect the selection options in the widget.
+     * @param doSave the platform options are saved if this is undefined or true
      */
-    var platformOptionsUpdated = function() {
+    var platformOptionsUpdated = function(doSave) {
         var actId = status.activities.add("updating display...");
         setTimeout(function() {
             var selectedPlatforms = platimModel.getSelectedPlatforms();
@@ -109,15 +110,17 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
             timelineWidget.redraw();
             status.activities.remove(actId);
             $scope.$digest();
-            service.savePlatformOptions(selectedPlatforms, function() {
-                //$scope.$digest();
-            });
+            if (doSave === undefined || doSave) {
+                service.savePlatformOptions(selectedPlatforms, function () {
+                    //$scope.$digest();
+                });
+            }
         }, 10);
     };
 
     function refreshComplete() {
         console.log("refreshing... done.");
-        platformOptionsUpdated();
+        platformOptionsUpdated(false);
     }
 
     $scope.$on('platformOptionsUpdated', platformOptionsUpdated);
