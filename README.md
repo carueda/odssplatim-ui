@@ -39,17 +39,15 @@ should be OK for the ODSS application.
 
 ## Local testing ##
 
-Run some local http server to serve this directory, for example,
-using [http-server](https://github.com/nodeapps/http-server):
 ```shell
-$ http-server
-Starting up http-server, serving ./ on port: 8080
-Hit CTRL-C to stop the server
+$ gulp local
 ```
-Then open [http://localhost:8080/src/app/](http://localhost:8080/src/app/) in your browser.
+This creates a local configuration and index file; then opens 
+[http://localhost:8001/src/app/local.index.html](http://localhost:8001/src/app/local.index.html)
+in your browser.
 
 To test the standalone version created by `gulp`,
-open [http://localhost:8080/dist/odssplatim-ui/](http://localhost:8080/dist/odssplatim-ui/).
+open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odssplatim-ui/).
 
 
 ## Noteworthy changes ##

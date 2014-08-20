@@ -123,7 +123,7 @@ var proxyAddr   = 'http://localhost:' +proxyPort;
 var localPort   = 8001;
 var localUrl    = 'http://localhost:' +localPort+ '/src/app/' +localIndex;
 
-gulp.task('local-with-proxy', ['webserver'], function(cb) {
+gulp.task('local', ['webserver'], function(cb) {
     open(localUrl);
     cb();
 });
