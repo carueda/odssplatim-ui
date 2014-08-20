@@ -5,9 +5,10 @@ This is the platform timeline editor UI module for ODSS.
 
 ## Setup in ODSS ##
 
-Currently the timeline editor widget is included in the main ODSS application
-via iframe, so there is no additional setup for ODSS. The timeline editor,
-in a standalone fashion, is already deployed at the associated URL.
+The platform timeline editor is currently being built directly from this
+directory and deployed as a standalone application on the odss-test server.
+Since the main ODSS application includes this editor via an iframe with
+the corresponding URL, there is no additional setup for ODSS. 
 
 
 ## Module setup ##
@@ -69,4 +70,4 @@ platform timeline widget via iframe.
 - 2014-01-17: fix url for retrieval of platforms
 
 - 2013-11-25 - platform timeline editor UI now fully integrated from initial development
-  in original odssplatim-ui https://github.com/carueda/odssplatim-ui-original/tree/b1b8b2b7
+  (original repo https://github.com/carueda/odssplatim-ui-original/tree/b1b8b2b7)
