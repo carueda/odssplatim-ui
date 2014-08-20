@@ -11,8 +11,11 @@
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.4.0",
     "gulp-util": "^3.0.0",
+    "gulp-webserver": "^0.6.0",
     "gulp-zip": "^1.0.0",
     "merge-stream": "^0.1.5",
+    "open": "0.0.5",
     "rimraf": "^2.2.8"
-  }
+  },
+  "dependencies": {}
 }

@@ -6,6 +6,8 @@ var zip      = require('gulp-zip');
 var replace  = require('gulp-replace');
 var merge    = require('merge-stream');
 var ngtemplates = require('gulp-angular-templatecache');
+var webserver = require('gulp-webserver');
+var open     = require('open');
 
 // some properties
 var bower = require('./bower');
@@ -109,3 +111,62 @@ gulp.task('clean',        function (cb) { rimraf(distDest, cb); });
 gulp.task('clean-dist',   function (cb) { rimraf('./dist', cb); });
 gulp.task('clean-vendor', function (cb) { rimraf('./vendor', cb); });
 gulp.task('clean-all', ['clean', 'clean-dist', 'clean-vendor']);
+
+//////////////////////////////////
+// for local testing
+
+var localConfig  = 'local.config.js';
+var localIndex  = 'local.index.html';
+var proxyTarget = 'http://odss-test.shore.mbari.org';
+var proxyPort   = 9999;
+var proxyAddr   = 'http://localhost:' +proxyPort;
+var localPort   = 8001;
+var localUrl    = 'http://localhost:' +localPort+ '/src/app/' +localIndex;
+
+gulp.task('local-with-proxy', ['webserver'], function(cb) {
+    open(localUrl);
+    cb();
+});
+
+gulp.task('webserver', ['config', 'proxy'], function() {
+    gulp.src('.')
+        .pipe(webserver({port: localPort}))
+    ;
+});
+
+gulp.task('config', function() {
+    merge(
+        gulp.src('src/app/config.js')
+            .pipe(replace(/rest\s*:\s*".*"/g,         'rest: "' +proxyAddr+ '/odss/platim"'))
+            .pipe(replace(/platformsUrl\s*:\s*".*"/g, 'platformsUrl: "' +proxyAddr+ '/odss/platforms"'))
+            .pipe(rename(localConfig))
+            .pipe(gulp.dest('src/app')),
+
+        gulp.src('src/app/index.html')
+            .pipe(replace(/<script src='config.js'/g, "<script src='" +localConfig+ "'"))
+            .pipe(rename(localIndex))
+            .pipe(gulp.dest('src/app'))
+    );
+});
+
+// proxy to CORS-enable the ODSS endpoint to facilitate local development/testing
+gulp.task('proxy', function(cb) {
+    var httpProxy = require('http-proxy');
+    var proxy = httpProxy.createProxyServer();
+    proxy.on('proxyRes', function (proxyRes, req, res, options) {
+        var headers = proxyRes.headers;
+        headers['Access-Control-Allow-Origin'] = '*';
+    });
+    proxy.on('error', function (err, req, res) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Something went wrong.');
+    });
+
+    require('http').createServer(function (req, res) {
+        proxy.web(req, res, {
+            target: proxyTarget
+        });
+    }).listen(proxyPort);
+
+    cb();
+});
