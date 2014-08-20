@@ -4,12 +4,14 @@
 angular.module('odssPlatimApp.main', [])
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', 'platimModel', 'service', 'timelineWidget', 'status'];
+MainCtrl.$inject = ['$scope', '$window', 'platimModel', 'service', 'timelineWidget', 'status'];
 
-function MainCtrl($scope, platimModel, service, timelineWidget, status) {
-    $scope.debug = window.location.toString().match(/.*\?debug/)
+function MainCtrl($scope, $window, platimModel, service, timelineWidget, status) {
+    $scope.debug = $window.location.toString().match(/.*\?debug/)
         ? { collapsed: true, model: platimModel }
         : undefined;
+
+    $scope.cfg = odssplatimConfig;
 
     $scope.activities = status.activities;
     $scope.errors     = status.errors;
@@ -65,10 +67,48 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
         }, 3000);
     }
 
+    function getSaveInfo() {
+        function isNewOrModifiedToken(tokenInfo) {
+            return tokenInfo.status !== undefined &&
+                (tokenInfo.status === "status_new" ||
+                    tokenInfo.status.indexOf("_modified") >= 0);
+        }
+
+        function isOkToBeSaved(tokenInfo) {
+            return tokenInfo.status !== undefined &&
+                tokenInfo.state !== undefined &&
+                tokenInfo.state.trim() !== "";
+        }
+
+        var skipped = 0;
+        var toBeSaved = [];
+        _.each(timelineWidget.getData(), function(tokenInfo, index) {
+            if (isNewOrModifiedToken(tokenInfo)) {
+                if (isOkToBeSaved(tokenInfo)) {
+                    toBeSaved.push({tokenInfo: tokenInfo, index: index});
+                }
+                else {
+                    skipped += 1;
+                }
+            }
+        });
+        return {toBeSaved: toBeSaved, skipped: skipped};
+    }
+
     /**
      * Triggers the refresh of the model.
      */
     $scope.refresh = function() {
+        var toBeSavedInfo = getSaveInfo();
+        var unsaved = toBeSavedInfo.toBeSaved;
+        if (unsaved.length > 0) {
+            console.log('unsaved', unsaved);
+            if (!$window.confirm(
+                'There are unsaved edits that will be lost with the refresh.\n\n' +
+                'Are you sure you want to proceed with the refresh?')) {
+                return;
+            }
+        }
         status.errors.removeAll();
         angular.element(document.getElementById('logarea')).html("");
         console.log("refreshing...");
@@ -132,37 +172,13 @@ function MainCtrl($scope, platimModel, service, timelineWidget, status) {
      */
     $scope.save = function() {
 
-        function isNewOrModifiedToken(tokenInfo) {
-            var res = tokenInfo.status !== undefined &&
-                     (tokenInfo.status === "status_new" ||
-                      tokenInfo.status.indexOf("_modified") >= 0);
-            return res;
-        }
-
-        function isOkToBeSaved(tokenInfo) {
-            var res = tokenInfo.status !== undefined &&
-                      tokenInfo.state !== undefined &&
-                      tokenInfo.state.trim() !== "";
-            return res;
-        }
-
         status.errors.removeAll();
 
-        var skipped = 0;
-        var toBeSaved = [];
-        _.each(timelineWidget.getData(), function(tokenInfo, index) {
-            if (isNewOrModifiedToken(tokenInfo)) {
-                if (isOkToBeSaved(tokenInfo)) {
-                    toBeSaved.push({tokenInfo: tokenInfo, index: index});
-                }
-                else {
-                    skipped += 1;
-                }
-            }
-        });
+        var saveInfo = getSaveInfo();
+        var toBeSaved = saveInfo.toBeSaved;
 
-        var msg, skippedMsg = skipped > 0
-                       ? " (" +skipped+ " skipped because of missing info)"
+        var msg, skippedMsg = saveInfo.skipped > 0
+                       ? " (" +saveInfo.skipped+ " skipped because of missing info)"
                        : "";
         if (toBeSaved.length > 0) {
             msg = "Saving " +toBeSaved.length+ " token(s)" + skippedMsg;

@@ -53,16 +53,20 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
+- 2014-08-20:
+  - confirmation alert prior to refresh if there are unsaved tokens
+  - help link  
+  
 - 2014-08-12: 
   - platform dialog now allows to individually select the platforms to be included in the widget 
   - platform selection is (automatically) saved so is preserved across sessions
   - selected platforms are now grouped by type and sorted alphabetically
   - token tooltip with name and description
   - colored bullets next to platform names
-  - internal: now using [vis.js](visjs.org) for the timeline widget itself
+  - internal: now using [vis.js](http://visjs.org) for the timeline widget itself
 
 - 2014-08-06: code review and adjustments toward preparations for upgrading
-underlying dependencies, and implementation of new enhacements.
+underlying dependencies, and implementation of new enhancements.
 
 - 2014-03-10: because of css conflicts (that need some more investigation) revert to include
 platform timeline widget via iframe.

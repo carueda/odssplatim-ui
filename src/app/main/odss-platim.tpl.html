@@ -1,23 +1,24 @@
 <div style="width: 100%" ng-controller="MainCtrl">
     <div class="navbar">
         <div class="pull-left">
-        <div class="btn-group">
-            <button class="btn btn-small" ng-click="refresh()"
-                    title="Reloads the timeline (discarding all unsaved changes, if any)"
-                    >Refresh</button>
-            <button class="btn btn-small" ng-controller="PlatformCtrl" ng-click="open()"
-                    title="Platform options"
-                    >Platform</button>
-            <button class="btn btn-small" ng-controller="PeriodCtrl" ng-click="open()"
-                    title="Allows to visualize a pre-defined period or create a new period"
-                    >Period</button>
-            <button class="btn btn-small" ng-click="save()"
-                    title="Saves all new and modified tokens"
-                    >Save</button>
-            <button class="btn btn-small" ng-show="showVersions" ng-click="showVersions()"
-                    title="Revision history"
-                    >Versions</button>
-        </div>
+            <div class="btn-group">
+                <button class="btn btn-small" ng-click="refresh()"
+                        title="Reloads the timeline (discarding all unsaved changes, if any)"
+                        >Refresh</button>
+                <button class="btn btn-small" ng-controller="PlatformCtrl" ng-click="open()"
+                        title="Platform options"
+                        >Platform</button>
+                <button class="btn btn-small" ng-controller="PeriodCtrl" ng-click="open()"
+                        title="Allows to visualize a pre-defined period or create a new period"
+                        >Period</button>
+                <button class="btn btn-small" ng-click="save()"
+                        title="Saves all new and modified tokens"
+                        >Save</button>
+                <button class="btn btn-small" ng-show="showVersions" ng-click="showVersions()"
+                        title="Revision history"
+                        >Versions</button>
+                <a target="_blank" class="btn btn-small btn-link" ng-href="{{cfg.helpLink}}">Help</a>
+            </div>
         </div>
         <div class="pull-right">
             <span style="color: lightgray; font-size: small; text-align: right">@@appname @@version</span>
