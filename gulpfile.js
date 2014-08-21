@@ -112,41 +112,73 @@ gulp.task('clean-dist',   function (cb) { rimraf('./dist', cb); });
 gulp.task('clean-vendor', function (cb) { rimraf('./vendor', cb); });
 gulp.task('clean-all', ['clean', 'clean-dist', 'clean-vendor']);
 
-//////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 // for local testing
+////////////////////////////////////////////////////////////////////////////
 
 var localConfig  = 'local.config.js';
 var localIndex  = 'local.index.html';
-var proxyTarget = 'http://odss-test.shore.mbari.org';
-var proxyPort   = 9999;
-var proxyAddr   = 'http://localhost:' +proxyPort;
 var localPort   = 8001;
 var localUrl    = 'http://localhost:' +localPort+ '/src/app/' +localIndex;
 
-gulp.task('local', ['webserver'], function(cb) {
+
+gulp.task('local-index', function() {
+    gulp.src('src/app/index.html')
+        .pipe(replace(/<script src='config.js'/g, "<script src='" +localConfig+ "'"))
+        .pipe(rename(localIndex))
+        .pipe(gulp.dest('src/app'));
+});
+
+////////////////////////////////////
+// local testing with platim server:
+
+// the following corresponds to running `node app` under webapp/server/platim/
+var platimAddr   = 'http://localhost:3000';
+
+gulp.task('local-with-platim', ['webserver-with-platim'], function(cb) {
     open(localUrl);
     cb();
 });
 
-gulp.task('webserver', ['config', 'proxy'], function() {
+gulp.task('webserver-with-platim', ['config-with-platim', 'local-index'], function() {
     gulp.src('.')
         .pipe(webserver({port: localPort}))
     ;
 });
 
-gulp.task('config', function() {
-    merge(
-        gulp.src('src/app/config.js')
-            .pipe(replace(/rest\s*:\s*".*"/g,         'rest: "' +proxyAddr+ '/odss/platim"'))
-            .pipe(replace(/platformsUrl\s*:\s*".*"/g, 'platformsUrl: "' +proxyAddr+ '/odss/platforms"'))
-            .pipe(rename(localConfig))
-            .pipe(gulp.dest('src/app')),
+gulp.task('config-with-platim', function() {
+    gulp.src('src/app/config.js')
+        .pipe(replace(/rest\s*:\s*".*"/g,         'rest: "' +platimAddr+ '"'))
+        .pipe(replace(/platformsUrl\s*:\s*".*"/g, 'platformsUrl: "' +platimAddr+ '/platforms"'))
+        .pipe(rename(localConfig))
+        .pipe(gulp.dest('src/app'));
+});
 
-        gulp.src('src/app/index.html')
-            .pipe(replace(/<script src='config.js'/g, "<script src='" +localConfig+ "'"))
-            .pipe(rename(localIndex))
-            .pipe(gulp.dest('src/app'))
-    );
+////////////////////////////////////
+// local testing with proxy:
+
+// the following is to run against actual ODSS via a proxy for CORS-enablement
+var proxyTarget = 'http://odss-test.shore.mbari.org';
+var proxyPort   = 9999;
+var proxyAddr   = 'http://localhost:' +proxyPort;
+
+gulp.task('local-with-proxy', ['webserver-with-proxy'], function(cb) {
+    open(localUrl);
+    cb();
+});
+
+gulp.task('webserver-with-proxy', ['config-with-proxy', 'proxy', 'local-index'], function() {
+    gulp.src('.')
+        .pipe(webserver({port: localPort}))
+    ;
+});
+
+gulp.task('config-with-proxy', function() {
+    gulp.src('src/app/config.js')
+        .pipe(replace(/rest\s*:\s*".*"/g,         'rest: "' +proxyAddr+ '/odss/platim"'))
+        .pipe(replace(/platformsUrl\s*:\s*".*"/g, 'platformsUrl: "' +proxyAddr+ '/odss/platforms"'))
+        .pipe(rename(localConfig))
+        .pipe(gulp.dest('src/app'));
 });
 
 // proxy to CORS-enable the ODSS endpoint to facilitate local development/testing
