@@ -53,6 +53,9 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
+- 2014-08-21:
+  - show "last updated" info
+  
 - 2014-08-20:
   - confirmation alert prior to refresh if there are unsaved tokens
   - help link  

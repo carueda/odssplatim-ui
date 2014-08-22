@@ -16,8 +16,43 @@ function service($rootScope, $http, platimModel, status) {
      */
     var refresh = function(fns) {
         status.errors.removeAll();
-        getAllPlatforms(fns);
+        getGeneralInfoAux(fns, true);
     };
+
+    /**
+     * Retrieves general info.
+     * @param fns  Callback functions
+     * @param continueRefresh true to continue with refresh sequence.
+     */
+    function getGeneralInfoAux(fns, continueRefresh) {
+        var actId = activities.add("retrieving general info");
+        var url = odssplatimConfig.rest + "/tokens/info";
+        //console.log("GET " + url);
+        $http.get(url)
+            .success(function(res, status, headers, config) {
+                activities.remove(actId);
+                fns.gotGeneralInfo(res);
+                if (continueRefresh) {
+                    getAllPlatforms(fns);
+                }
+            })
+            .error(function(data, status, headers, config) {
+                activities.remove(actId);
+                fns.gotGeneralInfo();
+                if (continueRefresh) {
+                    getAllPlatforms(fns);
+                }
+            })
+        ;
+    }
+
+    /**
+     * Retrieves general info.
+     * @param fns  Callback functions
+     */
+    function getGeneralInfo(fns) {
+        getGeneralInfoAux(fns, false);
+    }
 
     /**
      * Retrieves all platform.
@@ -442,6 +477,8 @@ function service($rootScope, $http, platimModel, status) {
 
     return {
         refresh: refresh,
+
+        getGeneralInfo: getGeneralInfo,
 
         platformOptionsUpdated: function() {
             $rootScope.$broadcast('platformOptionsUpdated');

@@ -16,6 +16,28 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
     $scope.activities = status.activities;
     $scope.errors     = status.errors;
 
+    function updateLastUpdated() {
+        var dur = moment.duration($scope.lastUpdated.on.diff(moment()));
+        $scope.lastUpdated.durHumanized = dur.humanize(true);
+    }
+    var gotGeneralInfo = function(info) {
+        $scope.lastUpdated = undefined;
+        console.log("gotGeneralInfo: " + JSON.stringify(info));
+        if (info && info.lastUpdated) {
+            $scope.lastUpdated = angular.copy(info.lastUpdated);
+            $scope.lastUpdated.on = moment(info.lastUpdated.on);
+            $scope.lastUpdated.onLocal = $scope.lastUpdated.on.local().format('llll');
+            updateLastUpdated();
+        }
+    };
+    setTimeout(function refreshLastUpdated() {
+        if ($scope.lastUpdated !== undefined) {
+            updateLastUpdated();
+            $scope.$digest();
+        }
+        setTimeout(refreshLastUpdated, 5 * 1000);
+    }, 0);
+
     var gotPlatforms = function(platforms) {
         //console.log("gotPlatforms: ", platforms);
     };
@@ -114,6 +136,7 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
         console.log("refreshing...");
         timelineWidget.reinit();
         service.refresh({
+            gotGeneralInfo:       gotGeneralInfo,
             gotPlatforms:         gotPlatforms,
             gotSelectedPlatforms: function(tmls) {},
             gotTimelines:         gotTimelines,
@@ -167,6 +190,11 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
 
     $scope.$on('periodSelected', setVisibleChartRange);
 
+    $scope.$on('tokenDeleted', function() {
+        console.log("reacting to tokenDeleted");
+        service.getGeneralInfo({gotGeneralInfo: gotGeneralInfo});
+    });
+
     /**
      * Saves the modified tokens in the timeline.
      */
@@ -196,7 +224,9 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
          */
         function doList(ii) {
             if (ii >= toBeSaved.length) {
-                return; // done.
+                // done.  Refresh just general info:
+                service.getGeneralInfo({gotGeneralInfo: gotGeneralInfo});
+                return;
             }
             var elm = toBeSaved[ii];
             var tokenInfo = elm.tokenInfo;

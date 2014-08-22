@@ -65,9 +65,9 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
     };
 }
 
-TokenInstanceCtrl.$inject = ['$scope', '$modalInstance', 'info', 'service', 'timelineWidget', 'focus'];
+TokenInstanceCtrl.$inject = ['$rootScope', '$scope', '$modalInstance', 'info', 'service', 'timelineWidget', 'focus'];
 
-function TokenInstanceCtrl($scope, $modalInstance, info, service, timelineWidget, focus) {
+function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, service, timelineWidget, focus) {
 
     $scope.master = angular.copy(info.token);
     $scope.token  = angular.copy(info.token);
@@ -99,6 +99,7 @@ function TokenInstanceCtrl($scope, $modalInstance, info, service, timelineWidget
                 $modalInstance.dismiss('delete token');
                 service.deleteToken(info.token, info.row, function(tokenInfo, index) {
                     timelineWidget.removeToken(tokenInfo, index, index);
+                    $rootScope.$broadcast('tokenDeleted');
                 });
             }
         });

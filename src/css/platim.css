@@ -189,3 +189,11 @@ div.status {
     padding: 3px;
     padding-left: 8px;
 }
+
+.lastUpdated {
+    color: #d3d3d3;
+    font-size: small;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 5px;
+}

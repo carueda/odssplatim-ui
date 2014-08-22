@@ -17,6 +17,10 @@
                 <button class="btn btn-small" ng-show="showVersions" ng-click="showVersions()"
                         title="Revision history"
                         >Versions</button>
+                <label class="lastUpdated" ng-show="lastUpdated" title="{{lastUpdated.onLocal}}">
+                    Last updated {{lastUpdated.durHumanized}}
+                    <span ng-show="lastUpdated.by">by {{lastUpdated.by}}</span>
+                </label>
                 <a target="_blank" class="btn btn-small btn-link" ng-href="{{cfg.helpLink}}">Help</a>
             </div>
         </div>
