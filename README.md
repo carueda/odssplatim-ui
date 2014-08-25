@@ -6,7 +6,7 @@ This is the platform timeline editor UI module for ODSS.
 ## Setup in ODSS ##
 
 The platform timeline editor is currently being built directly from this
-directory and deployed as a standalone application on the odss-test server.
+directory (see below) and deployed as a standalone application on the odss-test server.
 Since the main ODSS application includes this editor via an iframe with
 the corresponding URL, there is no additional setup for ODSS. 
 
@@ -35,17 +35,36 @@ Either for standalone deployment or embedded inclusion in ODSS, `src/app/config.
 is used to configure this module. This configuration consists of indicating the
 platform timeline editor REST endpoint URL and the URL to retrieve platform information.
 The default values (`"/odss/platim"` and `"/odss/platforms"`, respectively)
-should be OK for the ODSS application.
+are currently appropriate for the ODSS application.
 
 
 ## Local testing ##
 
+### with "platim" server running locally
+
+In a terminal:
+
 ```shell
-$ gulp local
+$ cd .../webapp/server/platim
+$ node app
+```
+
+And in this directory:
+```shell
+$ gulp local-with-platim
 ```
 This creates a local configuration and index file; then opens 
 [http://localhost:8001/src/app/local.index.html](http://localhost:8001/src/app/local.index.html)
 in your browser.
+
+### with proxy to actual ODSS server
+
+Just run in this directory:
+```shell
+$ gulp local-with-proxy
+```
+
+### Testing the standalone distro
 
 To test the standalone version created by `gulp`,
 open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odssplatim-ui/).
