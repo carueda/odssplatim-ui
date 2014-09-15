@@ -72,8 +72,9 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
-- 2014-08-21:
+- 2014-08-25: (0.2.1)
   - show "last updated" info
+  - set margin.item.horizontal=0
   
 - 2014-08-20:
   - confirmation alert prior to refresh if there are unsaved tokens
