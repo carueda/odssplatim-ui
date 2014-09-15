@@ -35,6 +35,10 @@ function timelineWidgetFactory(service, vis) {
         'showMinorLabels':  true,
         'showCustomTime':   false,
 
+        'margin': {
+            'item': { horizontal: 0 }
+        },
+
         'min': new Date(2012, 0, 1),                  // lower limit of visible range
         'max': new Date(2015, 11, 31)                 // upper limit of visible range
 //        ,"zoomMin": 1000 * 60 * 60 * 24             // one day in milliseconds
