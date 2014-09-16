@@ -68,9 +68,10 @@ function service($rootScope, $http, platimModel, status) {
                 //console.log("getAllPlatforms: " + JSON.stringify(res));
 
                 var tmls = _.map(res, function(elm) {
-                    var platform_id = elm._id;
+                    //var platform_id = elm._id;
                     var tml = _.extend({
-                        platform_id:   platform_id,
+                        //platform_id:   platform_id,
+                        platform_id:   elm.name,
                         platform_name: elm.name
                     }, elm);
                     tml = _.omit(tml, '_id', 'name');
@@ -158,7 +159,8 @@ function service($rootScope, $http, platimModel, status) {
                 _.each(res, function(elm) {
                     var platform_id = elm._id;
                     var tml = _.extend({
-                        platform_id:   platform_id,
+                        //platform_id:   platform_id,
+                        platform_id: elm.name,
                         platform_name: elm.name
                     }, elm);
                     tml = _.omit(tml, '_id', 'name');
@@ -213,6 +215,7 @@ function service($rootScope, $http, platimModel, status) {
                     _.each(tokens, function(token) {
                         token.token_id      = token._id;
                         token.platform_name = platform_name;
+                        token.platform_id   = platform_name;
                         token.status        = "status_saved";
                     });
                     platimModel.byPlat[platform_id].tokens = tokens;
@@ -367,7 +370,8 @@ function service($rootScope, $http, platimModel, status) {
         console.log("saveToken: tokenInfo=" + JSON.stringify(tokenInfo));
 
         var item = {
-            platform_id:   strip(tokenInfo.platform_id),
+            //platform_id:   strip(tokenInfo.platform_id),
+            platform_name: strip(tokenInfo.platform_id),
             start:         unparseDate(tokenInfo.start),
             end:           unparseDate(tokenInfo.end),
             state:         tokenInfo.state,

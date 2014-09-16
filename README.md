@@ -72,6 +72,10 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
+- 2014-09-15: (0.3.0)
+  - (internal) change token-platform link to use platform name instead of platform mongo id
+    (this supported by corresponding adjustments in "platim" backend service).
+  
 - 2014-08-25: (0.2.1)
   - show "last updated" info
   - set margin.item.horizontal=0
