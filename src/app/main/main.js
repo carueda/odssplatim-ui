@@ -195,7 +195,7 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
     $scope.$on('periodSelected', setVisibleChartRange);
 
     $scope.$on('tokenDeleted', function() {
-        console.log("reacting to tokenDeleted");
+        //console.log("reacting to tokenDeleted");
         service.getGeneralInfo({gotGeneralInfo: gotGeneralInfo});
     });
 

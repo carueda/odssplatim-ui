@@ -340,11 +340,11 @@ function timelineWidgetFactory(cfg, service, vis) {
         else {
             updateStatus(tokenInfo, tokenInfo.status + "_modified");
         }
-        console.log("modified status set to: " + tokenInfo.status);
+        //console.log("modified status set to: " + tokenInfo.status);
     }
 
     function removeToken(tokenInfo) {
-        console.log("removeToken", tokenInfo);
+        //console.log("removeToken", tokenInfo);
         items.remove(tokenInfo.id);
     }
 

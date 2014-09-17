@@ -367,7 +367,7 @@ function service($rootScope, $http, platimModel, status) {
      */
     var saveToken = function(tokenInfo, index, successFn) {
         var url, actId;
-        console.log("saveToken: tokenInfo=" + JSON.stringify(tokenInfo));
+        //console.log("saveToken: tokenInfo=" + JSON.stringify(tokenInfo));
 
         var item = {
             //platform_id:   strip(tokenInfo.platform_id),
@@ -380,7 +380,7 @@ function service($rootScope, $http, platimModel, status) {
 
         if (tokenInfo.token_id !== undefined) {
             // update existing token:
-            console.log("saveToken: updating token_id=" +tokenInfo.token_id, item);
+            //console.log("saveToken: updating token_id=" +tokenInfo.token_id, item);
 
             url = odssplatimConfig.rest + "/tokens/" + tokenInfo.token_id;
             actId = activities.add("updating token " +item.state);
@@ -388,14 +388,14 @@ function service($rootScope, $http, platimModel, status) {
                 .success(function(res, status, headers, config) {
                     activities.remove(actId);
                     successFn(index, tokenInfo);
-                    console.log("token updated:", tokenInfo);
+                    //console.log("token updated:", tokenInfo);
                 })
 
                 .error(httpErrorHandler(actId));
         }
         else {
             // add new token
-            console.log("saveToken: posting new token", item);
+            //console.log("saveToken: posting new token", item);
 
             url = odssplatimConfig.rest + "/tokens";
             actId = activities.add("adding token " +item.state);
@@ -408,7 +408,7 @@ function service($rootScope, $http, platimModel, status) {
                     activities.remove(actId);
                     tokenInfo.token_id = data._id;
                     successFn(index, tokenInfo);
-                    console.log("token posted:", tokenInfo);
+                    //console.log("token posted:", tokenInfo);
                 })
                 .error(httpErrorHandler(actId));
         }
@@ -424,7 +424,7 @@ function service($rootScope, $http, platimModel, status) {
         }
 
         var url = odssplatimConfig.rest + "/tokens/" + tokenInfo.token_id;
-        console.log("DELETE " + url);
+        //console.log("DELETE " + url);
         var actId = activities.add("deleting token " +tokenInfo.state);
         $http.delete(url)
             .success(function(res, status, headers, config) {
