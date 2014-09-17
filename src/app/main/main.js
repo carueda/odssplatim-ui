@@ -105,12 +105,16 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
         var skipped = 0;
         var toBeSaved = [];
         _.each(timelineWidget.getData(), function(tokenInfo, index) {
-            if (isNewOrModifiedToken(tokenInfo)) {
-                if (isOkToBeSaved(tokenInfo)) {
-                    toBeSaved.push({tokenInfo: tokenInfo, index: index});
-                }
-                else {
-                    skipped += 1;
+            var isActualToken = tokenInfo.type === undefined || tokenInfo.type !== "background";
+            if (isActualToken) {
+                //console.log("tokenInfo=", tokenInfo);
+                if (isNewOrModifiedToken(tokenInfo)) {
+                    if (isOkToBeSaved(tokenInfo)) {
+                        toBeSaved.push({tokenInfo: tokenInfo, index: index});
+                    }
+                    else {
+                        skipped += 1;
+                    }
                 }
             }
         });
