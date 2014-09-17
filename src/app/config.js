@@ -18,6 +18,4 @@ var odssplatimConfig = {
         showHolidays: true,
         showWeekends: true
     }
-
-    , useVis: true   // internal -- to be removed
 };

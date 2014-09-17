@@ -62,9 +62,7 @@ gulp.task('copy', function () {
         .pipe(gulp.dest(distDest)),
 
       gulp.src([
-              'src/app/**/*.js',
-              '!src/app/constants_links.js',
-              '!src/app/token/timelineWidget.js'
+              'src/app/**/*.js'
             ])
         .pipe(gulp.dest(distDest)),
 
@@ -94,14 +92,11 @@ gulp.task('copy', function () {
       gulp.src(['**/*tpl.html'], {cwd: 'src/app'})
         .pipe(replace(/@@appname/g, appname))
         .pipe(replace(/@@version/g, version))
-        .pipe(gulp.dest(distDest)),
+        .pipe(gulp.dest(distDest))
 
       //gulp.src('src/app/index.min.html')
       //  .pipe(rename('index.html'))
       //  .pipe(gulp.dest(distDest)),
-
-      gulp.src('src/app/index_links.html')
-        .pipe(gulp.dest(distDest))
     )
 });
 

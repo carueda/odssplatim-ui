@@ -46,18 +46,8 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
                 end :          moment(token.end).toDate(),
                 content:       token.state
             });
-            if (odssplatimConfig.useVis) {
-                timelineWidget.getDataSet().update(updatedToken);
-                timelineWidget.updateStatusModified(updatedToken);
-            }
-            else {
-                var row = $scope.info.row;
-                timelineWidget.getData()[row] = updatedToken;
-                timelineWidget.updateStatusModified(row);
-                //console.log('updatedToken', updatedToken);
-                timelineWidget.redraw();
-            }
-
+            timelineWidget.getDataSet().update(updatedToken);
+            timelineWidget.updateStatusModified(updatedToken);
 
         }, function () {
             //console.log('Token dialog dismissed');
@@ -81,10 +71,7 @@ function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, service, ti
         //console.log("delete:", info);
         if (info.token.token_id === undefined) {
             // not in database; just remove token from timeline
-            if (odssplatimConfig.useVis)
-                timelineWidget.removeToken(info.token);
-            else
-                timelineWidget.removeToken(info.token, info.row, info.row);
+            timelineWidget.removeToken(info.token);
             timelineWidget.redraw();
             $modalInstance.dismiss('delete token');
             return;
