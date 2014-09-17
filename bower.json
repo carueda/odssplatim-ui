@@ -2,9 +2,9 @@
   "name": "odssplatim-ui",
   "version": "0.3.1",
   "dependencies": {
-    "angular": "~1.2.0",
-    "angular-sanitize": "~1.2.0",
-    "angular-bootstrap": "~0.6.0",
+    "angular": "~1.2.25",
+    "angular-sanitize": "~1.2.25",
+    "angular-bootstrap": "~0.10.0",
     "angular-ui-utils": "~0.0.3",
     "bootstrap": "~2.3.2",
     "bootstrap-css": "~2.3.2",
