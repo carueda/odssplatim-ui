@@ -119,6 +119,7 @@ function timelineWidgetFactory(cfg, service, vis) {
         groups.clear();
 
         holidays = withHolidays;  // see setBackgroundItems
+        backgroundItemsSet = false;
     }
 
     // TODO remove group parameter and call this method in reinit when
