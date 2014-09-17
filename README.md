@@ -76,6 +76,7 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
   - vis.js upgraded to 3.5.0, and with this, re-enable highlight of holidays and weekends.
   - some related parameters only captured in the config (later on, some of these can put 
     in the preferences, specially when user information is incorporated).
+  - adjust status div style (now similar to that of fleet status) 
   
 - 2014-09-15: (0.3.0)
   - (internal) change token-platform link to use platform name instead of platform mongo id

@@ -175,7 +175,7 @@ div.timeline-axis-grid-holiday {
 }
 
 
-div.status {
+div.parent-status {
     position:absolute;
     top:2px;
     width:20em;
@@ -183,11 +183,14 @@ div.status {
     margin-right: auto;
     left: 0;
     right: 0;
-    font-size: smaller;
-    background-color: #fff3dd;
-    /*border: 1px solid #8cacbb;*/
     padding: 3px;
     padding-left: 8px;
+}
+div.status {
+    position:absolute;
+    left:0;
+    padding: 1px 10px 1px 10px;
+    font-size: 12px;
 }
 
 .lastUpdated {

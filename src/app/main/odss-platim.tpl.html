@@ -28,9 +28,11 @@
             <span style="color: lightgray; font-size: small; text-align: right">@@appname @@version</span>
         </div>
     </div>
-    <div class="status" ng-show="activities.any()" >
-        <span class="fa fa-spinner fa-spin"></span>
-        <span ng-bind="activities.any()"></span>
+    <div class="parent-status" ng-show="activities.any()">
+        <alert class="status" type="'info'">
+            <span class="fa fa-spinner fa-spin"></span>
+            <span ng-bind="activities.any()"></span>
+        </alert>
     </div>
     <div id="error" style="color: #CC0000" ng-show="errors.any()">
         <div ng-bind="errors.any()"></div>
