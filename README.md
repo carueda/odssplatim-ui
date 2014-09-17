@@ -6,7 +6,7 @@ This is the platform timeline editor UI module for ODSS.
 ## Setup in ODSS ##
 
 The platform timeline editor is currently being built directly from this
-directory (see below) and deployed as a standalone application on the odss-test server.
+directory (see below) and deployed as a standalone application on target server.
 Since the main ODSS application includes this editor via an iframe with
 the corresponding URL, there is no additional setup for ODSS. 
 
@@ -72,6 +72,11 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
+- 2014-09-17: (0.3.1)
+  - vis.js upgraded to 3.5.0, and with this, re-enable highlight of holidays and weekends.
+  - some related parameters only captured in the config (later on, some of these can put 
+    in the preferences, specially when user information is incorporated).
+  
 - 2014-09-15: (0.3.0)
   - (internal) change token-platform link to use platform name instead of platform mongo id
     (this supported by corresponding adjustments in "platim" backend service).

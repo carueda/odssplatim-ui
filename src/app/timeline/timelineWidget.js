@@ -7,9 +7,13 @@ var gTW = {};
 angular.module('odssPlatimApp.timelineWidget', [])
     .factory('timelineWidget', timelineWidgetFactory);
 
-timelineWidgetFactory.$inject = ['service', 'vis'];
+timelineWidgetFactory.$inject = ['cfg', 'service', 'vis'];
 
-function timelineWidgetFactory(service, vis) {
+function timelineWidgetFactory(cfg, service, vis) {
+
+    var visRangeMin = moment(cfg.opts.visRange.min);
+    var visRangeMax = moment(cfg.opts.visRange.max);
+
     var tokenForm = {
         showForm: function(args) {
             //console.log("showForm: args=", args);
@@ -37,12 +41,13 @@ function timelineWidgetFactory(service, vis) {
 
         'margin': {
             'item': { horizontal: 0 }
-        },
+        }
 
-        'min': new Date(2012, 0, 1),                  // lower limit of visible range
-        'max': new Date(2015, 11, 31)                 // upper limit of visible range
-//        ,"zoomMin": 1000 * 60 * 60 * 24             // one day in milliseconds
-//        ,"zoomMax": 1000 * 60 * 60 * 24 * 31 * 3    // about three months in milliseconds
+        ,min: visRangeMin.toDate()
+        ,max: visRangeMax.toDate()
+
+        ,zoomMin: 1000 * 60 * 60                 // one hour in milliseconds
+        //,zoomMax: 1000 * 60 * 60 * 24 * 31 * 3        // about three months in milliseconds
 
         ,onAdd:       onAdd
         ,onUpdate:    onUpdate
@@ -63,6 +68,9 @@ function timelineWidgetFactory(service, vis) {
              */
         }, 2 * 1000);
     }
+
+    var holidays = undefined;
+    var backgroundItemsSet = false;
 
     var groups = new vis.DataSet();
     var items  = new vis.DataSet();
@@ -104,11 +112,62 @@ function timelineWidgetFactory(service, vis) {
         return items.get();
     }
 
-    function reinit(holidays) {
+    function reinit(withHolidays) {
         timeline.setGroups([]);
         timeline.setItems([]);
         items.clear();
         groups.clear();
+
+        holidays = withHolidays;  // see setBackgroundItems
+    }
+
+    // TODO remove group parameter and call this method in reinit when
+    // https://github.com/almende/vis/issues/320 is fixed.
+    // Workaround is to "wait" for the first group to then use it for
+    // the association to the background items.
+    function setBackgroundItems(group) {
+        //console.log("setBackgroundItems: groupName=", groupName);
+
+        if (cfg.opts.showHolidays && holidays) {
+            _.each(holidays, function (holiday) {
+                var start = moment(holiday, 'YYYYMMDD');
+                var end = start.clone().add(1, 'd');
+                //console.log("holiday=", holiday, "start=", start.format(), "end=", end.format());
+                items.add({
+                    id:        'holiday_' + holiday,
+                    content:   '',
+                    start:     start.toDate(),
+                    end:       end.toDate(),
+                    type:      'background',
+                    className: 'holiday',
+                    group:     group    // to be removed
+                });
+            });
+        }
+
+        if (cfg.opts.showWeekends) {
+            var from  = visRangeMin.clone();
+            var limit = visRangeMax.clone().add(1, 'd');
+            // start from the closest saturday:
+            var weekendStart = from.clone().add(6 - from.day(), 'd');
+            while (weekendStart.isBefore(limit)) {
+                var weekendId = 'weekend_' + weekendStart.format("YYYYMMDD");
+                var weekendEnd = weekendStart.clone().add(2, 'd');
+                items.add({
+                    id:        weekendId,
+                    content:   '',
+                    start:     weekendStart.toDate(),
+                    end:       weekendEnd.toDate(),
+                    type:      'background',
+                    className: 'weekend',
+                    group:     group    // to be removed
+                });
+                //console.log("weekend", weekendStart.format(), weekendEnd.format());
+                weekendStart = weekendStart.clone().add(7, 'd');
+            }
+        }
+
+        backgroundItemsSet = true;
     }
 
     function adjustVisibleChartRange() {
@@ -160,6 +219,10 @@ function timelineWidgetFactory(service, vis) {
             typeName:      tml.typeName
         });
         // note: refreshShading will set the CSS class.
+
+        if (!backgroundItemsSet) {
+            setBackgroundItems(platform_id);
+        }
 
         setTimeout(function() {
             var elm = angular.element(document.getElementById(platform_id));

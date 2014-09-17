@@ -87,5 +87,12 @@ div.status_modified {
     background-repeat: repeat-y;
 }
 
+.vis.timeline .item.background.holiday {
+    background-color: #fffceb;
+}
+.vis.timeline .item.background.weekend {
+    background-color: #f4f8fd;
+}
+
 
 /* ********************* </vis> ********************* */

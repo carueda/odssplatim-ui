@@ -22,7 +22,7 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
     }
     var gotGeneralInfo = function(info) {
         $scope.lastUpdated = undefined;
-        console.log("gotGeneralInfo: " + JSON.stringify(info));
+        //console.log("gotGeneralInfo: " + JSON.stringify(info));
         if (info && info.lastUpdated) {
             $scope.lastUpdated = angular.copy(info.lastUpdated);
             $scope.lastUpdated.on = moment(info.lastUpdated.on);
@@ -133,7 +133,7 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
         }
         status.errors.removeAll();
         angular.element(document.getElementById('logarea')).html("");
-        console.log("refreshing...");
+        //console.log("refreshing...");
         timelineWidget.reinit();
         service.refresh({
             gotGeneralInfo:       gotGeneralInfo,
@@ -182,7 +182,7 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
     };
 
     function refreshComplete() {
-        console.log("refreshing... done.");
+        //console.log("refreshing... done.");
         platformOptionsUpdated(false);
     }
 
