@@ -72,6 +72,9 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
+- 2014-11-10: (0.3.2)
+  - vis.js upgraded to 3.6.4, and with this, removed workaround to https://github.com/almende/vis/issues/320
+
 - 2014-09-17: (0.3.1)
   - vis.js upgraded to 3.5.0, and with this, re-enable highlight of holidays and weekends.
   - some related parameters only captured in the config (later on, some of these can put 

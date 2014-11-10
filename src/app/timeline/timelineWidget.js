@@ -69,9 +69,6 @@ function timelineWidgetFactory(cfg, service, vis) {
         }, 2 * 1000);
     }
 
-    var holidays = undefined;
-    var backgroundItemsSet = false;
-
     var groups = new vis.DataSet();
     var items  = new vis.DataSet();
 
@@ -118,16 +115,10 @@ function timelineWidgetFactory(cfg, service, vis) {
         items.clear();
         groups.clear();
 
-        holidays = withHolidays;  // see setBackgroundItems
-        backgroundItemsSet = false;
+        setBackgroundItems(withHolidays);
     }
 
-    // TODO remove group parameter and call this method in reinit when
-    // https://github.com/almende/vis/issues/320 is fixed.
-    // Workaround is to "wait" for the first group to then use it for
-    // the association to the background items.
-    function setBackgroundItems(group) {
-        //console.log("setBackgroundItems: groupName=", groupName);
+    function setBackgroundItems(holidays) {
 
         if (cfg.opts.showHolidays && holidays) {
             _.each(holidays, function (holiday) {
@@ -140,8 +131,7 @@ function timelineWidgetFactory(cfg, service, vis) {
                     start:     start.toDate(),
                     end:       end.toDate(),
                     type:      'background',
-                    className: 'holiday',
-                    group:     group    // to be removed
+                    className: 'holiday'
                 });
             });
         }
@@ -160,15 +150,12 @@ function timelineWidgetFactory(cfg, service, vis) {
                     start:     weekendStart.toDate(),
                     end:       weekendEnd.toDate(),
                     type:      'background',
-                    className: 'weekend',
-                    group:     group    // to be removed
+                    className: 'weekend'
                 });
                 //console.log("weekend", weekendStart.format(), weekendEnd.format());
                 weekendStart = weekendStart.clone().add(7, 'd');
             }
         }
-
-        backgroundItemsSet = true;
     }
 
     function adjustVisibleChartRange() {
@@ -220,10 +207,6 @@ function timelineWidgetFactory(cfg, service, vis) {
             typeName:      tml.typeName
         });
         // note: refreshShading will set the CSS class.
-
-        if (!backgroundItemsSet) {
-            setBackgroundItems(platform_id);
-        }
 
         setTimeout(function() {
             var elm = angular.element(document.getElementById(platform_id));
