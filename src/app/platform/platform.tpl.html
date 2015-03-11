@@ -1,26 +1,29 @@
 <div class="modal-header">
-    <h3>Select the platforms to include in timeline</h3>
+    <span class="modalTitle">Select the platforms to include in the timeline</span>
 </div>
 <div class="modal-body">
-    <form name="form" class="css-form" novalidate>
-        <div>
+    <form name="form" novalidate="">
+        <div style="height: 400px">
             <ul>
                 <li ng-repeat="(pt, tmls) in platformOptions.byPlatformType">
-                    <span style="font-style: italic">{{pt}}</span>
-                    <ul>
+                    <span style="font-style: italic; font-size: large">{{pt}}:</span>
+                    <ul style="margin-left: 30px">
                         <li ng-repeat="tml in tmls">
-                            <label class="checkbox" title="{{tml.platform_name}} - (trackingDBID={{tml.trackingDBID}})">
+                            <span class="checkbox" title="{{tml.platform_name}} - (trackingDBID={{tml.trackingDBID}})">
+                                <label>
+                                    <input type="checkbox" ng-model="platformOptions.selectedPlatforms[tml.platform_id]"
+                                           value="platformOptions.selectedPlatforms[tml.platform_id]">
 
-                                <span ng-show="tml.color" style="color: {{tml.color}}; font-size: x-small">
-                                    <span class="fa fa-circle fa-fw"></span>
-                                </span>
+                                    <span ng-show="tml.color" style="color: {{tml.color}}; font-size: x-small">
+                                        <span class="fa fa-circle fa-fw"></span>
+                                    </span>
 
-                                <input type="checkbox" ng-model="platformOptions.selectedPlatforms[tml.platform_id]"
-                                       value="platformOptions.selectedPlatforms[tml.platform_id]"/>
-                                {{tml.platform_name}}
-                                <!-- show some more info for diagnostics mainly because there are duplicate names -->
-                                <span style="color: lightgray; font-weight: lighter"> ({{tml.trackingDBID}})</span>
-                            </label>
+                                    {{tml.platform_name}}
+
+                                    <!-- show some more info for diagnostics mainly because there are duplicate names -->
+                                    <span style="color: lightgray; font-weight: lighter"> ({{tml.trackingDBID}})</span>
+                                </label>
+                            </span>
                         </li>
                     </ul>
                 </li>
@@ -35,5 +38,5 @@
             ng-disabled="isUnchanged() || !isValid()">Apply</button>
     <button class="btn btn-primary" ng-click="reset()"
             ng-disabled="isUnchanged() || !isValid()">Reset</button>
-    <button class="btn" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
 </div>

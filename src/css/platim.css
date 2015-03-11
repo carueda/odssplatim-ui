@@ -31,10 +31,14 @@ div.block-body {
     margin-bottom: 0;
 }
 
-#period-select {
-    width: 600px;
+.modalTitle {        /* similar to h3 with bootstrap 2.x */
+    font-size: 20px;
 }
 
+.modal-body {
+    overflow: scroll;
+    overflow-y: auto;
+}
 
 div.parent-status {
     position:absolute;
@@ -60,6 +64,19 @@ div.status {
     display: inline-block;
     margin-left: 10px;
     margin-right: 5px;
+    padding-top: 8px;
+    font-weight: normal !important;  /* undo bootstrap's label's bold weight */
+}
+
+.version {
+    color: lightgray;
+    font-size: small;
+    text-align: right;
+}
+
+.navbar {
+    min-height: 0;        /* 50px in bootstrap */
+    margin-bottom: 4px;   /* 20px in bootstrap */
 }
 
 

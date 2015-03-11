@@ -72,6 +72,12 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
+- 2015-03-10: (0.4.0)
+  - Fixed issue #128: "style issues when integrating platform timeline widget directly"
+    Basically, the fix relied on upgrading bootstrap to 3.x, then doing several adjustments in 
+    html templates and platim.css because the new version is not backwards compatible.
+    TODO: check in changes for re-integration into main ODSS application.     
+  
 - 2014-11-10: (0.3.2)
   - vis.js upgraded to 3.6.4, and with this, removed workaround to https://github.com/almende/vis/issues/320
 
