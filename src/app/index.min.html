@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html>
+<!-- To test distribution under dist/, which is used for inclusion in main ODSS -->
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>ODSS Platform Timeline Editor</title>
+    <title>ODSS Platform Timeline Editor @@version</title>
 
-    <link rel="stylesheet" href="css/odssplatim_vendor.css" />
-    <link rel='stylesheet' href='css/odssplatim.css'>
+    <link href="css/vendor.min.css" rel="stylesheet" >
+    <link href='css/app.css'        rel='stylesheet' >
 
     <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <script src='js/odssplatim_vendor.js' charset="utf-8"></script>
-    <script src='js/odssplatim.js' charset="utf-8"></script>
-
+    <script src='js/vendor.min.js'></script>
+    <script src='js/config.js'></script>
+    <script src='js/app.min.js'></script>
 </head>
 
 <body style="margin: 15px">
-
-    <!--<h3>ODSS Platform Timeline Editor</h3>-->
-
     <div class="odssplatim" ng-app="odssPlatimApp">
         <odss-platim></odss-platim>
     </div>
-
 </body>
 </html>

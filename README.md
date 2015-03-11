@@ -1,19 +1,11 @@
-odssplatim-ui
-=============
+# odssplatim-ui
 
-This is the platform timeline editor UI module for ODSS.
+This is the platform timeline module for the ODSS web application.
 
-## Setup in ODSS ##
+## Setup for the ODSS main application
 
-The platform timeline editor is currently being built directly from this
-directory (see below) and deployed as a standalone application on target server.
-Since the main ODSS application includes this editor via an iframe with
-the corresponding URL, there is no additional setup for ODSS. 
-
-
-## Module setup ##
-
-In general:
+Only the following steps are needed to completely prepare this module
+for the ODSS main application:
 
 ```shell
 $ npm install
@@ -21,24 +13,24 @@ $ bower install
 $ gulp
 ```
 
-- `npm install` installs dependencies.
+This generates the `dist/` subdirectory with the required resources
+to be linked to by the main ODSS' html file.
 
-- `bower install` installs web application dependencies.
+## Configuration
 
-- `gulp` generates a distribution of the module as a standalone application.
-Default configuration should be OK for the ODSS application, but can be adjusted
-as needed (see below).
+`src/app/config.js`is used to configure this module. The key parameters are:
+```js
+    // odssplatim-rest endpoint URL
+    rest: "/odss/platim",
 
-## Configuration ##
+    // URL to get platform information
+    platformsUrl: "/odss/platforms",
+```
 
-Either for standalone deployment or embedded inclusion in ODSS, `src/app/config.js`
-is used to configure this module. This configuration consists of indicating the
-platform timeline editor REST endpoint URL and the URL to retrieve platform information.
-The default values (`"/odss/platim"` and `"/odss/platforms"`, respectively)
-are currently appropriate for the ODSS application.
+**NOTE**: Normally no changes are needed in this file.
 
 
-## Local testing ##
+## Development and local testing
 
 ### with "platim" server running locally
 
@@ -72,12 +64,17 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
+- 2015-03-11: (0.4.1)
+  - adjustments in gulpfile to create minified version for final inclusion in main ODSS app.
+    The default gulp task prepares the dist/ directory to be used as base path for
+    inclusion of widget in ODSS.
+  
 - 2015-03-10: (0.4.0)
   - Fixed issue #128: "style issues when integrating platform timeline widget directly"
-    Basically, the fix relied on upgrading bootstrap to 3.x, then doing several adjustments in 
+    Basically, the fix relied on upgrading bootstrap to 3.x, then doing several adjustments in
     html templates and platim.css because the new version is not backwards compatible.
-    TODO: check in changes for re-integration into main ODSS application.     
-  
+    TODO: check in changes for re-integration into main ODSS application.
+
 - 2014-11-10: (0.3.2)
   - vis.js upgraded to 3.6.4, and with this, removed workaround to https://github.com/almende/vis/issues/320
 
