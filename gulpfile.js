@@ -47,7 +47,7 @@ gulp.task('odssplatim', ['app', 'vendor'], function() {
         .pipe(gulp.dest(distDest))
 });
 
-gulp.task('app', ['app-js', 'app-css']);
+gulp.task('app', ['app-js', 'app-css', 'app-other']);
 
 gulp.task('app-js', ['ngtemplates'], function() {
     return merge(
@@ -77,13 +77,19 @@ gulp.task('ngtemplates', function() {
         .pipe(gulp.dest('src/app'));
 });
 
-
 gulp.task('app-css', function() {
     return gulp.src([
         'src/**/*.css'
     ])
         .pipe(concat('app.css'))
         .pipe(gulp.dest(distDest + '/css'))
+});
+
+gulp.task('app-other', function() {
+    return gulp.src([
+        'src/img/resize_dots.png'
+    ], {base: 'src/'})
+        .pipe(gulp.dest(distDest))
 });
 
 gulp.task('vendor', ['vendor-js', 'vendor-css', 'vendor-other']);
