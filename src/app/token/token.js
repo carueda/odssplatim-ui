@@ -151,7 +151,7 @@ function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, service, ti
         $modalInstance.dismiss('cancel');
     };
 
-    focus("token_form_activation");
+    focus("token_form_activation", 700, {select: true});
 }
 
 })();

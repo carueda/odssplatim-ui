@@ -6,6 +6,9 @@
   - re focusable: the widget is focused on by default and automatically re-focused upon closing the
     token, platform, and period dialogs.
     The user can in general click the timeline area to make it the focused element.
+  - token dialog: the name input field is now focused and selected when dialog is open.
+    This was the behaviour before but it seems the new automatic focus of the timeline widget
+    was interfering so a delay was added to the focus() utility and used.
   - snap to full hours, independent of the scale
 
 - 2015-03-11: (0.4.1)

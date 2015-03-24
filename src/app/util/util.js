@@ -116,17 +116,20 @@ function status() {
 // focus http://stackoverflow.com/a/18295416/830737
 focus.$inject = ['$rootScope', '$timeout'];
 function focus($rootScope, $timeout) {
-    return function(name) {
+    return function(name, delay, options) {
         $timeout(function (){
-            $rootScope.$broadcast('focusOn', name);
-        });
+            $rootScope.$broadcast('focusOn', name, options);
+        }, delay);
     }
 }
 function focusOn() {
     return function(scope, elem, attr) {
-        scope.$on('focusOn', function(e, name) {
+        scope.$on('focusOn', function(e, name, options) {
             if(name === attr.focusOn) {
                 elem[0].focus();
+                if (options && options.select) {
+                    elem[0].select();
+                }
             }
         });
     };
