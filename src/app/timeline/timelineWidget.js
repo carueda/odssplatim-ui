@@ -53,11 +53,11 @@ function timelineWidgetFactory(cfg, service, vis) {
 
         //,clickToUse: true
 
-        //// snap to full hours, independent of the scale
-        //,snap: function(date, scale, step) {
-        //    var hour = 60 * 60 * 1000;
-        //    return Math.round(date / hour) * hour;
-        //}
+        // snap to full hours, independent of the scale
+        ,snap: function(date, scale, step) {
+            var hour = 60 * 60 * 1000;
+            return Math.round(date / hour) * hour;
+        }
 
         ,onAdd:       onAdd
         ,onUpdate:    onUpdate

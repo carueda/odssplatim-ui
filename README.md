@@ -65,6 +65,7 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 ## Noteworthy changes ##
 
 - 2015-03-24: (0.4.2)
+  - snap to full hours, independent of the scale
   - copy token for addition: the timeline widget is now focusable so it gets key events.
     The 'C' key copies the selected token, which is used when adding a new token via double-clicking;
     the date (year-month-day) is taken from the clicked location, but the hour and duration are taken
