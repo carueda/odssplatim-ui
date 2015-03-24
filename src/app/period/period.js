@@ -13,9 +13,9 @@ angular.module('odssPlatimApp.period', [])
     .controller('PeriodInstanceCtrl', PeriodInstanceCtrl)
 ;
 
-PeriodCtrl.$inject = ['$scope', '$modal', '$timeout', 'platimModel', 'service'];
+PeriodCtrl.$inject = ['$scope', '$modal', '$timeout', 'platimModel', 'service', 'focus'];
 
-function PeriodCtrl($scope, $modal, $timeout, platimModel, service) {
+function PeriodCtrl($scope, $modal, $timeout, platimModel, service, focus) {
     $scope.open = function () {
         var modalInstance = $modal.open({
             templateUrl: 'period/period.tpl.html',
@@ -27,8 +27,9 @@ function PeriodCtrl($scope, $modal, $timeout, platimModel, service) {
             //console.log('Period dialog accepted:', selectedPeriod);
             platimModel.selectedPeriodId = selectedPeriod._id;
             service.periodSelected();
+            focus('focusTimeline');
         }, function () {
-            //console.log('Period dialog dismissed');
+            focus('focusTimeline');
         });
     };
 }

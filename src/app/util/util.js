@@ -57,10 +57,12 @@ function ConfirmInstanceCtrl($scope, $modalInstance, info) {
 }
 
 function status() {
+    var messages   = new ItemList();
     var activities = new ItemList();
     var errors     = new ItemList();
 
     return {
+        messages:   messages,
         activities: activities,
         errors:     errors
     };

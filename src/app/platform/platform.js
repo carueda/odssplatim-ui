@@ -6,9 +6,9 @@ angular.module('odssPlatimApp.platform', [])
     .controller('PlatformInstanceCtrl', PlatformInstanceCtrl)
 ;
 
-PlatformCtrl.$inject = ['$scope', '$modal', 'platimModel', 'service'];
+PlatformCtrl.$inject = ['$scope', '$modal', 'platimModel', 'service', 'focus'];
 
-function PlatformCtrl($scope, $modal, platimModel, service) {
+function PlatformCtrl($scope, $modal, platimModel, service, focus) {
     $scope.open = function () {
 
         $scope.platformOptions = platimModel.platformOptions;
@@ -27,8 +27,9 @@ function PlatformCtrl($scope, $modal, platimModel, service) {
         modalInstance.result.then(function (platformOptions) {
             platimModel.platformOptions = $scope.platformOptions = platformOptions;
             service.platformOptionsUpdated();
+            focus('focusTimeline');
         }, function () {
-            //console.log('Platform dialog dismissed');
+            focus('focusTimeline');
         });
     };
 }

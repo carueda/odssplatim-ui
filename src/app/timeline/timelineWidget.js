@@ -24,6 +24,8 @@ function timelineWidgetFactory(cfg, service, vis) {
     var container = document.getElementById("timelines");
     var logarea = angular.element(document.getElementById('logarea'));
 
+    var copiedItem;  // for addition of new tokens
+
     var options = {
         'width':            '99%',
         'orientation':      'top',
@@ -48,6 +50,14 @@ function timelineWidgetFactory(cfg, service, vis) {
 
         ,zoomMin: 1000 * 60 * 60                 // one hour in milliseconds
         //,zoomMax: 1000 * 60 * 60 * 24 * 31 * 3        // about three months in milliseconds
+
+        //,clickToUse: true
+
+        //// snap to full hours, independent of the scale
+        //,snap: function(date, scale, step) {
+        //    var hour = 60 * 60 * 1000;
+        //    return Math.round(date / hour) * hour;
+        //}
 
         ,onAdd:       onAdd
         ,onUpdate:    onUpdate
@@ -98,7 +108,10 @@ function timelineWidgetFactory(cfg, service, vis) {
         getData:                   getData,
         updateStatus:              updateStatus,
         updateStatusModified:      updateStatusModified,
-        redraw:                    redraw
+        redraw:                    redraw,
+        getSelection:              getSelection,
+        getItemById:               getItemById,
+        setCopiedToken:            setCopiedToken
     };
 
     function getDataSet() {
@@ -116,6 +129,18 @@ function timelineWidgetFactory(cfg, service, vis) {
         groups.clear();
 
         setBackgroundItems(withHolidays);
+    }
+
+    function getSelection() {
+        return timeline.getSelection();
+    }
+
+    function getItemById(itemId) {
+        return items.get(itemId);
+    }
+
+    function setCopiedToken(item) {
+        copiedItem = item;
     }
 
     function setBackgroundItems(holidays) {
@@ -262,6 +287,8 @@ function timelineWidgetFactory(cfg, service, vis) {
     function onAdd(item, callback) {
         //console.log("onAdd=", item);
 
+        pasteTokenIfAny(item);
+
         item.platform_id   = item.group;
         item.platform_name = groups.get(item.platform_id).platform_name;
 
@@ -271,6 +298,27 @@ function timelineWidgetFactory(cfg, service, vis) {
         item.className     = item.status + " " + "block-body";
 
         callback(item);
+    }
+
+    // adjusts item's start/end attributes according to copiedItem, if any.
+    function pasteTokenIfAny(item) {
+        if (!copiedItem) {
+            return;
+        }
+        // take duration from copied item:
+        var duration = moment.duration(moment(copiedItem.end).diff(copiedItem.start));
+
+        var clickedStart = moment(item.start);
+        var copiedStart = moment(copiedItem.start);
+
+        // preserve start (year-month-day) date from clicked item
+        // and take time from copied item:
+        var startMoment = moment([
+            clickedStart.year(), clickedStart.month(), clickedStart.date(),
+            copiedStart.hour(), copiedStart.minute(), copiedStart.second(), copiedStart.millisecond()
+        ]);
+        item.start = startMoment.toDate();
+        item.end   = startMoment.clone().add(duration).toDate();
     }
 
     function onUpdate(item, callback) {

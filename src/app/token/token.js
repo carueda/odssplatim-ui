@@ -7,9 +7,9 @@ angular.module('odssPlatimApp.token', ['odssPlatimApp.timelineWidget'])
     .controller('TokenInstanceCtrl', TokenInstanceCtrl)
 ;
 
-TimelineCtrl.$inject = ['$scope', '$modal', '$timeout', 'platimModel', 'service', 'timelineWidget'];
+TimelineCtrl.$inject = ['$scope', '$modal', '$timeout', 'platimModel', 'service', 'timelineWidget', 'status', 'focus'];
 
-function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWidget) {
+function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWidget, status, focus) {
     $scope.info = {
         token: undefined,
         row: undefined
@@ -48,11 +48,52 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
             });
             timelineWidget.getDataSet().update(updatedToken);
             timelineWidget.updateStatusModified(updatedToken);
+            focus('focusTimeline');
 
         }, function () {
-            //console.log('Token dialog dismissed');
+            focus('focusTimeline');
         });
     };
+
+    focus('focusTimeline');
+
+    $scope.keyPressed = function($event) {
+        var chr = String.fromCharCode($event.charCode).toLowerCase();
+
+        if (chr === 'c') {  // copy selected token
+            var selection = timelineWidget.getSelection();
+            if (selection.length == 1) {
+                var selectedItem = timelineWidget.getItemById(selection[0]);
+                if (selectedItem) {
+                    var copiedItem = angular.copy(selectedItem);
+                    timelineWidget.setCopiedToken(copiedItem);
+                    var str = copiedItem.content || copiedItem.title || "";
+                    if (str) str = "'" + str + "'";
+                    showMessage("Token " + str + " copied");
+                }
+            }
+            else {
+                showMessage("Select a token to copy" +
+                    (selection.length > 1 ? " (" + selection.length + " selected)" : ""));
+            }
+        }
+        else if (chr === '!') {  // clear copy of token for addition
+            timelineWidget.setCopiedToken(undefined);
+            showMessage("Cleared token copy for addition");
+        }
+    };
+
+    $scope.click = function($event) {
+        focus('focusTimeline');
+    };
+
+    function showMessage(msg) {
+        var actId = status.messages.add(msg);
+        setTimeout(function() {
+            status.messages.remove(actId);
+            $scope.$digest();
+        }, 0);
+    }
 }
 
 TokenInstanceCtrl.$inject = ['$rootScope', '$scope', '$modalInstance', 'info', 'service', 'timelineWidget', 'focus'];

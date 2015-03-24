@@ -1,6 +1,6 @@
 {
   "name": "odssplatim-ui",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "dependencies": {
     "angular": "~1.2.25",
     "angular-sanitize": "~1.2.25",
@@ -10,7 +10,7 @@
     "moment": "~2.1.0",
     "lodash": "~2.4.1",
     "font-awesome": "~4.3.0",
-    "vis": "~3.6.4"
+    "vis": "~3.11.0"
   },
   "devDependencies": {}
 }

@@ -29,8 +29,13 @@
             <span class="version">@@appname @@version</span>
         </div>
     </div>
-    <div class="parent-status" ng-show="activities.any()">
-        <alert class="status alert alert-info" role="alert" type="'info'">
+    <div class="parent-status">
+        <alert ng-show="messages.any()"
+               class="status alert alert-info" role="alert" type="'info'">
+            <span ng-bind="messages.any()"></span>
+        </alert>
+        <alert ng-show="activities.any()"
+               class="status alert alert-info" role="alert" type="'info'">
             <span class="fa fa-spinner fa-spin"></span>
             <span ng-bind="activities.any()"></span>
         </alert>
@@ -39,7 +44,12 @@
         <div ng-bind="errors.any()"></div>
     </div>
 
-    <div ng-controller="TimelineCtrl" id="timelines"></div>
+    <div ng-controller="TimelineCtrl" id="timelines"
+         tabindex="0"
+         focus-on="focusTimeline"
+         ng-click="click()"
+         ng-keypress="keyPressed($event)"
+    ></div>
 
     <div ng-show="debug">
         <div id="logarea" style="color: blue; background-color: #f8fff7">

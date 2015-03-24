@@ -13,6 +13,7 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
 
     $scope.cfg = odssplatimConfig;
 
+    $scope.messages   = status.messages;
     $scope.activities = status.activities;
     $scope.errors     = status.errors;
 

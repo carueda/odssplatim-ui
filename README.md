@@ -64,6 +64,15 @@ open [http://localhost:8001/dist/odssplatim-ui/](http://localhost:8001/dist/odss
 
 ## Noteworthy changes ##
 
+- 2015-03-24: (0.4.2)
+  - copy token for addition: the timeline widget is now focusable so it gets key events.
+    The 'C' key copies the selected token, which is used when adding a new token via double-clicking;
+    the date (year-month-day) is taken from the clicked location, but the hour and duration are taken
+    from the copied token.
+  - re focusable: the widget is focused on by default and automatically re-focused upon closing the
+    token, platform, and period dialogs.
+    The user can in general click the timeline area to make it the focused element.
+
 - 2015-03-11: (0.4.1)
   - adjustments in gulpfile to create minified version for final inclusion in main ODSS app.
     The default gulp task prepares the dist/ directory to be used as base path for
