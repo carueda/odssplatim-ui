@@ -1,12 +1,12 @@
 - 2015-03-24: (0.4.2)
-  - snap to full hours, independent of the scale
-  - copy token for addition: the timeline widget is now focusable so it gets key events.
+  - Fixed issue #130: copy-and-add token: the timeline widget is now focusable so it gets key events.
     The 'C' key copies the selected token, which is used when adding a new token via double-clicking;
     the date (year-month-day) is taken from the clicked location, but the hour and duration are taken
-    from the copied token.
+    from the copied token. The token's name (aka state) is also copied.
   - re focusable: the widget is focused on by default and automatically re-focused upon closing the
     token, platform, and period dialogs.
     The user can in general click the timeline area to make it the focused element.
+  - snap to full hours, independent of the scale
 
 - 2015-03-11: (0.4.1)
   - adjustments in gulpfile to create minified version for final inclusion in main ODSS app.

@@ -287,24 +287,29 @@ function timelineWidgetFactory(cfg, service, vis) {
     function onAdd(item, callback) {
         //console.log("onAdd=", item);
 
-        pasteTokenIfAny(item);
+        // "" by default to force missing info --skip save, etc
+        item.state = item.content = "";
+
+        if (copiedItem) {
+            pasteToken(item);
+        }
 
         item.platform_id   = item.group;
         item.platform_name = groups.get(item.platform_id).platform_name;
 
-        item.content       = "";  // to force missing info --skip save, etc
-        item.state         = item.content;
         item.status        = "status_new";
         item.className     = item.status + " " + "block-body";
 
         callback(item);
     }
 
-    // adjusts item's start/end attributes according to copiedItem, if any.
-    function pasteTokenIfAny(item) {
-        if (!copiedItem) {
-            return;
-        }
+    /**
+     * adjusts some item attributes according to copiedItem.
+     */
+    function pasteToken(item) {
+        item.state   = copiedItem.state;
+        item.content = copiedItem.content;
+
         // take duration from copied item:
         var duration = moment.duration(moment(copiedItem.end).diff(copiedItem.start));
 
