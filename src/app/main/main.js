@@ -160,6 +160,10 @@ function MainCtrl($scope, $window, platimModel, service, timelineWidget, status)
     var insertTimeline = function(tml) {
         timelineWidget.addGroup(tml);
         _.each(tml.tokens, function(token) {
+            // manually set ttype if not provided by backend. TODO proper save/retrieval of ttype
+            if (!token.ttype) {
+                token.ttype = "ttdeployment";
+            }
             timelineWidget.addToken(token);
         });
     };

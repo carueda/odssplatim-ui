@@ -26,6 +26,9 @@ function timelineWidgetFactory(cfg, service, vis) {
 
     var copiedItem;  // for addition of new tokens
 
+    // type for addition of new tokens
+    var ttypeAddition = 'ttdeployment';
+
     var options = {
         'width':            '99%',
         'orientation':      'top',
@@ -42,14 +45,23 @@ function timelineWidgetFactory(cfg, service, vis) {
         'showCustomTime':   false,
 
         'margin': {
-            'item': { horizontal: 0 }
+            'axis': 10,
+            'item': { horizontal: 0, vertical: 10 }
         }
+
+        //,padding: 2  // must correspond to css: .vis.timeline .item
+
+        ,showCurrentTime: false   // don't need this for the time being
 
         ,min: visRangeMin.toDate()
         ,max: visRangeMax.toDate()
 
         ,zoomMin: 1000 * 60 * 60                 // one hour in milliseconds
         //,zoomMax: 1000 * 60 * 60 * 24 * 31 * 3        // about three months in milliseconds
+
+        ,stack: true    //  to be explicit (true is the default)
+
+        ,order: null    //  to be explicit (no order is the default)
 
         //,clickToUse: true
 
@@ -65,6 +77,13 @@ function timelineWidgetFactory(cfg, service, vis) {
         ,groupOrder:  groupOrder
 
     };
+
+    if (cfg.opts.useSubgroups) {
+        options.stack = false;
+    }
+    else {
+        options.order = tokenOrdering;
+    }
 
     if (options.showCustomTime) {
         // set the custom time to the current UTC time
@@ -112,6 +131,10 @@ function timelineWidgetFactory(cfg, service, vis) {
         getSelection:              getSelection,
         getItemById:               getItemById,
         setCopiedToken:            setCopiedToken
+
+        ,setTokenTypeForAddition:   setTokenTypeForAddition
+        ,updateItem:                updateItem
+        ,updateStackSetting:        updateStackSetting
     };
 
     function getDataSet() {
@@ -141,6 +164,50 @@ function timelineWidgetFactory(cfg, service, vis) {
 
     function setCopiedToken(item) {
         copiedItem = item;
+    }
+
+    function setTokenTypeForAddition(m) {
+        ttypeAddition = m;
+        copiedItem = undefined;  // disable copied item.
+    }
+
+    function updateItem(item, modified) {
+        if (modified && item.status === "status_saved") {
+            updateStatus(item, "status_modified");
+        }
+        else {
+            updateStatus(item, item.status);
+        }
+    }
+
+    function updateStackSetting(stack) {
+        timeline.setOptions({
+            stack: stack,
+
+            order: stack ? tokenOrdering : null
+        });
+        _.each(items.get(), function(tokenInfo) {
+            var isActualToken = tokenInfo.type === undefined || tokenInfo.type !== "background";
+            if (isActualToken) {
+                if (stack) {
+                    tokenInfo.subgroup = undefined;
+                }
+                else {
+                    tokenInfo.subgroup = tokenInfo.ttype;
+                }
+                updateItem(tokenInfo);
+            }
+        });
+    }
+
+    /** Only to be applied when stacking (at least initially) */
+    function tokenOrdering(a, b) {
+        if (a.ttype === b.ttype) {
+            // perhaps include some additional criteria like size of the token so
+            // smaller tokens appear underneath bigger ones if overlapping
+            return 0;
+        }
+        return a.ttype === "ttdeployment" ? -1 : +1;
     }
 
     function setBackgroundItems(holidays) {
@@ -239,6 +306,24 @@ function timelineWidgetFactory(cfg, service, vis) {
                 logarea.html(tablify(tml));
             });
         },2000);
+
+        // mainly as a workaround for https://github.com/almende/vis/issues/745:
+        // include 2 background items, one for each subgroup; so, the
+        // subgroups are already known in case there's an update of the subgroup
+        // for a regular item.
+        // NOTE: do this regardless of cfg.opts.useSubgroups
+        _.each(["ttdeployment", "ttmission"], function (ttype) {
+            items.add({
+                id: platform_id + '_subgroup_' + ttype,
+                group: platform_id,
+                subgroup: ttype,
+                content: '',
+                start: parseDate("1900-01-01"),
+                end: parseDate("2100-01-01"),
+                type: 'background',
+                className: ttype + "FullBg"
+            });
+        });
     }
 
     function addToken(token) {
@@ -249,7 +334,7 @@ function timelineWidgetFactory(cfg, service, vis) {
 
         var body = {
             'id':             token._id,
-            'className':      token.status + " " + "block-body",
+            'className':      token.status + " " + token.ttype,
             'content':        getTokenContent(token),
             'start':          parseDate(token.start),
             'end':            parseDate(token.end),
@@ -262,8 +347,12 @@ function timelineWidgetFactory(cfg, service, vis) {
             'state':          token.state,
             'description':    token.description,
 
-            'status':         token.status
+            'status':         token.status,
+            'ttype':          token.ttype
         };
+        if (cfg.opts.useSubgroups) {
+            body.subgroup = token.ttype;
+        }
         //console.log("addToken: body", body);
         items.add(body);
     }
@@ -293,12 +382,18 @@ function timelineWidgetFactory(cfg, service, vis) {
         if (copiedItem) {
             pasteToken(item);
         }
+        else {
+            item.ttype = ttypeAddition;
+            if (cfg.opts.useSubgroups) {
+                item.subgroup = item.ttype;
+            }
+        }
 
         item.platform_id   = item.group;
         item.platform_name = groups.get(item.platform_id).platform_name;
 
         item.status        = "status_new";
-        item.className     = item.status + " " + "block-body";
+        item.className     = item.status + " " + item.ttype;
 
         callback(item);
     }
@@ -309,6 +404,11 @@ function timelineWidgetFactory(cfg, service, vis) {
     function pasteToken(item) {
         item.state   = copiedItem.state;
         item.content = copiedItem.content;
+        item.ttype   = copiedItem.ttype;
+
+        if (cfg.opts.useSubgroups) {
+            item.subgroup = copiedItem.subgroup;
+        }
 
         // take duration from copied item:
         var duration = moment.duration(moment(copiedItem.end).diff(copiedItem.start));
@@ -359,7 +459,10 @@ function timelineWidgetFactory(cfg, service, vis) {
 
     function updateStatus(tokenInfo, status) {
         tokenInfo.status = status;
-        tokenInfo.className = "block-body"  + " " + status;
+        tokenInfo.className = status + " " + tokenInfo.ttype;
+        if (cfg.opts.useSubgroups) {
+            tokenInfo.subgroup = tokenInfo.ttype;
+        }
         items.update(tokenInfo);
     }
 

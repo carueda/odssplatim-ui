@@ -17,5 +17,8 @@ var odssplatimConfig = {
 
         showHolidays: true,
         showWeekends: true
+
+        // temporary flag while developing the new token types feature
+        ,useSubgroups: false
     }
 };

@@ -7,9 +7,9 @@ angular.module('odssPlatimApp.token', ['odssPlatimApp.timelineWidget'])
     .controller('TokenInstanceCtrl', TokenInstanceCtrl)
 ;
 
-TimelineCtrl.$inject = ['$scope', '$modal', '$timeout', 'platimModel', 'service', 'timelineWidget', 'status', 'focus'];
+TimelineCtrl.$inject = ['$scope', '$modal', 'cfg', 'timelineWidget', 'status', 'focus'];
 
-function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWidget, status, focus) {
+function TimelineCtrl($scope, $modal, cfg, timelineWidget, status, focus) {
     $scope.info = {
         token: undefined,
         row: undefined
@@ -58,10 +58,12 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
     focus('focusTimeline');
 
     $scope.keyPressed = function($event) {
-        var chr = String.fromCharCode($event.charCode).toLowerCase();
+        var chr = String.fromCharCode($event.charCode);
+        var chrLc = chr.toLowerCase();
+        var selection, ttype;
 
-        if (chr === 'c') {  // copy selected token
-            var selection = timelineWidget.getSelection();
+        if (chrLc === 'c') {  // copy selected token
+            selection = timelineWidget.getSelection();
             if (selection.length == 1) {
                 var selectedItem = timelineWidget.getItemById(selection[0]);
                 if (selectedItem) {
@@ -80,6 +82,41 @@ function TimelineCtrl($scope, $modal, $timeout, platimModel, service, timelineWi
         else if (chr === '!') {  // clear copy of token for addition
             timelineWidget.setCopiedToken(undefined);
             showMessage("Cleared token copy for addition");
+        }
+
+        // set token type for next additions
+        else if (chr === 'd' || chr === 'm') {
+            ttype = chr === 'd' ? 'ttdeployment' : 'ttmission';
+            timelineWidget.setTokenTypeForAddition(ttype);
+            showMessage("Now adding " + ttype.substring(2) + " tokens");
+        }
+
+        // set token type for selection
+        else if (chr === 'D' || chr === 'M') {
+            selection = timelineWidget.getSelection();
+            ttype = chr === 'D' ? 'ttdeployment' : 'ttmission';
+            if (selection.length > 0) {
+                _.each(selection, function(itemId) {
+                    var item = timelineWidget.getItemById(itemId);
+                    var modified = item.ttype !== ttype; // TODO more general logic to check token modification
+                    item.ttype = ttype;
+                    if (cfg.opts.useSubgroups) {
+                        item.subgroup = ttype;
+                    }
+                    timelineWidget.updateItem(item, modified);
+                });
+                showMessage(selection.length + " tokens set to type " + ttype.substring(2));
+            }
+            else {
+                showMessage("No tokens selected");
+            }
+        }
+
+        // toggle useSubgroups
+        else if (chr === '$') {
+            cfg.opts.useSubgroups = !cfg.opts.useSubgroups;
+            timelineWidget.updateStackSetting(!cfg.opts.useSubgroups);
+            showMessage("useSubgroups set to " + cfg.opts.useSubgroups);
         }
     };
 

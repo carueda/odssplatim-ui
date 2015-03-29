@@ -1,3 +1,22 @@
+- 2015-03-27:
+  - 0.5.0: Initial adjustments to have two token types: deployment and mission
+    - new token attribute 'ttype' to indicate the specific type; this one to be captured in database
+    - using visJs's timeline 'order' option to make the mission tokens appear underneath the
+    deployment ones when they overlap.
+    - optionally use 'subgroup' feature, along with the required stack=false.
+    - when subgroup is used, it takes the same value as ttype
+    - some keyboard "commands" (initially mainly for development purposes):
+      - 'd' and 'm' to set the current type for addition of new tokens
+      - 'D' and 'M' to set the type of the currently selected tokens
+      - '$' to toggle the use of subgroup
+    - so the idea for existing tokens is to use the usual stacking (ie., no subgroups) to more
+      easily see the overlapping tokens to then manually set the ttype values as needed.
+    - Not decided yet but perhaps eventually use the subgroup mechanism as the final one when all
+      tokens are updated and when the linkage between a deployment token with its own missions is defined.
+    - Note: stacking per subgroup (which would be convenient for usability) is not supported
+      by visJs -- https://github.com/almende/vis/issues/620
+
+
 - 2015-03-24: (0.4.2)
   - Fixed issue #130: copy-and-add token: the timeline widget is now focusable so it gets key events.
     The 'C' key copies the selected token, which is used when adding a new token via double-clicking;
