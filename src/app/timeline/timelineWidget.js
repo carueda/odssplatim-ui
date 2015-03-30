@@ -30,7 +30,7 @@ function timelineWidgetFactory(cfg, service, vis) {
     var ttypeAddition = 'ttdeployment';
 
     var options = {
-        'width':            '99%',
+        'width':            '100%', // to be explicit (100% is the default)
         'orientation':      'top',
         'type':             'range',
 

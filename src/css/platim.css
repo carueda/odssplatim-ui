@@ -20,7 +20,7 @@ fieldset { padding:0; border:0; margin-top:10px; }
     width: 700px;
 }
 .modal-backdrop, .modal-backdrop.fade.in {
-    opacity: 0.5;
+    opacity: 0.4;
 }
 .well {
     margin-bottom: 0;
