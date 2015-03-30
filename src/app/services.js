@@ -376,6 +376,8 @@ function service($rootScope, $http, platimModel, status) {
             end:           unparseDate(tokenInfo.end),
             state:         tokenInfo.state,
             description:   tokenInfo.description
+
+            ,ttype:         tokenInfo.ttype
         };
 
         if (tokenInfo.token_id !== undefined) {
