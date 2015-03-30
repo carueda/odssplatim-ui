@@ -16,11 +16,6 @@ fieldset { padding:0; border:0; margin-top:10px; }
 .validateTips { border: 1px solid transparent; padding: 0.3em; }
 
 
-div.block-body {
-    /*border-left-style: dotted;*/
-    /*border-right-style: dotted;*/
-}
-
 .modal {
     width: 700px;
 }
@@ -101,6 +96,9 @@ div.text.major {
 div.text.minor {
     color: #ffffff !important;
 }
+
+/*.group:hover { background-color: rgba(167, 222, 255, 0.21); }*/
+
 .groupCol0 {
     /*background-color: #ffffff;*/
 }
@@ -118,8 +116,22 @@ div.text.minor {
 }
 */
 
-div.range {
+.ttdeploymentFullBg {
+    background-color: rgba(255, 255, 255, 0) !important;
+}
+.ttmissionFullBg {
+    background-color: rgba(234, 253, 242, 0.35) !important;
+}
+.ttdeployment {
     background-color: #FDF3D5 !important;
+    border-color: blue !important;
+}
+.ttmission {
+    background-color: #e7ffe4 !important;
+    border-color: seagreen !important;
+}
+div.range {
+    background-color: #FDF3D5;
     border: 1px solid #000000;
     cursor: pointer;
     padding-left: 0 !important;
@@ -134,22 +146,27 @@ div.range {
 div.status_new {
     font-weight: bold;
     color: red !important;
-    border-color: red !important;
+    /*border-color: red !important;*/
     border-width: 2px !important;
 }
 
 div.status_saved {
     color: mediumblue !important;
-    border-color: mediumblue !important;
+    /*border-color: mediumblue !important;*/
 }
 
 div.status_modified {
     font-weight: bold !important;
     color: mediumblue !important;
-    border-color: mediumblue !important;
+    /*border-color: mediumblue !important;*/
     border-width: 2px !important;
 }
 
+
+.vis.timeline .item {
+    background-color: #FDF3D5;
+    /*padding: 2px !important;*/
+}
 
 .vis.timeline .item.selected {
     /*border-color: #FFC200 !important;*/
