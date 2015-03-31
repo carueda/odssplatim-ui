@@ -4,9 +4,9 @@
 angular.module('odssPlatimApp.services', [])
     .factory('service', service);
 
-service.$inject = ['$rootScope', '$http', 'platimModel', 'status'];
+service.$inject = ['$rootScope', '$http', 'platimModel', 'status', 'utl'];
 
-function service($rootScope, $http, platimModel, status) {
+function service($rootScope, $http, platimModel, status, utl) {
     var activities = status.activities;
     var errors     = status.errors;
 
@@ -370,10 +370,9 @@ function service($rootScope, $http, platimModel, status) {
         //console.log("saveToken: tokenInfo=" + JSON.stringify(tokenInfo));
 
         var item = {
-            //platform_id:   strip(tokenInfo.platform_id),
-            platform_name: strip(tokenInfo.platform_id),
-            start:         unparseDate(tokenInfo.start),
-            end:           unparseDate(tokenInfo.end),
+            platform_name: utl.strip(tokenInfo.platform_id),
+            start:         utl.unparseDate(tokenInfo.start),
+            end:           utl.unparseDate(tokenInfo.end),
             state:         tokenInfo.state,
             description:   tokenInfo.description
 

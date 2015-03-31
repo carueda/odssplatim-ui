@@ -7,9 +7,9 @@ var gTW = {};
 angular.module('odssPlatimApp.timelineWidget', [])
     .factory('timelineWidget', timelineWidgetFactory);
 
-timelineWidgetFactory.$inject = ['cfg', 'service', 'vis'];
+timelineWidgetFactory.$inject = ['cfg', 'service', 'vis', 'utl'];
 
-function timelineWidgetFactory(cfg, service, vis) {
+function timelineWidgetFactory(cfg, service, vis, utl) {
 
     var visRangeMin = moment(cfg.opts.visRange.min);
     var visRangeMax = moment(cfg.opts.visRange.max);
@@ -303,7 +303,7 @@ function timelineWidgetFactory(cfg, service, vis) {
         setTimeout(function() {
             var elm = angular.element(document.getElementById(platform_id));
             elm.on("click", function() {
-                logarea.html(tablify(tml));
+                logarea.html(utl.tablify(tml));
             });
         },2000);
 
@@ -314,13 +314,13 @@ function timelineWidgetFactory(cfg, service, vis) {
         // NOTE: do this regardless of cfg.opts.useSubgroups
         _.each(["ttdeployment", "ttmission"], function (ttype) {
             items.add({
-                id: platform_id + '_subgroup_' + ttype,
-                group: platform_id,
-                subgroup: ttype,
-                content: '',
-                start: parseDate("1900-01-01"),
-                end: parseDate("2100-01-01"),
-                type: 'background',
+                id:        platform_id + '_subgroup_' + ttype,
+                group:     platform_id,
+                subgroup:  ttype,
+                content:   '',
+                start:     utl.parseDate("1900-01-01"),
+                end:       utl.parseDate("2100-01-01"),
+                type:      'background',
                 className: ttype + "FullBg"
             });
         });
@@ -336,8 +336,8 @@ function timelineWidgetFactory(cfg, service, vis) {
             'id':             token._id,
             'className':      token.status + " " + token.ttype,
             'content':        getTokenContent(token),
-            'start':          parseDate(token.start),
-            'end':            parseDate(token.end),
+            'start':          utl.parseDate(token.start),
+            'end':            utl.parseDate(token.end),
             'group':          token.platform_id,
             'title':          tooltip,
 
@@ -492,7 +492,7 @@ function timelineWidgetFactory(cfg, service, vis) {
             //console.log("onSelect=", properties);
             if (properties.items && properties.items.length > 0) {
                 var selected = _.map(properties.items, function(itemId) { return items.get(itemId) });
-                logarea.html(tablify(selected));
+                logarea.html(utl.tablify(selected));
                 //console.log("SELECT: item=", item);
             }
             else {
@@ -506,7 +506,7 @@ function timelineWidgetFactory(cfg, service, vis) {
 
         return token.state;
 
-//        var tooltip = tablify(token);
+//        var tooltip = utl.tablify(token);
 //        //console.log("tootip = " + tooltip);
 //        var content = "<div title='" +tooltip+ "'>" +token.state+ "</div>";
 //        return content;
