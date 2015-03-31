@@ -4,12 +4,17 @@
 var odssplatimUtil = (function() {
     'use strict';
 
+    var debug = undefined;
+
     return {
         strip: function(html) {
             var tmp = document.createElement("DIV");
             tmp.innerHTML = html;
             return tmp.textContent||tmp.innerText;
         }
+
+        ,setDebug: function(d) { debug = d; }
+        ,getDebug: function() { return debug; }
 
         ,parseDate: function(str) {
             return moment(str).toDate();

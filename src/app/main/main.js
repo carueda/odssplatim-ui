@@ -4,12 +4,14 @@
 angular.module('odssPlatimApp.main', [])
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', '$window', 'platimModel', 'service', 'timelineWidget', 'status'];
+MainCtrl.$inject = ['$scope', '$window', 'platimModel', 'service', 'timelineWidget', 'status', 'utl'];
 
-function MainCtrl($scope, $window, platimModel, service, timelineWidget, status) {
+function MainCtrl($scope, $window, platimModel, service, timelineWidget, status, utl) {
     $scope.debug = $window.location.toString().match(/.*\?debug/)
         ? { collapsed: true, model: platimModel }
         : undefined;
+
+    utl.setDebug($scope.debug);
 
     $scope.cfg = odssplatimConfig;
 

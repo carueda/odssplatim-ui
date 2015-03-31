@@ -27,7 +27,7 @@ function service($rootScope, $http, platimModel, status, utl) {
     function getGeneralInfoAux(fns, continueRefresh) {
         var actId = activities.add("retrieving general info");
         var url = odssplatimConfig.rest + "/tokens/info";
-        //console.log("GET " + url);
+        if (utl.getDebug()) console.log("GET " + url);
         $http.get(url)
             .success(function(res, status, headers, config) {
                 activities.remove(actId);
@@ -61,7 +61,7 @@ function service($rootScope, $http, platimModel, status, utl) {
     var getAllPlatforms = function(fns) {
         var actId = activities.add("retrieving platforms");
         var url = odssplatimConfig.platformsUrl;
-        //console.log("GET " + url);
+        if (utl.getDebug()) console.log("GET " + url);
         $http.get(url)
             .success(function(res, status, headers, config) {
                 activities.remove(actId);
@@ -94,7 +94,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      */
     function getSelectedPlatforms(fns) {
         var url = odssplatimConfig.rest + "/prefs/selectedPlatforms";
-        //console.log("GET " + url);
+        if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add('retrieving selected platforms');
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -122,7 +122,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      */
     var getHolidays = function(fns) {
         var url = odssplatimConfig.rest + "/periods/holidays";
-        //console.log("GET " + url);
+        if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add('retrieving holidays');
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -149,7 +149,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      */
     var refreshTimelines = function(fns) {
         var url = odssplatimConfig.rest + "/tokens/timelines";
-        //console.log("GET " + url);
+        if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add('retrieving timelines');
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -207,7 +207,7 @@ function service($rootScope, $http, platimModel, status, utl) {
             //console.log("getting tokens for " + platform_name + " (" +platform_id+ ")");
 
             var url = odssplatimConfig.rest + "/tokens/timelines/" + platform_id;
-            //console.log("GET " + url);
+            if (utl.getDebug()) console.log("GET " + url);
             var actId = activities.add("getting tokens for " + platform_name);
             $http.get(url)
                 .success(function(tokens, status, headers, config) {
@@ -244,7 +244,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      */
     var refreshPeriods = function(fns) {
         var url = odssplatimConfig.rest + "/periods";
-        //console.log("GET " + url);
+        if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add("refreshing periods");
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -266,7 +266,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      */
     var getDefaultPeriodId = function(fns) {
         var url = odssplatimConfig.rest + "/periods/default";
-        //console.log("GET " + url);
+        if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add("getting default period");
         $http.get(url)
             .success(function(res, status, headers, config) {
