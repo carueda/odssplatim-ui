@@ -4,9 +4,9 @@
 angular.module('odssPlatimApp.services', [])
     .factory('service', service);
 
-service.$inject = ['$rootScope', '$http', 'platimModel', 'status', 'utl'];
+service.$inject = ['$rootScope', '$http', 'cfg', 'platimModel', 'status', 'utl'];
 
-function service($rootScope, $http, platimModel, status, utl) {
+function service($rootScope, $http, cfg, platimModel, status, utl) {
     var activities = status.activities;
     var errors     = status.errors;
 
@@ -26,7 +26,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      */
     function getGeneralInfoAux(fns, continueRefresh) {
         var actId = activities.add("retrieving general info");
-        var url = odssplatimConfig.rest + "/tokens/info";
+        var url = cfg.rest + "/tokens/info";
         if (utl.getDebug()) console.log("GET " + url);
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -60,7 +60,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      */
     var getAllPlatforms = function(fns) {
         var actId = activities.add("retrieving platforms");
-        var url = odssplatimConfig.platformsUrl;
+        var url = cfg.platformsUrl;
         if (utl.getDebug()) console.log("GET " + url);
         $http.get(url)
             .success(function(res, status, headers, config) {
@@ -93,7 +93,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      * @param fns  Callback functions
      */
     function getSelectedPlatforms(fns) {
-        var url = odssplatimConfig.rest + "/prefs/selectedPlatforms";
+        var url = cfg.rest + "/prefs/selectedPlatforms";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add('retrieving selected platforms');
         $http.get(url)
@@ -121,7 +121,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      * @param fns  Callback functions
      */
     var getHolidays = function(fns) {
-        var url = odssplatimConfig.rest + "/periods/holidays";
+        var url = cfg.rest + "/periods/holidays";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add('retrieving holidays');
         $http.get(url)
@@ -148,7 +148,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      * @param fns  Callback functions
      */
     var refreshTimelines = function(fns) {
-        var url = odssplatimConfig.rest + "/tokens/timelines";
+        var url = cfg.rest + "/tokens/timelines";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add('retrieving timelines');
         $http.get(url)
@@ -206,7 +206,7 @@ function service($rootScope, $http, platimModel, status, utl) {
             var platform_name = tml.platform_name;
             //console.log("getting tokens for " + platform_name + " (" +platform_id+ ")");
 
-            var url = odssplatimConfig.rest + "/tokens/timelines/" + platform_id;
+            var url = cfg.rest + "/tokens/timelines/" + platform_id;
             if (utl.getDebug()) console.log("GET " + url);
             var actId = activities.add("getting tokens for " + platform_name);
             $http.get(url)
@@ -243,7 +243,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      * @param fns  Callback functions
      */
     var refreshPeriods = function(fns) {
-        var url = odssplatimConfig.rest + "/periods";
+        var url = cfg.rest + "/periods";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add("refreshing periods");
         $http.get(url)
@@ -265,7 +265,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      * @param fns  Callback functions
      */
     var getDefaultPeriodId = function(fns) {
-        var url = odssplatimConfig.rest + "/periods/default";
+        var url = cfg.rest + "/periods/default";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add("getting default period");
         $http.get(url)
@@ -294,7 +294,7 @@ function service($rootScope, $http, platimModel, status, utl) {
     var setDefaultPeriodId = function(_id) {
         var url, actId;
         if (_id === undefined) {
-            url = odssplatimConfig.rest + "/periods/default";
+            url = cfg.rest + "/periods/default";
             console.log("DELETE " + url);
             actId = activities.add("deleting default period");
             $http.delete(url)
@@ -306,7 +306,7 @@ function service($rootScope, $http, platimModel, status, utl) {
                 .error(httpErrorHandler(actId));
         }
         else {
-            url = odssplatimConfig.rest + "/periods/default/" + _id;
+            url = cfg.rest + "/periods/default/" + _id;
             console.log("PUT " + url);
             actId = activities.add("updating default period");
             $http.put(url)
@@ -323,7 +323,7 @@ function service($rootScope, $http, platimModel, status, utl) {
      * Removes the given period from the database.
      */
     var removePeriod = function(_id) {
-        var url = odssplatimConfig.rest + "/periods/" + _id;
+        var url = cfg.rest + "/periods/" + _id;
         console.log("DELETE " + url);
         var actId = activities.add("deleting period");
         $http.delete(url)
@@ -344,7 +344,7 @@ function service($rootScope, $http, platimModel, status, utl) {
     var addPeriod = function(newPeriodInfo, successFn) {
         console.log("addPeriod:", newPeriodInfo);
         var actId = activities.add("saving new period '" +newPeriodInfo.name+ "'");
-        var url = odssplatimConfig.rest + "/periods";
+        var url = cfg.rest + "/periods";
 
         console.log("POST " + url, "newPeriodInfo=", newPeriodInfo);
         $http({
@@ -383,7 +383,7 @@ function service($rootScope, $http, platimModel, status, utl) {
             // update existing token:
             //console.log("saveToken: updating token_id=" +tokenInfo.token_id, item);
 
-            url = odssplatimConfig.rest + "/tokens/" + tokenInfo.token_id;
+            url = cfg.rest + "/tokens/" + tokenInfo.token_id;
             actId = activities.add("updating token " +item.state);
             $http.put(url, item)
                 .success(function(res, status, headers, config) {
@@ -398,7 +398,7 @@ function service($rootScope, $http, platimModel, status, utl) {
             // add new token
             //console.log("saveToken: posting new token", item);
 
-            url = odssplatimConfig.rest + "/tokens";
+            url = cfg.rest + "/tokens";
             actId = activities.add("adding token " +item.state);
             $http({
                 method:  'POST',
@@ -424,7 +424,7 @@ function service($rootScope, $http, platimModel, status, utl) {
             return;
         }
 
-        var url = odssplatimConfig.rest + "/tokens/" + tokenInfo.token_id;
+        var url = cfg.rest + "/tokens/" + tokenInfo.token_id;
         //console.log("DELETE " + url);
         var actId = activities.add("deleting token " +tokenInfo.state);
         $http.delete(url)
@@ -438,7 +438,7 @@ function service($rootScope, $http, platimModel, status, utl) {
     function savePlatformOptions(selectedPlatforms, successFn) {
         var actId = activities.add("saving platform options...");
         //console.log("savePlatformOptions", selectedPlatforms);
-        var url = odssplatimConfig.rest + "/prefs/selectedPlatforms";
+        var url = cfg.rest + "/prefs/selectedPlatforms";
         var data = {selectedPlatforms: _.map(selectedPlatforms, "platform_id")};
         //console.log("POST " + url);
         $http.post(url, data)

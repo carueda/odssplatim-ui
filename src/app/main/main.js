@@ -4,16 +4,16 @@
 angular.module('odssPlatimApp.main', [])
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', '$window', 'platimModel', 'service', 'timelineWidget', 'status', 'utl'];
+MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'timelineWidget', 'status', 'utl'];
 
-function MainCtrl($scope, $window, platimModel, service, timelineWidget, status, utl) {
+function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, status, utl) {
     $scope.debug = $window.location.toString().match(/.*\?debug/)
         ? { collapsed: true, model: platimModel }
         : undefined;
 
     utl.setDebug($scope.debug);
 
-    $scope.cfg = odssplatimConfig;
+    $scope.cfg = cfg;
 
     $scope.messages   = status.messages;
     $scope.activities = status.activities;
