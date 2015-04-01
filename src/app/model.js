@@ -5,8 +5,6 @@
 
         byPlat:    {},
 
-        platform_ids: [],
-
         platformOptions: {
 
             selectedPlatforms:      {}
@@ -42,7 +40,7 @@
                 byPlatformType[typeName] = [];
             }
             byPlatformType[typeName].push(tml);
-            model.byPlat[tml.platform_id] = tml;
+            model.byPlat[tml.platform_name] = tml;
 
             selectedPlatformTypes[typeName] = false;
             platformTypeIndeterminate[typeName] = false;
@@ -57,8 +55,8 @@
     model.setSelectedPlatforms = function(selectedPlatforms) {
         //console.log("setSelectedPlatforms", selectedPlatforms);
         model.platformOptions.selectedPlatforms = {};
-        _.each(selectedPlatforms, function(platform_id) {
-            model.platformOptions.selectedPlatforms[platform_id] = true;
+        _.each(selectedPlatforms, function(platform_name) {
+            model.platformOptions.selectedPlatforms[platform_name] = true;
         });
         //console.log("model.platformOptions.selectedPlatforms", model.platformOptions.selectedPlatforms);
     };
@@ -69,16 +67,16 @@
     model.getSelectedPlatforms = function() {
         //console.log("getSelectedPlatforms");
         var selectedPlatforms = [];
-        _.each(model.platformOptions.selectedPlatforms, function(selected, platform_id) {
-            if (selected && model.byPlat[platform_id]) {
-                selectedPlatforms.push(model.byPlat[platform_id]);
+        _.each(model.platformOptions.selectedPlatforms, function(selected, platform_name) {
+            if (selected && model.byPlat[platform_name]) {
+                selectedPlatforms.push(model.byPlat[platform_name]);
             }
         });
         if (selectedPlatforms.length == 0) {
             // else: show only platforms with tokens:
-            _.each(model.byPlat, function(tml, platform_id) {
+            _.each(model.byPlat, function(tml, platform_name) {
                 if (tml.tokens.length > 0) {
-                    selectedPlatforms.push(model.byPlat[platform_id]);
+                    selectedPlatforms.push(model.byPlat[platform_name]);
                 }
             });
         }

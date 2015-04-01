@@ -33,14 +33,14 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 activities.remove(actId);
                 fns.gotGeneralInfo(res);
                 if (continueRefresh) {
-                    getAllPlatforms(fns);
+                    getHolidays(fns);
                 }
             })
             .error(function(data, status, headers, config) {
                 activities.remove(actId);
                 fns.gotGeneralInfo();
                 if (continueRefresh) {
-                    getAllPlatforms(fns);
+                    getHolidays(fns);
                 }
             })
         ;
@@ -55,7 +55,8 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
     }
 
     /**
-     * Retrieves all platform.
+     * Retrieves all platforms. We need all of them to support any
+     * selection by the user.
      * @param fns  Callback functions
      */
     var getAllPlatforms = function(fns) {
@@ -68,10 +69,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 //console.log("getAllPlatforms: " + JSON.stringify(res));
 
                 var tmls = _.map(res, function(elm) {
-                    //var platform_id = elm._id;
                     var tml = _.extend({
-                        //platform_id:   platform_id,
-                        platform_id:   elm.name,
                         platform_name: elm.name
                     }, elm);
                     tml = _.omit(tml, '_id', 'name');
@@ -79,14 +77,12 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                     return tml;
                 });
                 platimModel.setAllPlatforms(tmls);
-
-                fns.gotPlatforms(tmls);
                 getSelectedPlatforms(fns);
             })
 
             .error(httpErrorHandler(actId))
         ;
-    };
+    }
 
     /**
      * Retrieves the selected platforms.
@@ -101,19 +97,9 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 activities.remove(actId);
                 //console.log("getSelectedPlatforms: res", res.selectedPlatforms);
                 platimModel.setSelectedPlatforms(res.selectedPlatforms);
-                fns.gotSelectedPlatforms(res);
-                getHolidays(fns);
+                refreshTokens(res.selectedPlatforms, fns);
             })
-            .error(function(data, status, headers, config) {
-                if (status == 404) {
-                    activities.remove(actId);
-                    fns.gotSelectedPlatforms();
-                    getHolidays(fns);
-                }
-                else {
-                    httpErrorHandler(actId)(data, status, headers, config)
-                }
-            });
+            .error(httpErrorHandler(actId));
     }
 
     /**
@@ -128,14 +114,13 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
             .success(function(res, status, headers, config) {
                 activities.remove(actId);
                 platimModel.holidays = res.holidays;
-                fns.gotHolidays(res);
-                refreshTimelines(fns);
+                getAllPlatforms(fns);
             })
             .error(function(data, status, headers, config) {
                 if (status == 404) {
                     activities.remove(actId);
-                    fns.gotHolidays();
-                    refreshTimelines(fns);
+                    // but continue sequence:
+                    getAllPlatforms(fns);
                 }
                 else {
                     httpErrorHandler(actId)(data, status, headers, config)
@@ -144,99 +129,34 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
     };
 
     /**
-     * Retrieves the timelines (ie., platforms having tokens).
-     * @param fns  Callback functions
+     * Retrieves the tokens for the given platforms.
+     * @param platformNames  Names of desired platforms
+     * @param fns            Callback functions
      */
-    var refreshTimelines = function(fns) {
-        var url = cfg.rest + "/tokens/timelines";
-        if (utl.getDebug()) console.log("GET " + url);
-        var actId = activities.add('retrieving timelines');
-        $http.get(url)
-            .success(function(res, status, headers, config) {
+    function refreshTokens(platformNames, fns) {
+        var url = cfg.rest + "/tokens";
+        var params = {platform_name: platformNames.join(',')};
+        if (utl.getDebug()) console.log("GET " + url + " params=", params);
+        var actId = activities.add('retrieving tokens');
+        $http.get(url, {params: params})
+            .success(function(tokens, status, headers, config) {
                 activities.remove(actId);
+                //console.log("GET response: tokens=", tokens);
+                var byPlatformName = _.groupBy(tokens, "platform_name");
+                _.each(byPlatformName, function(platTokens, platform_name) {
+                    _.each(platTokens, function(token) {
+                        token.token_id      = token._id;
+                        token.status        = "status_saved";
 
-                platimModel.platform_ids = [];
-                _.each(res, function(elm) {
-                    var platform_id = elm._id;
-                    var tml = _.extend({
-                        //platform_id:   platform_id,
-                        platform_id: elm.name,
-                        platform_name: elm.name
-                    }, elm);
-                    tml = _.omit(tml, '_id', 'name');
-
-                    tml.tokens = [];
-                    platimModel.byPlat[platform_id] = tml;
-
-                    platimModel.platform_ids.push(platform_id);
+                        platimModel.byPlat[platform_name].tokens.push(token);
+                    });
                 });
 
-                var platforms_with_tokens = _.pick(platimModel.byPlat, platimModel.platform_ids);
-                fns.gotTimelines(platforms_with_tokens);
-
-                putTokens(fns);
+                refreshPeriods(fns);
             })
 
             .error(httpErrorHandler(actId));
-    };
-
-    /**
-     * Retrieves the tokens for the platforms having tokens.
-     * @param fns  Callback functions
-     */
-    var putTokens = function(fns) {
-
-        var platforms_with_tokens = _.pick(platimModel.byPlat, platimModel.platform_ids);
-        var list = _.values(platforms_with_tokens);
-
-        /**
-         * Retrieves the tokens for the platform at the given index in the
-         * list, and then recursively calls doList(index + 1).
-         * listDone(true) is called when the list is completed, and
-         * listDone(false) upon any error in the corresponding request.
-         * @param index  Index in list
-         */
-        function doList(index) {
-            if (index >= list.length) {
-                listDone(true);
-                return;
-            }
-            var tml = list[index];
-            var platform_id   = tml.platform_id;
-            var platform_name = tml.platform_name;
-            //console.log("getting tokens for " + platform_name + " (" +platform_id+ ")");
-
-            var url = cfg.rest + "/tokens/timelines/" + platform_id;
-            if (utl.getDebug()) console.log("GET " + url);
-            var actId = activities.add("getting tokens for " + platform_name);
-            $http.get(url)
-                .success(function(tokens, status, headers, config) {
-                    activities.remove(actId);
-                    _.each(tokens, function(token) {
-                        token.token_id      = token._id;
-                        token.platform_name = platform_name;
-                        token.platform_id   = platform_name;
-                        token.status        = "status_saved";
-                    });
-                    platimModel.byPlat[platform_id].tokens = tokens;
-                    //console.log("tokens added to " + tml.platform_name+ ":", tokens);
-                    fns.gotTokens(tml, tokens);
-                    doList(index + 1)
-                })
-
-                .error(httpErrorHandler(actId, function() {
-                    listDone(false);
-                }));
-        }
-
-        function listDone(ok) {
-            if (ok) {
-                refreshPeriods(fns);
-            }
-        }
-
-        doList(0);
-    };
+    }
 
     /**
      * Retrieves the defined periods.
@@ -253,7 +173,6 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 _.each(res, function(per) {
                     platimModel.periods[per._id] = per;
                 });
-                fns.gotPeriods(platimModel.periods);
                 getDefaultPeriodId(fns);
             })
 
@@ -295,7 +214,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
         var url, actId;
         if (_id === undefined) {
             url = cfg.rest + "/periods/default";
-            console.log("DELETE " + url);
+            if (utl.getDebug()) console.log("DELETE " + url);
             actId = activities.add("deleting default period");
             $http.delete(url)
                 .success(function(res, status, headers, config) {
@@ -307,7 +226,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
         }
         else {
             url = cfg.rest + "/periods/default/" + _id;
-            console.log("PUT " + url);
+            if (utl.getDebug()) console.log("PUT " + url);
             actId = activities.add("updating default period");
             $http.put(url)
                 .success(function(res, status, headers, config) {
@@ -324,7 +243,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
      */
     var removePeriod = function(_id) {
         var url = cfg.rest + "/periods/" + _id;
-        console.log("DELETE " + url);
+        if (utl.getDebug()) console.log("DELETE " + url);
         var actId = activities.add("deleting period");
         $http.delete(url)
             .success(function(res, status, headers, config) {
@@ -346,7 +265,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
         var actId = activities.add("saving new period '" +newPeriodInfo.name+ "'");
         var url = cfg.rest + "/periods";
 
-        console.log("POST " + url, "newPeriodInfo=", newPeriodInfo);
+        if (utl.getDebug()) console.log("POST " + url, "newPeriodInfo=", newPeriodInfo);
         $http({
             method:  'POST',
             url:     url,
@@ -370,7 +289,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
         //console.log("saveToken: tokenInfo=" + JSON.stringify(tokenInfo));
 
         var item = {
-            platform_name: utl.strip(tokenInfo.platform_id),
+            platform_name: utl.strip(tokenInfo.platform_name),
             start:         utl.unparseDate(tokenInfo.start),
             end:           utl.unparseDate(tokenInfo.end),
             state:         tokenInfo.state,
@@ -425,7 +344,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
         }
 
         var url = cfg.rest + "/tokens/" + tokenInfo.token_id;
-        //console.log("DELETE " + url);
+        if (utl.getDebug()) console.log("DELETE " + url);
         var actId = activities.add("deleting token " +tokenInfo.state);
         $http.delete(url)
             .success(function(res, status, headers, config) {
@@ -439,8 +358,8 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
         var actId = activities.add("saving platform options...");
         //console.log("savePlatformOptions", selectedPlatforms);
         var url = cfg.rest + "/prefs/selectedPlatforms";
-        var data = {selectedPlatforms: _.map(selectedPlatforms, "platform_id")};
-        //console.log("POST " + url);
+        var data = {selectedPlatforms: _.map(selectedPlatforms, "platform_name")};
+        if (utl.getDebug()) console.log("POST " + url);
         $http.post(url, data)
             .success(function(res, status, headers, config) {
                 platimModel.setSelectedPlatforms(data.selectedPlatforms);

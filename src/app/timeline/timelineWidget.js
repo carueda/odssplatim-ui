@@ -269,12 +269,13 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
 
         //console.log("addGroup: tml", tml);
 
-        var platform_id   = tml.platform_id;
         var platform_name = tml.platform_name;
+
+        var elementId = "_platform_" +platform_name;
 
         var trackingDBID = tml.trackingDBID ? ("; trackingDBID: " +tml.trackingDBID) : "";
         var tooltip = platform_name + " (" +tml.typeName + trackingDBID+ ")";
-        var content = "<div id='" +platform_id+ "'";
+        var content = "<div id='" +elementId+ "'";
         content += " tooltip='" +tooltip+ "'";
         content += ">" ;
 
@@ -291,7 +292,7 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
         content += "</div>";
 
         groups.add({
-            id:         platform_id,
+            id:         platform_name,
             content:    content,
             title:      tooltip,
 
@@ -301,7 +302,7 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
         // note: refreshShading will set the CSS class.
 
         setTimeout(function() {
-            var elm = angular.element(document.getElementById(platform_id));
+            var elm = angular.element(document.getElementById(elementId));
             elm.on("click", function() {
                 logarea.html(utl.tablify(tml));
             });
@@ -314,8 +315,8 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
         // NOTE: do this regardless of cfg.opts.useSubgroups
         _.each(["ttdeployment", "ttmission"], function (ttype) {
             items.add({
-                id:        platform_id + '_subgroup_' + ttype,
-                group:     platform_id,
+                id:        platform_name + '_subgroup_' + ttype,
+                group:     platform_name,
                 subgroup:  ttype,
                 content:   '',
                 start:     utl.parseDate("1900-01-01"),
@@ -338,11 +339,10 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
             'content':        getTokenContent(token),
             'start':          utl.parseDate(token.start),
             'end':            utl.parseDate(token.end),
-            'group':          token.platform_id,
+            'group':          token.platform_name,
             'title':          tooltip,
 
             'token_id':       token._id,
-            'platform_id':    token.platform_id,
             'platform_name':  token.platform_name,
             'state':          token.state,
             'description':    token.description,
@@ -389,9 +389,7 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
             }
         }
 
-        item.platform_id   = item.group;
-        item.platform_name = groups.get(item.platform_id).platform_name;
-
+        item.platform_name = item.group;
         item.status        = "status_new";
         item.className     = item.status + " " + item.ttype;
 

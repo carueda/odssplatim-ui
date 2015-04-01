@@ -41,26 +41,7 @@ function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, st
         setTimeout(refreshLastUpdated, 5 * 1000);
     }, 0);
 
-    var gotPlatforms = function(platforms) {
-        //console.log("gotPlatforms: ", platforms);
-    };
-
-    var gotHolidays = function(res) {
-        //console.log("gotHolidays: ", res);
-    };
-
-    var gotTimelines = function(timelines) {
-        //console.log("gotTimelines: ", timelines);
-    };
-
-    var gotTokens = function(tml, tokens) {
-    };
-
     $scope.periods = {};
-
-    var gotPeriods = function(periods) {
-        //console.log("gotPeriods:", periods);
-    };
 
     var gotDefaultPeriodId = function() {
         setVisibleChartRange();
@@ -144,13 +125,7 @@ function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, st
         timelineWidget.reinit();
         service.refresh({
             gotGeneralInfo:       gotGeneralInfo,
-            gotPlatforms:         gotPlatforms,
-            gotSelectedPlatforms: function(tmls) {},
-            gotTimelines:         gotTimelines,
-            gotTokens:            gotTokens,
-            gotPeriods:           gotPeriods,
             gotDefaultPeriodId:   gotDefaultPeriodId,
-            gotHolidays:          gotHolidays,
             refreshComplete:      refreshComplete
         });
     };

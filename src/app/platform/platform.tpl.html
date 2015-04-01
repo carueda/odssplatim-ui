@@ -11,8 +11,8 @@
                         <li ng-repeat="tml in tmls">
                             <span class="checkbox" title="{{tml.platform_name}} - (trackingDBID={{tml.trackingDBID}})">
                                 <label>
-                                    <input type="checkbox" ng-model="platformOptions.selectedPlatforms[tml.platform_id]"
-                                           value="platformOptions.selectedPlatforms[tml.platform_id]">
+                                    <input type="checkbox" ng-model="platformOptions.selectedPlatforms[tml.platform_name]"
+                                           value="platformOptions.selectedPlatforms[tml.platform_name]">
 
                                     <span ng-show="tml.color" style="color: {{tml.color}}; font-size: x-small">
                                         <span class="fa fa-circle fa-fw"></span>

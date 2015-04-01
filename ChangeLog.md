@@ -1,3 +1,8 @@
+- 2015-03-31: (0.5.0)
+  - significant simplification of interaction with backend, including getting rid of "platform_id"
+    (recall that "platform_name" is the actual the identification key for platforms.)
+  - some other code clean-up
+  
 - 2015-03-27:
   - 0.5.0: Initial adjustments to have two token types: deployment and mission
     - new token attribute 'ttype' to indicate the specific type; this one to be captured in database
