@@ -188,3 +188,7 @@ div.status_modified {
 .vis.timeline .item.background.weekend {
     background-color: #f4f8fd;
 }
+
+.periodSelectionItem {
+    cursor: pointer;
+}

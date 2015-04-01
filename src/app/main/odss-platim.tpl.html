@@ -6,12 +6,36 @@
                 <button class="btn btn-default btn-sm" ng-click="refresh()"
                         title="Reloads the timeline from the database"
                         >Refresh</button>
+
                 <button class="btn btn-default btn-sm" ng-controller="PlatformCtrl" ng-click="open()"
                         title="Platform options"
                         >Platform</button>
-                <button class="btn btn-default btn-sm" ng-controller="PeriodCtrl" ng-click="open()"
-                        title="Allows to visualize a pre-defined period or create a new period"
-                        >Period</button>
+
+                <div class="btn-group" dropdown ng-controller="PeriodCtrl">
+                    <button class="btn btn-default btn-sm dropdown-toggle"
+                            dropdown-toggle
+                            title="Allows to visualize a pre-defined period or create a new period">
+                        Period <span class="caret"></span>
+                        </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li class="periodSelectionItem" ng-repeat="period in vm.periods | orderBy:'-start'">
+                            <a ng-click="selectPeriod(period)">
+                                <span ng-show="vm.selectedPeriodId === period._id" class="fa fa-check"></span>
+                                {{period.period}}
+                                <span style="color: gray; font-weight: lighter">
+                                    ({{period.start}} – {{period.end}})
+                                </span>
+                                <button ng-click="editPeriod(period._id)" class="btn btn-default btn-xs">Edit</button>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a ng-click="createNewPeriod()" style="cursor: pointer">
+                                Create new period...</a>
+                        </li>
+                    </ul>
+                </div>
+
                 <button class="btn btn-default btn-sm" ng-click="save()"
                         title="Saves all new and modified tokens"
                         >Save</button>

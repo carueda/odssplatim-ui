@@ -192,6 +192,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 activities.remove(actId);
                 platimModel.selectedPeriodId = res.defaultPeriodId;
                 fns.gotDefaultPeriodId();
+                $rootScope.$broadcast('periodsRefreshed');
                 fns.refreshComplete();
             })
 
@@ -210,7 +211,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
     /**
      * Sets the default period.
      */
-    var setDefaultPeriodId = function(_id) {
+    var setDefaultPeriodId = function(_id, cb) {
         var url, actId;
         if (_id === undefined) {
             url = cfg.rest + "/periods/default";
@@ -220,6 +221,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 .success(function(res, status, headers, config) {
                     activities.remove(actId);
                     platimModel.selectedPeriodId = undefined;
+                    if (cb) cb();
                 })
 
                 .error(httpErrorHandler(actId));
@@ -232,6 +234,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 .success(function(res, status, headers, config) {
                     activities.remove(actId);
                     platimModel.selectedPeriodId = _id;
+                    if (cb) cb();
                 })
 
                 .error(httpErrorHandler(actId));
@@ -275,7 +278,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 activities.remove(actId);
                 platimModel.periods[res._id] = res;
                 platimModel.selectedPeriodId = res._id;
-                successFn();
+                successFn(platimModel.periods[res._id]);
             })
 
             .error(httpErrorHandler(actId));

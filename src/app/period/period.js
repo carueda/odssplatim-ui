@@ -4,72 +4,105 @@
 /**
  * Dispatches the Period form.
  * Allows to add new periods, remove a period, set the default period.
- *
- * NOTE: not completely implemented. For example, there is no direct way for the
- * user to reset to the saved period info after applying a modification in the UI.
  */
 angular.module('odssPlatimApp.period', [])
     .controller('PeriodCtrl', PeriodCtrl)
     .controller('PeriodInstanceCtrl', PeriodInstanceCtrl)
 ;
 
-PeriodCtrl.$inject = ['$scope', '$modal', '$timeout', 'platimModel', 'service', 'focus'];
+PeriodCtrl.$inject = ['$scope', '$modal', 'platimModel', 'timelineWidget', 'service', 'focus'];
 
-function PeriodCtrl($scope, $modal, $timeout, platimModel, service, focus) {
-    $scope.open = function () {
+function PeriodCtrl($scope, $modal, platimModel, timelineWidget, service, focus) {
+
+    $scope.vm = {};
+    $scope.$on('periodsRefreshed', periodsRefreshed);
+
+    function periodsRefreshed() {
+        $scope.vm.periods = _.values(platimModel.periods);
+        _.each($scope.vm.periods, function(period) {
+           period.start = moment(period.start).format("YYYY-MM-DD");
+           period.end   = moment(period.end).  format("YYYY-MM-DD");
+        });
+        $scope.vm.selectedPeriodId = platimModel.selectedPeriodId;
+        //console.log('on periodsRefreshed', $scope.vm.periods);
+    }
+
+    $scope.selectPeriod = function(period) {
+        //console.log('selectPeriod:', period);
+        if (platimModel.selectedPeriodId !== period._id) {
+            service.setDefaultPeriodId(period._id, function() {
+                periodsRefreshed();
+                service.periodSelected();
+            });
+        }
+        focus('focusTimeline');
+    };
+
+    function openModal(options) {
         var modalInstance = $modal.open({
             templateUrl: 'period/period.tpl.html',
             controller:  'PeriodInstanceCtrl',
-            backdrop:    'static'
+            backdrop:    'static',
+            resolve:     { options: function() { return options; } }
         });
-
         modalInstance.result.then(function (selectedPeriod) {
             //console.log('Period dialog accepted:', selectedPeriod);
             platimModel.selectedPeriodId = selectedPeriod._id;
+            periodsRefreshed();
             service.periodSelected();
             focus('focusTimeline');
         }, function () {
             focus('focusTimeline');
         });
+    }
+
+    $scope.editPeriod = function(selectedPeriodId) {
+        openModal({selectedPeriodId: selectedPeriodId});
+    };
+
+    $scope.createNewPeriod = function() {
+        var createPeriod = {};
+        var dr = timelineWidget.getVisibleChartRange();
+        if (dr !== undefined) {
+            createPeriod['start'] = moment(dr.start).toDate();
+            createPeriod['end']   = moment(dr.end).toDate();
+        }
+        else {
+            var now = moment(moment().format("YYYY-MM-DD"));
+            createPeriod['start'] = now.toDate();
+            createPeriod['end']   = now.clone().add(1, 'month').toDate();
+        }
+        console.log("createPeriod = ", angular.toJson(createPeriod));
+        openModal({createPeriod: createPeriod});
     };
 }
 
-PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'platimModel', 'service', 'timelineWidget', 'focus'];
+PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'options', 'platimModel', 'service', 'focus'];
 
-function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timelineWidget, focus) {
-    var periods_plus_create = platimModel.periods;
-    periods_plus_create["--all tokens--"] = {
-       _id:    "--all tokens--",
-       period:   "Show all tokens",
-       start:  undefined,
-       end:    undefined
-    };
+function PeriodInstanceCtrl($scope, $modalInstance, options, platimModel, service, focus) {
 
-    var createPeriod = periods_plus_create["--create period--"] = {
-       _id:    "--create period--",
-       period:   "--create period--"
-    };
-    var dr = timelineWidget.getVisibleChartRange();
-    if (dr !== undefined) {
-       createPeriod['start'] = moment(dr.start).toDate();
-       createPeriod['end']   = moment(dr.end).toDate();
+    var selectedPeriod, info;
+    if (options.selectedPeriodId) {
+        selectedPeriod = platimModel.periods[options.selectedPeriodId];
+        info = {
+            selectedPeriod:  selectedPeriod
+        };
     }
+    else if (options.createPeriod) {
+        info = {
+            newName:  "",
+            selectedPeriod: {
+                start: options.createPeriod.start,
+                end:   options.createPeriod.end
+            }
+        };
 
-    var selectedPeriod;
-    if (platimModel.periods[platimModel.selectedPeriodId]) {
-        selectedPeriod = platimModel.periods[platimModel.selectedPeriodId];
     }
     else {
-        platimModel.selectedPeriodId = "--all tokens--";
-        selectedPeriod = periods_plus_create[platimModel.selectedPeriodId];
+        throw new Error("malformed options");
     }
 
-    var info = {
-        periods:         _.values(periods_plus_create),
-        selectedPeriod:  selectedPeriod,
-        newName:         ""  // when creating a new period
-    };
-    //console.log("info:", info);
+    console.log("info:", info);
 
     $scope.info = info;
     $scope.master = angular.copy(info);
@@ -84,31 +117,19 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
     };
 
     $scope.isCreating = function() {
-        return $scope.info.selectedPeriod._id == "--create period--";
+        return !options.selectedPeriodId;
     };
 
     $scope.create = function() {
         //console.log("create:", $scope.info);
         var newPeriodInfo = {
             period:  $scope.info.newName,
-            start: moment($scope.info.selectedPeriod.start).format("YYYY-MM-DD"),
-            end:   moment($scope.info.selectedPeriod.end).  format("YYYY-MM-DD")
+            start: moment($scope.info.start).format("YYYY-MM-DD"),
+            end:   moment($scope.info.end).  format("YYYY-MM-DD")
         };
-        $modalInstance.dismiss('create period');
-        service.addPeriod(newPeriodInfo, function() {
-            service.periodSelected();
+        service.addPeriod(newPeriodInfo, function(selectedPeriod) {
+            $modalInstance.close(selectedPeriod);
         });
-    };
-
-    $scope.setDefault = function() {
-        //console.log("setDefault:", $scope.info.selectedPeriod);
-        var _id = $scope.info.selectedPeriod._id;
-        if ( _id === "--all tokens--") {
-            _id = undefined;
-        }
-        service.setDefaultPeriodId(_id);
-        // and set this period, and close dialog:
-        $scope.set();
     };
 
     $scope.delete = function() {
@@ -126,6 +147,9 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
     };
 
     $scope.isUnchanged = function() {
+        if (options.createPeriod) {
+            return false;
+        }
         var formSelectedPeriod   = $scope.info.selectedPeriod;
         var masterSelectedPeriod = $scope.master.selectedPeriod;
         return angular.equals(formSelectedPeriod._id, masterSelectedPeriod._id)
@@ -143,8 +167,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, platimModel, service, timeli
 
     $scope.cannotDelete = function() {
         return $scope.isCreating()
-            || $scope.info.selectedPeriod._id.indexOf("--") == 0
-            || $scope.info.selectedPeriod._id === platimModel.selectedPeriodId;
+            || $scope.info.selectedPeriod._id === platimModel.selectedPeriodId
     };
 
     $scope.cancel = function () {

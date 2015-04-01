@@ -1,29 +1,19 @@
 <div class="modal-header">
-    <span class="modalTitle">Period: {{info.selectedPeriod.period}}</span>
+    <span class="modalTitle">
+        <span ng-show="isCreating()">Create period</span>
+        <span ng-hide="isCreating()">Editing period: {{info.selectedPeriod.period}}</span>
+    </span>
 </div>
 <div class="modal-body">
 
     <form name="form" novalidate="">
-        <p>
-            Select the period (time range) to visualize in the timeline
-            or create a new period:
-        </p>
 
-        <select ng-model="info.selectedPeriod"
-                ng-options="v as v.period for v in info.periods"
-                ng-change="change()"
-                id="period-select"
-                focus-on="period_form_activation">
-        </select>
-        <!--<br/>selectedPeriod: <pre>{{info.selectedPeriod | json}}</pre>-->
-        <!--<br/>periods: <pre>{{info.periods | json}}</pre>-->
-
-        <div ng-show="isCreating()">
+        <span ng-show="isCreating()">
             <label class="text">
                 Name for the new period:
                 <input type="text" ng-model="info.newName" required="" class="form-control">
             </label>
-        </div>
+        </span>
 
         <table>
             <tbody>
@@ -64,13 +54,6 @@
             ng-disabled="isUnchanged()"
             title="Applies the changes in the timeline"
             >Apply</button>
-
-    <button ng-show="!isCreating()"
-            class="btn btn-primary"
-            ng-click="setDefault()"
-            ng-disabled="isCreating()"
-            title="Sets this period as the default"
-            >Set default</button>
 
     <button ng-show="!isCreating()"
             class="btn btn-warning"
