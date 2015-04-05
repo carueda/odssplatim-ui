@@ -6,14 +6,18 @@
 </div>
 <div class="modal-body">
 
-    <form name="form" novalidate="">
+    <form class="form-horizontal">
 
-        <span ng-show="isCreating()">
-            <label class="text">
-                Name for the new period:
-                <input type="text" ng-model="info.newName" required="" class="form-control">
+        <div ng-show="isCreating()" class="form-group">
+            <label class="control-label col-xs-1" for="periodNameField">
+                Name:
             </label>
-        </span>
+            <div class="col-xs-7">
+                <input type="text" id="periodNameField"
+                       ng-model="info.newName" required="" class="form-control"
+                       focus-on="period_form_activation">
+            </div>
+        </div>
 
         <table>
             <tbody>
@@ -34,7 +38,7 @@
                     </div>
                 </td>
                 <td style="vertical-align: middle">
-                    <i class="icon-arrow-right"></i>
+                    <span class="fa fa-arrow-right"></span>
                 </td>
                 <td>
                     <div class="well well-sm pull-left" ng-model="info.selectedPeriod.end">

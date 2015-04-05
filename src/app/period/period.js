@@ -174,7 +174,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, options, platimModel, servic
         $modalInstance.dismiss('cancel');
     };
 
-    focus("period_form_activation");
+    focus("period_form_activation", 700, {select: true});
 }
 
 })();
