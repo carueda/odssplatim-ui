@@ -36,6 +36,10 @@ function PeriodCtrl($scope, $modal, platimModel, timelineWidget, service, focus)
                 service.periodSelected();
             });
         }
+        else {
+            // no change in selected period, but adjust window in case visible range has changed
+            service.periodSelected();
+        }
         focus('focusTimeline');
     };
 

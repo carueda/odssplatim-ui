@@ -6,20 +6,25 @@
     </button>
 
     <ul class="dropdown-menu" role="menu">
-        <li class="periodSelectionItem" ng-repeat="period in vm.periods | orderBy:'-start'">
-            <a ng-click="selectPeriod(period)">
+        <li ng-repeat="period in vm.periods | orderBy:'-start'"
+            class="periodSelectionItem"
+            tooltip="{{period.start}} – {{period.end}}">
+
+            <span ng-click="selectPeriod(period)">
                 <span ng-show="vm.selectedPeriodId === period._id" class="fa fa-check"></span>
                 {{period.period}}
-                                <span style="color: gray; font-weight: lighter">
-                                    ({{period.start}} – {{period.end}})
-                                </span>
-                <button ng-click="editPeriod(period._id)" class="btn btn-default btn-xs">Edit</button>
-            </a>
+            </span>
+            <span ng-hide="vm.selectedPeriodId === period._id"
+                  style="position: absolute; right: 5px"
+                  title="Edit this period">
+                <button ng-click="editPeriod(period._id)" class="btn btn-default btn-xs">
+                    <span class="fa fa-edit"></span>
+                </button>
+            </span>
         </li>
         <li class="divider"></li>
-        <li>
-            <a ng-click="createNewPeriod()" style="cursor: pointer">
-                Create new period...</a>
+        <li class="periodSelectionItem" ng-click="createNewPeriod()">
+            Create new period...
         </li>
     </ul>
 </div>
