@@ -5,7 +5,8 @@
  * Dispatches the Period form.
  * Allows to add new periods, remove a period, set the default period.
  */
-angular.module('odssPlatimApp.period', [])
+angular.module('odssPlatimApp.period', ['odssPlatimApp.period.directives'])
+
     .controller('PeriodCtrl', PeriodCtrl)
     .controller('PeriodInstanceCtrl', PeriodInstanceCtrl)
 ;
