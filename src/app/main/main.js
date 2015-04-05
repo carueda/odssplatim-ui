@@ -1,7 +1,8 @@
 (function() {
 'use strict';
 
-angular.module('odssPlatimApp.main', [])
+angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
+
     .controller('MainCtrl', MainCtrl) ;
 
 MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'timelineWidget', 'status', 'utl'];
