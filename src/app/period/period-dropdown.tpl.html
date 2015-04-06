@@ -11,8 +11,13 @@
             tooltip="{{period.start}} – {{period.end}}">
 
             <span ng-click="selectPeriod(period)">
-                <span ng-show="vm.selectedPeriodId === period._id" class="fa fa-check"></span>
+                <span ng-show="vm.selectedPeriodId === period._id"
+                      style="position: absolute; left: 5px"
+                      title="Default period"
+                      class="fa fa-check">
+                </span>
                 {{period.period}}
+                &nbsp;&nbsp;&nbsp;
             </span>
             <span ng-hide="vm.selectedPeriodId === period._id"
                   style="position: absolute; right: 5px"
