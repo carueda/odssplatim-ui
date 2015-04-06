@@ -80,6 +80,12 @@ function PeriodCtrl($scope, $modal, platimModel, timelineWidget, service, focus)
         console.log("createPeriod = ", angular.toJson(createPeriod));
         openModal({createPeriod: createPeriod});
     };
+
+    $scope.dropdownToggled = function(open) {
+        if (!open) {
+            focus('focusTimeline');
+        }
+    };
 }
 
 PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'options', 'platimModel', 'service', 'focus'];
