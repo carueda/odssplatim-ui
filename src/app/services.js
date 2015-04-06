@@ -224,7 +224,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                     if (cb) cb();
                 })
 
-                .error(httpErrorHandler(actId));
+                .error(httpErrorHandler(actId, cb));
         }
         else {
             url = cfg.rest + "/periods/default/" + _id;
@@ -244,7 +244,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
     /**
      * Removes the given period from the database.
      */
-    var removePeriod = function(_id) {
+    var removePeriod = function(_id, cb) {
         var url = cfg.rest + "/periods/" + _id;
         if (utl.getDebug()) console.log("DELETE " + url);
         var actId = activities.add("deleting period");
@@ -255,15 +255,16 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 if (platimModel.selectedPeriodId === _id) {
                     platimModel.selectedPeriodId = undefined;
                 }
+                cb();
             })
 
-            .error(httpErrorHandler(actId));
+            .error(httpErrorHandler(actId, cb));
     };
 
     /**
      * Adds a period to the database.
      */
-    var addPeriod = function(newPeriodInfo, successFn) {
+    var addPeriod = function(newPeriodInfo, cb) {
         console.log("addPeriod:", newPeriodInfo);
         var actId = activities.add("saving new period '" +newPeriodInfo.name+ "'");
         var url = cfg.rest + "/periods";
@@ -277,11 +278,33 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
             .success(function(res, status, headers, config) {
                 activities.remove(actId);
                 platimModel.periods[res._id] = res;
-                platimModel.selectedPeriodId = res._id;
-                successFn(platimModel.periods[res._id]);
+                cb(undefined, res);
             })
 
             .error(httpErrorHandler(actId));
+    };
+
+    /**
+     * Updates a period in the database.
+     */
+    var updatePeriod = function(periodInfo, cb) {
+        console.log("updatePeriod:", periodInfo);
+        var actId = activities.add("updating period '" +periodInfo.name+ "'");
+        var url = cfg.rest + "/periods/" + periodInfo._id;
+
+        if (utl.getDebug()) console.log("PUT " + url, "periodInfo=", periodInfo);
+        $http({
+            method:  'PUT',
+            url:     url,
+            data:    periodInfo
+        })
+            .success(function(res, status, headers, config) {
+                activities.remove(actId);
+                platimModel.periods[res._id] = res;
+                cb(undefined, res);
+            })
+
+            .error(httpErrorHandler(actId, cb));
     };
 
     /**
@@ -376,11 +399,12 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
      * Returns a customized error handler for an http request.
      *
      * @param actId     Id of activity to be removed from the activities list.
-     * @param fn        callback for any further action on the error;
-     *                  called as fn(data, status, headers, config).
+     * @param cb        if given, callback for any further action on the error;
+     *                  called with a single argument object as follows:
+     *                     cb({data:data, status:status, headers:headers, config:config}).
      * @returns {Function}  handler
      */
-    var httpErrorHandler = function(actId, fn) {
+    var httpErrorHandler = function(actId, cb) {
         return function(data, status, headers, config) {
             var reqMsg = config.method + " '" + config.url + "'";
             console.log("error in request " +reqMsg+ ":",
@@ -396,8 +420,8 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
             if (actId !== undefined) {
                 activities.remove(actId);
             }
-            if (fn !== undefined) {
-                fn(data, status, headers, config);
+            if (cb !== undefined) {
+                cb({data:data, status:status, headers:headers, config:config});
             }
         };
     };
@@ -426,6 +450,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
 
         setDefaultPeriodId:  setDefaultPeriodId,
         addPeriod:           addPeriod,
+        updatePeriod:        updatePeriod,
         removePeriod:        removePeriod,
 
         confirm: function(info) {
