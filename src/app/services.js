@@ -10,14 +10,47 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
     var activities = status.activities;
     var errors     = status.errors;
 
+    return {
+        refresh: refresh,
+
+        getGeneralInfo: getGeneralInfo,
+
+        platformOptionsUpdated: function() {
+            $rootScope.$broadcast('platformOptionsUpdated');
+        },
+
+        editToken: function(token, row) {
+            $rootScope.$broadcast('editToken', token, row);
+        },
+
+        saveToken: saveToken,
+        deleteToken: deleteToken,
+
+        periodSelected: function() {
+            $rootScope.$broadcast('periodSelected');
+        },
+
+        savePlatformOptions: savePlatformOptions,
+
+        setDefaultPeriodId:  setDefaultPeriodId,
+        addPeriod:           addPeriod,
+        updatePeriod:        updatePeriod,
+        removePeriod:        removePeriod,
+
+        confirm: function(info) {
+            //console.log("service: confirm: ", info);
+            $rootScope.$broadcast('confirm', info);
+        }
+    };
+
     /**
      * Start the full refresh of the model (except options)
      * @param fns  Callback functions
      */
-    var refresh = function(fns) {
+    function refresh(fns) {
         status.errors.removeAll();
         getGeneralInfoAux(fns, true);
-    };
+    }
 
     /**
      * Retrieves general info.
@@ -59,7 +92,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
      * selection by the user.
      * @param fns  Callback functions
      */
-    var getAllPlatforms = function(fns) {
+    function getAllPlatforms(fns) {
         var actId = activities.add("retrieving platforms");
         var url = cfg.platformsUrl;
         if (utl.getDebug()) console.log("GET " + url);
@@ -106,7 +139,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
      * Retrieves the holidays.
      * @param fns  Callback functions
      */
-    var getHolidays = function(fns) {
+    function getHolidays(fns) {
         var url = cfg.rest + "/periods/holidays";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add('retrieving holidays');
@@ -126,7 +159,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                     httpErrorHandler(actId)(data, status, headers, config)
                 }
             });
-    };
+    }
 
     /**
      * Retrieves the tokens for the given platforms.
@@ -162,7 +195,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
      * Retrieves the defined periods.
      * @param fns  Callback functions
      */
-    var refreshPeriods = function(fns) {
+    function refreshPeriods(fns) {
         var url = cfg.rest + "/periods";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add("refreshing periods");
@@ -177,13 +210,13 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
             })
 
             .error(httpErrorHandler(actId));
-    };
+    }
 
     /**
      * Retrieves the default period.
      * @param fns  Callback functions
      */
-    var getDefaultPeriodId = function(fns) {
+    function getDefaultPeriodId(fns) {
         var url = cfg.rest + "/periods/default";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add("getting default period");
@@ -206,12 +239,12 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                     httpErrorHandler(actId)(data, status, headers, config)
                 }
             });
-    };
+    }
 
     /**
      * Sets the default period.
      */
-    var setDefaultPeriodId = function(_id, cb) {
+    function setDefaultPeriodId(_id, cb) {
         var url, actId;
         if (_id === undefined) {
             url = cfg.rest + "/periods/default";
@@ -239,12 +272,12 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
 
                 .error(httpErrorHandler(actId));
         }
-    };
+    }
 
     /**
      * Removes the given period from the database.
      */
-    var removePeriod = function(_id, cb) {
+    function removePeriod(_id, cb) {
         var url = cfg.rest + "/periods/" + _id;
         if (utl.getDebug()) console.log("DELETE " + url);
         var actId = activities.add("deleting period");
@@ -259,12 +292,12 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
             })
 
             .error(httpErrorHandler(actId, cb));
-    };
+    }
 
     /**
      * Adds a period to the database.
      */
-    var addPeriod = function(newPeriodInfo, cb) {
+    function addPeriod(newPeriodInfo, cb) {
         console.log("addPeriod:", newPeriodInfo);
         var actId = activities.add("saving new period '" +newPeriodInfo.name+ "'");
         var url = cfg.rest + "/periods";
@@ -282,12 +315,12 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
             })
 
             .error(httpErrorHandler(actId));
-    };
+    }
 
     /**
      * Updates a period in the database.
      */
-    var updatePeriod = function(periodInfo, cb) {
+    function updatePeriod(periodInfo, cb) {
         console.log("updatePeriod:", periodInfo);
         var actId = activities.add("updating period '" +periodInfo.name+ "'");
         var url = cfg.rest + "/periods/" + periodInfo._id;
@@ -305,12 +338,12 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
             })
 
             .error(httpErrorHandler(actId, cb));
-    };
+    }
 
     /**
      * Adds or updates the given token.
      */
-    var saveToken = function(tokenInfo, index, successFn) {
+    function saveToken(tokenInfo, index, successFn) {
         var url, actId;
         //console.log("saveToken: tokenInfo=" + JSON.stringify(tokenInfo));
 
@@ -358,12 +391,12 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 })
                 .error(httpErrorHandler(actId));
         }
-    };
+    }
 
     /**
      * Removes the given token.
      */
-    var deleteToken = function(tokenInfo, index, successFn) {
+    function deleteToken(tokenInfo, index, successFn) {
         if (tokenInfo.token_id === undefined) {
             successFn(tokenInfo, index);
             return;
@@ -378,7 +411,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 successFn(tokenInfo, index);
             })
             .error(httpErrorHandler(actId));
-    };
+    }
 
     function savePlatformOptions(selectedPlatforms, successFn) {
         var actId = activities.add("saving platform options...");
@@ -404,7 +437,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
      *                     cb({data:data, status:status, headers:headers, config:config}).
      * @returns {Function}  handler
      */
-    var httpErrorHandler = function(actId, cb) {
+    function httpErrorHandler(actId, cb) {
         return function(data, status, headers, config) {
             var reqMsg = config.method + " '" + config.url + "'";
             console.log("error in request " +reqMsg+ ":",
@@ -424,41 +457,7 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 cb({data:data, status:status, headers:headers, config:config});
             }
         };
-    };
-
-    return {
-        refresh: refresh,
-
-        getGeneralInfo: getGeneralInfo,
-
-        platformOptionsUpdated: function() {
-            $rootScope.$broadcast('platformOptionsUpdated');
-        },
-
-        editToken: function(token, row) {
-            $rootScope.$broadcast('editToken', token, row);
-        },
-
-        saveToken: saveToken,
-        deleteToken: deleteToken,
-
-        periodSelected: function() {
-            $rootScope.$broadcast('periodSelected');
-        },
-
-        savePlatformOptions: savePlatformOptions,
-
-        setDefaultPeriodId:  setDefaultPeriodId,
-        addPeriod:           addPeriod,
-        updatePeriod:        updatePeriod,
-        removePeriod:        removePeriod,
-
-        confirm: function(info) {
-            //console.log("service: confirm: ", info);
-            $rootScope.$broadcast('confirm', info);
-        }
-
-    };
+    }
 }
 
 })();
