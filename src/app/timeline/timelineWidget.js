@@ -38,7 +38,7 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
             'remove':       false,
             'updateTime':   true,
             'add':          true,
-            'updateGroup':  false
+            'updateGroup':  true
         },
         'showMajorLabels':  true,
         'showMinorLabels':  true,
@@ -435,6 +435,7 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
 
     function onMove(item, callback) {
         //console.log("onMove=", item);
+        item.platform_name = item.group;
         updateStatusModified(item);
         callback(item);
     }

@@ -1,4 +1,5 @@
 - 2015-04-07: (0.5.0)
+  - allow to update associated platform (== group) by dragging the token vertically
   - overall period handling improvements merged (https://github.com/carueda/odssplatim-ui/pull/2)
     and committed to SVN.
     In summary:
