@@ -1,54 +1,47 @@
 <div class="modal-header">
-    <span class="modalTitle">Period: {{info.selectedPeriod.period}}</span>
+    <span class="modalTitle">
+        <span> {{isCreating() ? "Creating" : "Editing"}} period: {{info.period}}</span>
+    </span>
 </div>
 <div class="modal-body">
 
-    <form name="form" novalidate="">
-        <p>
-            Select the period (time range) to visualize in the timeline
-            or create a new period:
-        </p>
+    <form class="form-horizontal">
 
-        <select ng-model="info.selectedPeriod"
-                ng-options="v as v.period for v in info.periods"
-                ng-change="change()"
-                id="period-select"
-                focus-on="period_form_activation">
-        </select>
-        <!--<br/>selectedPeriod: <pre>{{info.selectedPeriod | json}}</pre>-->
-        <!--<br/>periods: <pre>{{info.periods | json}}</pre>-->
-
-        <div ng-show="isCreating()">
-            <label class="text">
-                Name for the new period:
-                <input type="text" ng-model="info.newName" required="" class="form-control">
+        <div class="form-group">
+            <label class="control-label col-xs-1" for="periodNameField">
+                Name:
             </label>
+            <div class="col-xs-7">
+                <input type="text" id="periodNameField"
+                       ng-model="info.period" required="" class="form-control"
+                       focus-on="period_form_activation">
+            </div>
         </div>
 
         <table>
             <tbody>
             <tr>
                 <td style="text-align: center">
-                    Start: {{info.selectedPeriod.start | date:'yyyy-MM-dd'}}
+                    Start: {{info.start | date:'yyyy-MM-dd'}}
                 </td>
                 <td></td>
                 <td style="text-align: center">
-                    End: {{info.selectedPeriod.end | date:'yyyy-MM-dd'}}
+                    End: {{info.end | date:'yyyy-MM-dd'}}
                 </td>
             </tr>
             <tr style="vertical-align: top">
                 <td>
-                    <div class="well well-sm pull-left " ng-model="info.selectedPeriod.start">
-                        <datepicker show-weeks="false" max-date="info.selectedPeriod.end">
+                    <div class="well well-sm pull-left " ng-model="info.start">
+                        <datepicker show-weeks="false" max-date="info.end">
                         </datepicker>
                     </div>
                 </td>
                 <td style="vertical-align: middle">
-                    <i class="icon-arrow-right"></i>
+                    <span class="fa fa-arrow-right"></span>
                 </td>
                 <td>
-                    <div class="well well-sm pull-left" ng-model="info.selectedPeriod.end">
-                        <datepicker show-weeks="false" min-date="info.selectedPeriod.start">
+                    <div class="well well-sm pull-left" ng-model="info.end">
+                        <datepicker show-weeks="false" min-date="info.start">
                         </datepicker>
                     </div>
                 </td>
@@ -60,22 +53,14 @@
 <div class="modal-footer" ng-controller="UtilCtrl">
     <button ng-show="!isCreating()"
             class="btn btn-primary"
-            ng-click="set()"
-            ng-disabled="isUnchanged()"
+            ng-click="update()"
+            ng-disabled="isUnchanged() || isInvalid()"
             title="Applies the changes in the timeline"
-            >Apply</button>
+            >Update</button>
 
-    <button ng-show="!isCreating()"
-            class="btn btn-primary"
-            ng-click="setDefault()"
-            ng-disabled="isCreating()"
-            title="Sets this period as the default"
-            >Set default</button>
-
-    <button ng-show="!isCreating()"
+    <button ng-show="canDelete()"
             class="btn btn-warning"
-            ng-click="delete()"
-            ng-disabled="cannotDelete()"
+            ng-click="remove()"
             title="Deletes this period from the database"
             >Delete...</button>
 

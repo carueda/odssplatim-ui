@@ -1,3 +1,7 @@
+- 2015-04-01: (0.5.0)
+  - UI changes for periods: use dropdown list for selection of "default" period,
+    editing, and addition.
+  
 - 2015-03-31: (0.5.0)
   - significant simplification of interaction with backend, including getting rid of "platform_id"
     (recall that "platform_name" is the actual the identification key for platforms.)
