@@ -201,6 +201,11 @@ div.status_modified {
 }
 .periodSelectionItem:hover{ background-color: rgba(217, 217, 217, 0.49); }
 
+/* to reduce the datepickers a bit so it fits in the default modal size */
+.periodDatepicker .btn {
+    padding: 4px 6px;
+}
+
 .btn {
     margin-left: 3px !important;
     margin-right: 3px !important;

@@ -1,4 +1,5 @@
 - 2015-04-07: (0.5.0)
+  - reduce period datepickers size a bit so it fits in the default modal size
   - allow to update associated platform (== group) by dragging the token vertically
   - overall period handling improvements merged (https://github.com/carueda/odssplatim-ui/pull/2)
     and committed to SVN.
