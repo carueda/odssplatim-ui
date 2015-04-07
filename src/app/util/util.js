@@ -8,6 +8,7 @@ angular.module('odssPlatimApp.util', [])
     .factory('status', status)
     .factory('focus', focus)
     .directive('focusOn', focusOn)
+    .factory('httpErrorHandler', httpErrorHandler)
 ;
 
 UtilCtrl.$inject = ['$scope', '$modal'];
@@ -133,6 +134,43 @@ function focusOn() {
             }
         });
     };
+}
+
+httpErrorHandler.$inject = ['status'];
+function httpErrorHandler(status) {
+    var activities = status.activities;
+    var errors     = status.errors;
+
+    /**
+     * Returns a customized error handler for an http request.
+     *
+     * @param actId     If defined, id of the activity to be removed from the activities list.
+     *                  A error message is added to the errors list.
+     * @param cb        if given, function to be called for any further action on the error.
+     *                  It is called with a single argument object as follows:
+     *                     cb({data:data, status:status, headers:headers, config:config}).
+     * @returns {Function}  http error handler
+     */
+    return function(actId, cb) {
+        return function(data, status, headers, config) {
+            var reqMsg = config.method + " '" + config.url + "'";
+            console.log("error in request " +reqMsg+ ":",
+                "data=", data, "status=", status,
+                "config=", config);
+
+            var error = "An error occurred while " + activities.get(actId) + ". " +
+                "(status=" + status + "). Try again in a few moments.";
+
+            errors.add(error);
+
+            if (actId !== undefined) {
+                activities.remove(actId);
+            }
+            if (cb !== undefined) {
+                cb({data:data, status:status, headers:headers, config:config});
+            }
+        };
+    }
 }
 
 })();

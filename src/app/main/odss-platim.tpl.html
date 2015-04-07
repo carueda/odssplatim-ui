@@ -51,8 +51,10 @@
             <span ng-bind="activities.any()"></span>
         </alert>
     </div>
+
     <div id="error" style="color: #CC0000" ng-show="errors.any()">
         <div ng-bind="errors.any()"></div>
+        <br />
     </div>
 
     <div ng-controller="TimelineCtrl" id="timelines"

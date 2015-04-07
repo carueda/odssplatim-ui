@@ -4,9 +4,9 @@
 angular.module('odssPlatimApp.services', [])
     .factory('service', service);
 
-service.$inject = ['$rootScope', '$http', 'cfg', 'platimModel', 'status', 'utl'];
+service.$inject = ['$rootScope', '$http', 'cfg', 'platimModel', 'status', 'utl', 'httpErrorHandler'];
 
-function service($rootScope, $http, cfg, platimModel, status, utl) {
+function service($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandler) {
     var activities = status.activities;
     var errors     = status.errors;
 
@@ -426,37 +426,6 @@ function service($rootScope, $http, cfg, platimModel, status, utl) {
                 successFn();
             })
             .error(httpErrorHandler(actId));
-    }
-
-    /**
-     * Returns a customized error handler for an http request.
-     *
-     * @param actId     Id of activity to be removed from the activities list.
-     * @param cb        if given, callback for any further action on the error;
-     *                  called with a single argument object as follows:
-     *                     cb({data:data, status:status, headers:headers, config:config}).
-     * @returns {Function}  handler
-     */
-    function httpErrorHandler(actId, cb) {
-        return function(data, status, headers, config) {
-            var reqMsg = config.method + " '" + config.url + "'";
-            console.log("error in request " +reqMsg+ ":",
-                        "data=", data, "status=", status,
-                        "config=", config);
-
-            var error = "An error occured while " + activities.get(actId) + ". " +
-                "(status=" + status + "). " +
-                "Try again in a few moments.";
-
-            errors.add(error);
-
-            if (actId !== undefined) {
-                activities.remove(actId);
-            }
-            if (cb !== undefined) {
-                cb({data:data, status:status, headers:headers, config:config});
-            }
-        };
     }
 }
 
