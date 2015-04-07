@@ -1,7 +1,16 @@
+- 2015-04-07: (0.5.0)
+  - overall period handling improvements merged (https://github.com/carueda/odssplatim-ui/pull/2)
+    and committed to SVN.
+    In summary:
+    - improved UI for periods
+    - ability to update existing period, and delete any period (except the current "default" one)
+    - reorganize buttons for the general interface
+    - show period name in period selection button
+  
 - 2015-04-01: (0.5.0)
   - UI changes for periods: use dropdown list for selection of "default" period,
     editing, and addition.
-  
+
 - 2015-03-31: (0.5.0)
   - significant simplification of interaction with backend, including getting rid of "platform_id"
     (recall that "platform_name" is the actual the identification key for platforms.)
