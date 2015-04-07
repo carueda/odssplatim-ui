@@ -5,9 +5,9 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
 
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'timelineWidget', 'status', 'utl'];
+MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'timelineWidget', 'status', 'utl', 'focus'];
 
-function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, status, utl) {
+function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, status, utl, focus) {
     $scope.debug = $window.location.toString().match(/.*\?debug/)
         ? { collapsed: true, model: platimModel }
         : undefined;
@@ -110,6 +110,7 @@ function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, st
      * Triggers the refresh of the model.
      */
     $scope.refresh = function() {
+        focus('focusTimeline');
         var toBeSavedInfo = getSaveInfo();
         var unsaved = toBeSavedInfo.toBeSaved;
         if (unsaved.length > 0) {
@@ -187,6 +188,7 @@ function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, st
      * Saves the modified tokens in the timeline.
      */
     $scope.save = function() {
+        focus('focusTimeline');
 
         status.errors.removeAll();
 

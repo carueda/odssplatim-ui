@@ -17,7 +17,7 @@
                     </label>
                 </td>
                 <td>
-                    <input id="state" type="text" style="width:400px;"
+                    <input id="state" type="text" style="width:450px;"
                            ng-model="token.state" focus-on="token_form_activation" class="form-control">
                 </td>
             </tr>
@@ -31,7 +31,7 @@
                     </label>
                 </td>
                 <td>
-                    <textarea id="description" rows="2" style="width:400px;"
+                    <textarea id="description" rows="2" style="width:450px;"
                               ng-model="token.description">
                     </textarea>
                 </td>
@@ -39,7 +39,7 @@
             </tbody>
         </table>
 
-        <table>
+        <table class="tokenDatepicker">
             <tbody><tr>
                 <td style="text-align: center">
                     Start: {{token.start | date:'medium'}}
@@ -68,14 +68,16 @@
             </tr>
             <tr style="vertical-align: top">
                 <td>
-                    <div ng-model="token.start" class="well well-sm" style="margin-left: auto; margin-right: auto;width: 11em">
+                    <div ng-model="token.start" class="well well-sm"
+                         style="margin-left: auto; margin-right: auto;width: 9em">
                         <timepicker show-meridian="false">
                         </timepicker>
                     </div>
                 </td>
                 <td></td>
                 <td>
-                    <div ng-model="token.end" class="well well-sm" style="margin-left: auto; margin-right: auto;width: 11em">
+                    <div ng-model="token.end" class="well well-sm"
+                         style="margin-left: auto; margin-right: auto;width: 9em">
                         <timepicker show-meridian="false">
                         </timepicker>
                     </div>
