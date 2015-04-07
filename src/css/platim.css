@@ -65,7 +65,7 @@ div.status {
 
 .version {
     color: lightgray;
-    font-size: small;
+    font-size: smaller;
     text-align: right;
 }
 
@@ -200,3 +200,8 @@ div.status_modified {
     white-space: nowrap;
 }
 .periodSelectionItem:hover{ background-color: rgba(217, 217, 217, 0.49); }
+
+.btn {
+    margin-left: 3px !important;
+    margin-right: 3px !important;
+}

@@ -1,8 +1,11 @@
 <div dropdown on-toggle="dropdownToggled(open)">
     <button class="btn btn-default btn-sm dropdown-toggle"
             dropdown-toggle
-            title="Allows to visualize a pre-defined period or create a new period">
-        Period <span class="caret"></span>
+            tooltip="Selected period for visualization"
+            tooltip-placement="bottom"
+            >
+        Period: {{vm.selectedPeriod.period || "select"}}
+        <span class="caret"></span>
     </button>
 
     <ul class="dropdown-menu" role="menu">

@@ -26,6 +26,7 @@ function PeriodCtrl($scope, $modal, platimModel, timelineWidget, service, focus)
            period.end   = moment(period.end).  format("YYYY-MM-DD");
         });
         $scope.vm.selectedPeriodId = platimModel.selectedPeriodId;
+        $scope.vm.selectedPeriod   = platimModel.periods[platimModel.selectedPeriodId];
         //console.log('on periodsRefreshed', $scope.vm.periods);
     }
 
