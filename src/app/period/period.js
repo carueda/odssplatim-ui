@@ -32,7 +32,7 @@ function PeriodCtrl($scope, $modal, platimModel, timelineWidget, service, focus)
 
     // selects the given period as the default
     $scope.selectPeriod = function(period) {
-        console.log('selectPeriod:', period);
+        //console.log('selectPeriod:', period);
         if (platimModel.selectedPeriodId !== period._id) {
             service.setDefaultPeriodId(period._id, function(error) {
                 if (!error) {
