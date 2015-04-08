@@ -55,7 +55,8 @@ use that local endpoint.
 In a terminal:
 
 ```shell
-$ cd .../webapp/server/platim
+$ cd .../webapp/server/platim/
+# see README.md to properly configure this server
 $ node app
 ```
 
@@ -65,11 +66,16 @@ And in this directory:
 $ gulp local-with-platim
 ```
 
-This creates a local configuration and index file; then opens
+This creates a local configuration (pointing to the "platim" server above) and index file; then opens
 [http://localhost:8001/src/app/local.index.html](http://localhost:8001/src/app/local.index.html)
 in your browser.
 
 ### Testing the standalone distro
 
-To test the standalone version created by `gulp`,
-open [http://localhost:8001/dist/](http://localhost:8001/dist/).
+To test the distribution created by `gulp`, that is, the actual directory being launched from the main
+ODSS application, but in a standalone fashion:
+```shell
+$ gulp
+$ vim dist/js/config.js  # to adjust the config as needed for the local testing
+$ open http://localhost:8001/dist/  # assuming a web server is running, like the one with 'gulp local-with-platim'
+```
