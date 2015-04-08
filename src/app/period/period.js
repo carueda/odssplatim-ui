@@ -6,15 +6,15 @@
  * Allows to select the default period; add a new period,
  * and update/remove a period.
  */
-angular.module('odssPlatimApp.period', ['odssPlatimApp.period.directives'])
+angular.module('odssPlatimApp.period', ['odssPlatimApp.period.directives', 'odssPlatimApp.period.services'])
 
     .controller('PeriodCtrl', PeriodCtrl)
     .controller('PeriodInstanceCtrl', PeriodInstanceCtrl)
 ;
 
-PeriodCtrl.$inject = ['$scope', '$modal', 'platimModel', 'timelineWidget', 'service', 'focus'];
+PeriodCtrl.$inject = ['$scope', '$modal', 'platimModel', 'timelineWidget', 'periods', 'focus'];
 
-function PeriodCtrl($scope, $modal, platimModel, timelineWidget, service, focus) {
+function PeriodCtrl($scope, $modal, platimModel, timelineWidget, periods, focus) {
 
     $scope.vm = {};
     $scope.$on('periodsRefreshed', periodsRefreshed);
@@ -34,16 +34,16 @@ function PeriodCtrl($scope, $modal, platimModel, timelineWidget, service, focus)
     $scope.selectPeriod = function(period) {
         //console.log('selectPeriod:', period);
         if (platimModel.selectedPeriodId !== period._id) {
-            service.setDefaultPeriodId(period._id, function(error) {
+            periods.setDefaultPeriodId(period._id, function(error) {
                 if (!error) {
                     periodsRefreshed();
-                    service.periodSelected();
+                    periods.periodSelected();
                 }
             });
         }
         else {
             // no change in selected period, but adjust window in case visible range has changed
-            service.periodSelected();
+            periods.periodSelected();
         }
         focus('focusTimeline');
     };
@@ -105,9 +105,9 @@ function PeriodCtrl($scope, $modal, platimModel, timelineWidget, service, focus)
     };
 }
 
-PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'period', 'platimModel', 'service', 'focus'];
+PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'period', 'platimModel', 'service', 'periods', 'focus'];
 
-function PeriodInstanceCtrl($scope, $modalInstance, period, platimModel, service, focus) {
+function PeriodInstanceCtrl($scope, $modalInstance, period, platimModel, service, periods, focus) {
     //console.log("period:", period);
 
     $scope.info = period;
@@ -124,7 +124,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, period, platimModel, service
             start: moment($scope.info.start).format("YYYY-MM-DD"),
             end:   moment($scope.info.end).  format("YYYY-MM-DD")
         };
-        service.addPeriod(newPeriodInfo, function(error, createdPeriod) {
+        periods.addPeriod(newPeriodInfo, function(error, createdPeriod) {
             // note, even if error is defined, we close the modal possibly with an
             // undefined argument, but the effect would be ok in any case.
             $modalInstance.close(createdPeriod);
@@ -139,7 +139,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, period, platimModel, service
             start:   moment($scope.info.start).format("YYYY-MM-DD"),
             end:     moment($scope.info.end).  format("YYYY-MM-DD")
         };
-        service.updatePeriod(periodInfo, function() {
+        periods.updatePeriod(periodInfo, function() {
             // just close the modal (no change in selected period)
             $modalInstance.close();
         });
@@ -153,7 +153,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, period, platimModel, service
             title:     "Confirm deletion",
             message:   "Period '" + periodInfo.period + "' will be deleted.",
             ok:        function() {
-                service.removePeriod(periodInfo._id, function() {
+                periods.removePeriod(periodInfo._id, function() {
                     $modalInstance.close();
                 });
             }

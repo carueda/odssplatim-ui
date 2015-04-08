@@ -1,4 +1,5 @@
 - 2015-04-07: (0.5.0)
+  - internal: move period services to its own module
   - focus timeline upon click to save and refresh buttons
   - reduce period and token datepickers so they fit better in their modals
   - allow to update associated platform (== group) by dragging the token vertically
