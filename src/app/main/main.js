@@ -5,9 +5,9 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
 
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
+MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
 
-function MainCtrl($scope, $window, cfg, platimModel, service, tokens, timelineWidget, status, utl, focus) {
+function MainCtrl($scope, $window, cfg, platimModel, service, platforms, tokens, timelineWidget, status, utl, focus) {
     $scope.debug = $window.location.toString().match(/.*\?debug/)
         ? { collapsed: true, model: platimModel }
         : undefined;
@@ -163,7 +163,7 @@ function MainCtrl($scope, $window, cfg, platimModel, service, tokens, timelineWi
             status.activities.remove(actId);
             $scope.$digest();
             if (doSave === undefined || doSave) {
-                service.savePlatformOptions(selectedPlatforms, function () {
+                platforms.savePlatformOptions(selectedPlatforms, function () {
                     //$scope.$digest();
                 });
             }

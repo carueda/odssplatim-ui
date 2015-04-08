@@ -1,14 +1,14 @@
 (function() {
 'use strict';
 
-angular.module('odssPlatimApp.platform', [])
+angular.module('odssPlatimApp.platform', ['odssPlatimApp.platform.services'])
     .controller('PlatformCtrl', PlatformCtrl)
     .controller('PlatformInstanceCtrl', PlatformInstanceCtrl)
 ;
 
-PlatformCtrl.$inject = ['$scope', '$modal', 'platimModel', 'service', 'focus'];
+PlatformCtrl.$inject = ['$scope', '$modal', 'platimModel', 'platforms', 'focus'];
 
-function PlatformCtrl($scope, $modal, platimModel, service, focus) {
+function PlatformCtrl($scope, $modal, platimModel, platforms, focus) {
     $scope.open = function () {
 
         $scope.platformOptions = platimModel.platformOptions;
@@ -26,7 +26,7 @@ function PlatformCtrl($scope, $modal, platimModel, service, focus) {
 
         modalInstance.result.then(function (platformOptions) {
             platimModel.platformOptions = $scope.platformOptions = platformOptions;
-            service.platformOptionsUpdated();
+            platforms.platformOptionsUpdated();
             focus('focusTimeline');
         }, function () {
             focus('focusTimeline');
