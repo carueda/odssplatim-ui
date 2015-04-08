@@ -130,7 +130,6 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
      * Adds a period to the database.
      */
     function addPeriod(newPeriodInfo, cb) {
-        console.log("addPeriod:", newPeriodInfo);
         var actId = activities.add("saving new period '" +newPeriodInfo.name+ "'");
         var url = cfg.rest + "/periods";
 
@@ -153,7 +152,6 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
      * Updates a period in the database.
      */
     function updatePeriod(periodInfo, cb) {
-        console.log("updatePeriod:", periodInfo);
         var actId = activities.add("updating period '" +periodInfo.name+ "'");
         var url = cfg.rest + "/periods/" + periodInfo._id;
 
