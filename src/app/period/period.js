@@ -105,9 +105,9 @@ function PeriodCtrl($scope, $modal, platimModel, timelineWidget, periods, focus)
     };
 }
 
-PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'period', 'platimModel', 'service', 'periods', 'focus'];
+PeriodInstanceCtrl.$inject = ['$scope', '$modalInstance', 'period', 'platimModel', 'periods', 'focus', 'utl'];
 
-function PeriodInstanceCtrl($scope, $modalInstance, period, platimModel, service, periods, focus) {
+function PeriodInstanceCtrl($scope, $modalInstance, period, platimModel, periods, focus, utl) {
     //console.log("period:", period);
 
     $scope.info = period;
@@ -149,7 +149,7 @@ function PeriodInstanceCtrl($scope, $modalInstance, period, platimModel, service
         //console.log("remove:", $scope.info);
 
         var periodInfo = $scope.info;
-        service.confirm({
+        utl.confirm({
             title:     "Confirm deletion",
             message:   "Period '" + periodInfo.period + "' will be deleted.",
             ok:        function() {

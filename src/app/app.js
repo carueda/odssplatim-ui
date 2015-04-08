@@ -1,3 +1,4 @@
+(function() {
 'use strict';
 
 angular.module('odssPlatimApp', [
@@ -8,9 +9,10 @@ angular.module('odssPlatimApp', [
     'odssPlatimApp.token',
     'odssPlatimApp.period',
     'odssPlatimApp.util',
-    'odssPlatimApp.services',
     'odssPlatimApp.templates',
     'odssPlatimApp.main'
 ]);
 
 angular.module("odssPlatimApp.templates", []);
+
+})();

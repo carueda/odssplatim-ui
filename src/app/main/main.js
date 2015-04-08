@@ -8,11 +8,7 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
 MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
 
 function MainCtrl($scope, $window, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus) {
-    $scope.debug = $window.location.toString().match(/.*\?debug/)
-        ? { collapsed: true, model: platimModel }
-        : undefined;
-
-    utl.setDebug($scope.debug);
+    $scope.debug = utl.getDebug();
 
     $scope.cfg = cfg;
 
@@ -114,7 +110,7 @@ function MainCtrl($scope, $window, cfg, platimModel, periods, platforms, tokens,
         var toBeSavedInfo = getSaveInfo();
         var unsaved = toBeSavedInfo.toBeSaved;
         if (unsaved.length > 0) {
-            console.log('unsaved', unsaved);
+            //console.log('unsaved', unsaved);
             if (!$window.confirm(
                 'There are unsaved edits that will be lost with the refresh.\n\n' +
                 'Are you sure you want to proceed with the refresh?')) {

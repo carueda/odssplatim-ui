@@ -133,9 +133,9 @@ function TimelineCtrl($scope, $modal, cfg, timelineWidget, status, focus) {
     }
 }
 
-TokenInstanceCtrl.$inject = ['$rootScope', '$scope', '$modalInstance', 'info', 'service', 'tokens', 'timelineWidget', 'focus'];
+TokenInstanceCtrl.$inject = ['$rootScope', '$scope', '$modalInstance', 'info', 'tokens', 'timelineWidget', 'focus', 'utl'];
 
-function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, service, tokens, timelineWidget, focus) {
+function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, tokens, timelineWidget, focus, utl) {
 
     $scope.master = angular.copy(info.token);
     $scope.token  = angular.copy(info.token);
@@ -155,7 +155,7 @@ function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, service, to
             return;
         }
 
-        service.confirm({
+        utl.confirm({
             title:     "Confirm deletion",
             message:   "Token '" + info.token.state+ "' will be deleted." +
                        "<br/><br/>" +
