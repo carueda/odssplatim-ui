@@ -7,9 +7,9 @@ var gTW = {};
 angular.module('odssPlatimApp.timelineWidget', [])
     .factory('timelineWidget', timelineWidgetFactory);
 
-timelineWidgetFactory.$inject = ['cfg', 'service', 'vis', 'utl'];
+timelineWidgetFactory.$inject = ['cfg', 'tokens', 'vis', 'utl'];
 
-function timelineWidgetFactory(cfg, service, vis, utl) {
+function timelineWidgetFactory(cfg, tokens, vis, utl) {
 
     var visRangeMin = moment(cfg.opts.visRange.min);
     var visRangeMax = moment(cfg.opts.visRange.max);
@@ -18,7 +18,7 @@ function timelineWidgetFactory(cfg, service, vis, utl) {
         showForm: function(args) {
             //console.log("showForm: args=", args);
             var token = args.tokenInfo;
-            service.editToken(token, args.row);
+            tokens.editToken(token, args.row);
         }
     };
     var container = document.getElementById("timelines");

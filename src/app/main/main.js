@@ -5,9 +5,9 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
 
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'timelineWidget', 'status', 'utl', 'focus'];
+MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
 
-function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, status, utl, focus) {
+function MainCtrl($scope, $window, cfg, platimModel, service, tokens, timelineWidget, status, utl, focus) {
     $scope.debug = $window.location.toString().match(/.*\?debug/)
         ? { collapsed: true, model: platimModel }
         : undefined;
@@ -181,7 +181,7 @@ function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, st
 
     $scope.$on('tokenDeleted', function() {
         //console.log("reacting to tokenDeleted");
-        service.getGeneralInfo({gotGeneralInfo: gotGeneralInfo});
+        tokens.getGeneralInfo({gotGeneralInfo: gotGeneralInfo});
     });
 
     /**
@@ -215,13 +215,13 @@ function MainCtrl($scope, $window, cfg, platimModel, service, timelineWidget, st
         function doList(ii) {
             if (ii >= toBeSaved.length) {
                 // done.  Refresh just general info:
-                service.getGeneralInfo({gotGeneralInfo: gotGeneralInfo});
+                tokens.getGeneralInfo({gotGeneralInfo: gotGeneralInfo});
                 return;
             }
             var elm = toBeSaved[ii];
             var tokenInfo = elm.tokenInfo;
             var index     = elm.index;
-            service.saveToken(tokenInfo, index, function(index, tokenInfo) {
+            tokens.saveToken(tokenInfo, index, function(index, tokenInfo) {
                 timelineWidget.updateStatus(tokenInfo, "status_saved");
                 doList(ii + 1);
             });

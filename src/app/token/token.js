@@ -2,7 +2,7 @@
 
 (function() {
 
-angular.module('odssPlatimApp.token', ['odssPlatimApp.timelineWidget'])
+angular.module('odssPlatimApp.token', ['odssPlatimApp.timelineWidget', 'odssPlatimApp.token.services'])
     .controller('TimelineCtrl', TimelineCtrl)
     .controller('TokenInstanceCtrl', TokenInstanceCtrl)
 ;
@@ -133,9 +133,9 @@ function TimelineCtrl($scope, $modal, cfg, timelineWidget, status, focus) {
     }
 }
 
-TokenInstanceCtrl.$inject = ['$rootScope', '$scope', '$modalInstance', 'info', 'service', 'timelineWidget', 'focus'];
+TokenInstanceCtrl.$inject = ['$rootScope', '$scope', '$modalInstance', 'info', 'service', 'tokens', 'timelineWidget', 'focus'];
 
-function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, service, timelineWidget, focus) {
+function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, service, tokens, timelineWidget, focus) {
 
     $scope.master = angular.copy(info.token);
     $scope.token  = angular.copy(info.token);
@@ -162,7 +162,7 @@ function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, service, ti
                        "(timeline: " + "'" + info.token.platform_name + "')",
             ok: function() {
                 $modalInstance.dismiss('delete token');
-                service.deleteToken(info.token, info.row, function(tokenInfo, index) {
+                tokens.deleteToken(info.token, info.row, function(tokenInfo, index) {
                     timelineWidget.removeToken(tokenInfo, index, index);
                     $rootScope.$broadcast('tokenDeleted');
                 });
