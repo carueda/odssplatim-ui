@@ -5,9 +5,9 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
 
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'service', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
+MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
 
-function MainCtrl($scope, $window, cfg, platimModel, service, platforms, tokens, timelineWidget, status, utl, focus) {
+function MainCtrl($scope, $window, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus) {
     $scope.debug = $window.location.toString().match(/.*\?debug/)
         ? { collapsed: true, model: platimModel }
         : undefined;
@@ -125,12 +125,28 @@ function MainCtrl($scope, $window, cfg, platimModel, service, platforms, tokens,
         angular.element(document.getElementById('logarea')).html("");
         //console.log("refreshing...");
         timelineWidget.reinit();
-        service.refresh({
+        doRefresh({
             gotGeneralInfo:       gotGeneralInfo,
             gotDefaultPeriodId:   gotDefaultPeriodId,
             refreshComplete:      refreshComplete
         });
     };
+
+    /**
+     * Starts the full refresh of the model (except options)
+     */
+    function doRefresh(fns) {
+        status.errors.removeAll();
+        tokens.getGeneralInfo(fns, function(fns) {
+            periods.getHolidays(fns, function(fns) {
+                platforms.getAllPlatforms(fns, function(fns) {
+                    platforms.getSelectedPlatforms(fns, function(selectedPlatforms, fns) {
+                        tokens.refreshTokens(selectedPlatforms, fns, periods.refreshPeriods);
+                    });
+                })
+            });
+        });
+    }
 
     /**
      * Inserts a timeline (a platform and its tokens) in the widget.
