@@ -5,9 +5,9 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
 
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', '$window', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
+MainCtrl.$inject = ['$scope', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
 
-function MainCtrl($scope, $window, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus) {
+function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus) {
     $scope.debug = utl.getDebug();
 
     $scope.cfg = cfg;
@@ -103,36 +103,41 @@ function MainCtrl($scope, $window, cfg, platimModel, periods, platforms, tokens,
     }
 
     /**
-     * Triggers the refresh of the model.
+     * Triggers the refresh of the model, first confirming with the user
+     * in case of any unsaved changes.
      */
     $scope.refresh = function() {
         focus('focusTimeline');
         var toBeSavedInfo = getSaveInfo();
         var unsaved = toBeSavedInfo.toBeSaved;
         if (unsaved.length > 0) {
-            //console.log('unsaved', unsaved);
-            if (!$window.confirm(
-                'There are unsaved edits that will be lost with the refresh.\n\n' +
-                'Are you sure you want to proceed with the refresh?')) {
-                return;
-            }
+            utl.confirm({
+                title:     "Confirm refresh",
+                message:   'There are unsaved edits that will be lost with the refresh.<br/><br/>' +
+                           'Are you sure you want to proceed?',
+                ok:        doRefresh
+            });
         }
-        status.errors.removeAll();
-        angular.element(document.getElementById('logarea')).html("");
-        //console.log("refreshing...");
-        timelineWidget.reinit();
-        doRefresh({
-            gotGeneralInfo:       gotGeneralInfo,
-            gotDefaultPeriodId:   gotDefaultPeriodId,
-            refreshComplete:      refreshComplete
-        });
+        else {
+            doRefresh();
+        }
     };
 
     /**
      * Starts the full refresh of the model (except options)
      */
-    function doRefresh(fns) {
+    function doRefresh() {
         status.errors.removeAll();
+        angular.element(document.getElementById('logarea')).html("");
+        //console.log("refreshing...");
+        timelineWidget.reinit();
+
+        var fns = {
+            gotGeneralInfo:       gotGeneralInfo,
+            gotDefaultPeriodId:   gotDefaultPeriodId,
+            refreshComplete:      refreshComplete
+        };
+
         tokens.getGeneralInfo(fns, function(fns) {
             periods.getHolidays(fns, function(fns) {
                 platforms.getAllPlatforms(fns, function(fns) {

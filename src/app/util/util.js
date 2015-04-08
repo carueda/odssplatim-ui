@@ -4,10 +4,14 @@
 angular.module('odssPlatimApp.util', [])
     .controller('UtilCtrl', UtilCtrl)
     .controller('ConfirmInstanceCtrl', ConfirmInstanceCtrl)
+
     .factory('status', status)
+
     .factory('focus', focus)
     .directive('focusOn', focusOn)
+
     .factory('httpErrorHandler', httpErrorHandler)
+
     .factory('utl', miscUtils)
 ;
 
@@ -21,16 +25,15 @@ function UtilCtrl($scope, $modal) {
     });
 
     $scope.open = function () {
-
         var modalInstance = $modal.open({
             templateUrl: 'util/confirm.tpl.html',
             controller: 'ConfirmInstanceCtrl',
+            size:       'sm',
             resolve: {
                 info: function () {
                     return $scope.info;
                 }
             }
-
         });
 
         modalInstance.result.then(function() {
@@ -181,7 +184,7 @@ function miscUtils($rootScope, $window, platimModel) {
 
     return {
         confirm: function(info) {
-            console.log("utl.confirm:", info);
+            //console.log("utl.confirm:", info);
             $rootScope.$broadcast('confirm', info);
         },
 
