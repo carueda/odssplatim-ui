@@ -1,3 +1,7 @@
+- 2015-04-08: (branch: geom-ol2-ole)
+  - geometry editing testing with openlayers2 and OLE (https://github.com/geops/ole/).
+    OLE has some good editing options; unfortunately it's rather buggy and not actively maintained.
+  
 - 2015-04-08: (branch: geom-prep)
   - preliminary preparations for definition/editing of geometries associated with tokens
   

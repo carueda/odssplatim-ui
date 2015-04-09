@@ -10,7 +10,9 @@
     "moment": "~2.1.0",
     "lodash": "~2.4.1",
     "font-awesome": "~4.3.0",
-    "vis": "~3.11.0"
+    "vis": "~3.11.0",
+    "openlayers": "*",
+    "geops-ole": "https://github.com/geops/ole.git#72dd05e63a7c44e854616de08b45d1827a2ad04b"
   },
   "devDependencies": {}
 }
