@@ -10,7 +10,8 @@ angular.module('odssPlatimApp', [
     'odssPlatimApp.period',
     'odssPlatimApp.util',
     'odssPlatimApp.templates',
-    'odssPlatimApp.main'
+    'odssPlatimApp.main',
+    'odssPlatimApp.olmap'
 ]);
 
 angular.module("odssPlatimApp.templates", []);

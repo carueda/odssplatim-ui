@@ -1,3 +1,6 @@
+- 2015-04-08: (branch: geom-prep)
+  - preliminary preparations for definition/editing of geometries associated with tokens
+  
 - 2015-04-07: (0.5.0)
   - internal: move platform, token, period services to their own modules
   - focus timeline upon click to save and refresh buttons
