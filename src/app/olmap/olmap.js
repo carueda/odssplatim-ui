@@ -379,12 +379,20 @@ function olMap($rootScope) {
             styleNormal: new ol.style.Style({
                 fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.1)'}),
                 stroke: new ol.style.Stroke({color: '#319FD3', width: 2})
+                ,image: new ol.style.Circle({
+                    radius: 3,
+                    fill: new ol.style.Fill({ color: '#319FD3' })
+                })
             })
 
             ,styleSelected: new ol.style.Style({
                 fill: new ol.style.Fill({color: 'rgba(255, 255, 255, 0.2)' }),
                 //fill: new ol.style.Fill({ color: 'rgba(255, 0, 0, 0.4)'}),
                 stroke: new ol.style.Stroke({color: '#ffcc33', width: 2})
+                ,image: new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({ color: '#ffcc33' })
+                })
             })
 
             ,styleOverlay: new ol.style.Style({
@@ -392,7 +400,7 @@ function olMap($rootScope) {
                 stroke: new ol.style.Stroke({ color: '#ff0000', width: 2 }),
                 //stroke: new ol.style.Stroke({ color: '#ffcc33', width: 2 }),
                 image: new ol.style.Circle({
-                    radius: 7,
+                    radius: 6,
                     fill: new ol.style.Fill({ color: '#ffcc33' })
                 })
             })

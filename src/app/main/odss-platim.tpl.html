@@ -64,6 +64,8 @@
          ng-keypress="keyPressed($event)"
     ></div>
 
+    <olmap></olmap>
+
     <div ng-show="debug">
         <div>
             useSubgroups = {{cfg.opts.useSubgroups}}
@@ -78,8 +80,6 @@
             <pre>{{debug.model | json}}</pre>
         </div>
     </div>
-
-    <olmap></olmap>
 
 </div>
 </div>
