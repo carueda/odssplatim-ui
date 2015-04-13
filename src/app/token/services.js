@@ -48,6 +48,7 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
      * Retrieves the tokens for the given platforms.
      * @param platformNames  Names of desired platforms
      * @param fns            Callback functions
+     * @param next
      */
     function refreshTokens(platformNames, fns, next) {
         var url = cfg.rest + "/tokens";
@@ -89,6 +90,8 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
             description:   tokenInfo.description
 
             ,ttype:         tokenInfo.ttype
+
+            ,geometry:      tokenInfo.geometry
         };
 
         if (tokenInfo.token_id !== undefined) {
@@ -96,6 +99,7 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
             //console.log("saveToken: updating token_id=" +tokenInfo.token_id, item);
 
             url = cfg.rest + "/tokens/" + tokenInfo.token_id;
+            if (utl.getDebug()) console.log("PUT " + url + " item=", item);
             actId = activities.add("updating token " +item.state);
             $http.put(url, item)
                 .success(function(res, status, headers, config) {
@@ -111,6 +115,7 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
             //console.log("saveToken: posting new token", item);
 
             url = cfg.rest + "/tokens";
+            if (utl.getDebug()) console.log("POST " + url + " item=", item);
             actId = activities.add("adding token " +item.state);
             $http({
                 method:  'POST',

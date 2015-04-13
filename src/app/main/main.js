@@ -5,9 +5,9 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
 
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
+MainCtrl.$inject = ['$scope', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus', 'olMap'];
 
-function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus) {
+function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus, olMap) {
     $scope.debug = utl.getDebug();
 
     $scope.cfg = cfg;
@@ -131,6 +131,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
         angular.element(document.getElementById('logarea')).html("");
         //console.log("refreshing...");
         timelineWidget.reinit();
+        olMap.reinit();
 
         var fns = {
             gotGeneralInfo:       gotGeneralInfo,
@@ -161,7 +162,25 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
             if (!token.ttype) {
                 token.ttype = "ttdeployment";
             }
+
+            if (!token.geometry) {
+                // TODO temporary mechanism to allow "adding" a brand new geometry
+                token.geometry = {
+                    type: "FeatureCollection",
+                    features: []
+                };
+            }
+
             timelineWidget.addToken(token);
+
+            //console.log("refreshTokens: token=", token.token_id, " geometry=", token.geometry)
+            if (token.geometry) {
+                //token.geometry = {
+                //    type: "Polygon",
+                //    coordinates :[[[-122.0, 36.83],[-122.5, 36.83],[-122.5, 37]]]
+                //};
+                olMap.addGeometry(token.token_id, token.geometry);
+            }
         });
     };
 
@@ -174,6 +193,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
         setTimeout(function() {
             var selectedPlatforms = platimModel.getSelectedPlatforms();
             timelineWidget.reinit(platimModel.holidays);
+            olMap.reinit();
             //console.log("selectedPlatforms", selectedPlatforms);
             _.each(selectedPlatforms, insertTimeline);
             timelineWidget.redraw();

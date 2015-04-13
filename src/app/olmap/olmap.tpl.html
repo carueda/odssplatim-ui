@@ -3,21 +3,22 @@
 
         <nav class="navbar navbar-default header-navbar">
             <form class="navbar-form navbar-right" style="display: inline-block">
-                <button type="button" class="btn btn-default btn-xs" ng-model="mv.editMode" btn-checkbox >
-                    Edit
-                </button>
-                <div ng-show="mv.editMode" style="display: inline-block">
+                <div ng-show="!vm.viewOnly && vm.editMode" style="display: inline-block">
                     <span>&nbsp;Add:</span>
-                    <div ng-repeat="drawType in mv.draw.typeList" style="display: inline-block; vertical-align: top; position: relative">
+                    <div ng-repeat="drawType in vm.draw.typeList" style="display: inline-block; vertical-align: top; position: relative">
                         <label class="btn btn-default btn-xs"
-                               ng-model="mv.draw.selectedType" btn-radio="drawType.value">
+                               ng-model="vm.draw.selectedType" btn-radio="drawType.value">
                             {{drawType.name}}
                         </label>
-                        <span ng-show="mv.draw.selectedType === drawType.name" style="font-size: xx-small; position: absolute; top: -3px; right: -1px">
+                        <span ng-show="vm.draw.selectedType === drawType.name" style="font-size: xx-small; position: absolute; top: -3px; right: -1px">
                             <span class="glyphicon glyphicon-ok"></span>
                         </span>
                     </div>
                 </div>
+                <button ng-disabled="vm.viewOnly"
+                        type="button" class="btn btn-default btn-xs" ng-model="vm.editMode" btn-checkbox>
+                    Edit
+                </button>
             </form>
         </nav>
 

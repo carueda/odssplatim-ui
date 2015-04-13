@@ -1,3 +1,7 @@
+- 2015-04-13: (branch: geom-ol3)
+  - initial coordination between timeline and map for geometry editing, loading and saving
+  - preliminary mechanism to add brand new geometry
+
 - 2015-04-08: (branch: geom-ol3)
   - geometry editing testing with openlayers3
   - Enabling Google Map base layer based on http://openlayers.org/en/v3.0.0/examples/google-map.html

@@ -7,9 +7,9 @@ var gTW = {};
 angular.module('odssPlatimApp.timelineWidget', [])
     .factory('timelineWidget', timelineWidgetFactory);
 
-timelineWidgetFactory.$inject = ['cfg', 'tokens', 'vis', 'utl'];
+timelineWidgetFactory.$inject = ['$rootScope', 'cfg', 'tokens', 'vis', 'utl'];
 
-function timelineWidgetFactory(cfg, tokens, vis, utl) {
+function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
 
     var visRangeMin = moment(cfg.opts.visRange.min);
     var visRangeMax = moment(cfg.opts.visRange.max);
@@ -114,6 +114,14 @@ function timelineWidgetFactory(cfg, tokens, vis, utl) {
     gTW.items = items;
 
     addSelectListener();
+
+    $rootScope.$on("tokenGeometryUpdated", function(e, token_id, geometry) {
+        console.warn("$on tokenGeometryUpdated: token_id=", token_id, "geometry=", geometry);
+        var item = items.get(token_id);
+        item.geometry = geometry;
+        items.update(item);
+        updateStatusModified(item);
+    });
 
     return {
         reinit:                    reinit,
@@ -349,7 +357,10 @@ function timelineWidgetFactory(cfg, tokens, vis, utl) {
 
             'status':         token.status,
             'ttype':          token.ttype
+
+            ,'geometry':      token.geometry
         };
+
         if (cfg.opts.useSubgroups) {
             body.subgroup = token.ttype;
         }
@@ -489,14 +500,12 @@ function timelineWidgetFactory(cfg, tokens, vis, utl) {
     function addSelectListener() {
         var onSelect = function(properties) {
             //console.log("onSelect=", properties);
+            var selected = [];
             if (properties.items && properties.items.length > 0) {
-                var selected = _.map(properties.items, function(itemId) { return items.get(itemId) });
-                logarea.html(utl.tablify(selected));
-                //console.log("SELECT: item=", item);
+                selected = _.map(properties.items, function(itemId) { return items.get(itemId) });
             }
-            else {
-                logarea.html("");
-            }
+            $rootScope.$broadcast("tokenSelection", selected);
+            logarea.html(utl.tablify(selected));
         };
         timeline.on('select', onSelect);
     }
