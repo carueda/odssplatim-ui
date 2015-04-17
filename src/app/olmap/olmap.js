@@ -82,21 +82,41 @@ function olMap($rootScope) {
                 altShiftDragRotate: false,
                 dragPan: false,
                 rotate: false
-            }).extend([new ol.interaction.DragPan({kinetic: null})]),
+            }).extend([
+                new ol.interaction.DragPan({kinetic: null})
+                ,new ol.interaction.Select({
+                    condition: ol.events.condition.pointerMove
+                })
+                ,new ol.interaction.DragBox({
+                    condition: ol.events.condition.shiftKeyOnly,
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: [255, 255, 255, 2],
+                            lineDash: [10, 10]
+                        })
+                    })
+                })
+            ]),
+            controls: ol.control.defaults({
+            }).extend([
+                new ol.control.MousePosition({
+                    coordinateFormat: ol.coordinate.createStringXY(4),
+                    projection: 'EPSG:4326',
+                    className: 'custom-mouse-position',
+                    //target: document.getElementById('mouse-position'),
+                    undefinedHTML: ' '
+                })
+            ]),
             target: olMapDiv,
             view: view
         });
 
-        view.on('change:center', function() {
-            //console.log('change:center', view.getCenter());
-            var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
-            gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
-        });
+        view.on('change:center', syncMapMove);
         view.on('change:resolution', function() {
             //console.log("change:resolution", view.getZoom());
             gmap.setZoom(view.getZoom());
         });
-        // TODO handle size change.
+        map.on('moveend', syncMapMove);
 
         setCenter([-122.0, 36.83]);
         setZoom(10);
@@ -106,6 +126,12 @@ function olMap($rootScope) {
 
         createFeatureOverlay();
         createModifyInteraction();
+
+        function syncMapMove() {
+            //console.log('syncMapMove', view.getCenter());
+            var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
+            gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
+        }
     }
 
     function reinit() {
@@ -369,6 +395,13 @@ function olMap($rootScope) {
             draw = new ol.interaction.Draw({
                 features: featureOverlay.getFeatures(),
                 type: type
+                ,style: {
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 0, 0.5)',
+                        lineDash: [10, 10],
+                        width: 2
+                    })
+                }
             });
             map.addInteraction(draw);
         }
@@ -378,17 +411,17 @@ function olMap($rootScope) {
         return {
             styleNormal: new ol.style.Style({
                 fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.1)'}),
-                stroke: new ol.style.Stroke({color: '#319FD3', width: 2})
+                stroke: new ol.style.Stroke({color: '#4deaf4', width: 3})
                 ,image: new ol.style.Circle({
                     radius: 3,
-                    fill: new ol.style.Fill({ color: '#319FD3' })
+                    fill: new ol.style.Fill({ color: '#4deaf4' })
                 })
             })
 
             ,styleSelected: new ol.style.Style({
                 fill: new ol.style.Fill({color: 'rgba(255, 255, 255, 0.2)' }),
                 //fill: new ol.style.Fill({ color: 'rgba(255, 0, 0, 0.4)'}),
-                stroke: new ol.style.Stroke({color: '#ffcc33', width: 2})
+                stroke: new ol.style.Stroke({color: '#ffcc33', width: 4})
                 ,image: new ol.style.Circle({
                     radius: 4,
                     fill: new ol.style.Fill({ color: '#ffcc33' })
@@ -397,8 +430,8 @@ function olMap($rootScope) {
 
             ,styleOverlay: new ol.style.Style({
                 fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
-                stroke: new ol.style.Stroke({ color: '#ff0000', width: 2 }),
-                //stroke: new ol.style.Stroke({ color: '#ffcc33', width: 2 }),
+                //stroke: new ol.style.Stroke({ color: '#ffdd44', width: 4 }),
+                stroke: new ol.style.Stroke({ color: '#f2ea00', width: 4 }),
                 image: new ol.style.Circle({
                     radius: 6,
                     fill: new ol.style.Fill({ color: '#ffcc33' })
