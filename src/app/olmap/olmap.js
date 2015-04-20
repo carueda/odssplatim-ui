@@ -1,7 +1,7 @@
 (function() {
 'use strict';
 
-angular.module('odssPlatimApp.olmap', ['odssPlatimApp.olmap.directives'])
+angular.module('odssPlatimApp.olmap', ['odssPlatimApp.olmap.directives', 'odssPlatimApp.olmap.ext'])
     .controller('MapCtrl', MapCtrl)
     .factory('olMap', olMap)
 ;
@@ -46,13 +46,13 @@ function MapCtrl($scope, olMap) {
     });
 }
 
-olMap.$inject = ['$rootScope'];
+olMap.$inject = ['$rootScope', 'olExt'];
 
-function olMap($rootScope) {
+function olMap($rootScope, olExt) {
     var styles = getStyles();
 
     var gmap, view, vectorLayer;
-    var map, draw, modify, featureOverlay;
+    var map, draw, modify, dragInteraction, featureOverlay;
     var vectorsByGeomId = {};
 
     var tokenSelection = [];
@@ -84,9 +84,9 @@ function olMap($rootScope) {
                 rotate: false
             }).extend([
                 new ol.interaction.DragPan({kinetic: null})
-                ,new ol.interaction.Select({
-                    condition: ol.events.condition.pointerMove
-                })
+                //,new ol.interaction.Select({
+                //    condition: ol.events.condition.pointerMove
+                //})
                 ,new ol.interaction.DragBox({
                     condition: ol.events.condition.shiftKeyOnly,
                     style: new ol.style.Style({
@@ -125,6 +125,7 @@ function olMap($rootScope) {
         gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
 
         createFeatureOverlay();
+        createDragInteraction();
         createModifyInteraction();
 
         function syncMapMove() {
@@ -202,6 +203,7 @@ function olMap($rootScope) {
             if (editInfo.editingToken) {
                 return;
             }
+            map.addInteraction(dragInteraction);
             map.addInteraction(modify);
 
             clearFeaturesOverlay();
@@ -220,6 +222,7 @@ function olMap($rootScope) {
                 return;
             }
             map.removeInteraction(modify);
+            map.removeInteraction(dragInteraction);
 
             endEditing();
             //setDrawType(null); // no draw type
@@ -370,6 +373,10 @@ function olMap($rootScope) {
                     ol.events.condition.singleClick(event);
             }
         });
+    }
+
+    function createDragInteraction() {
+        dragInteraction = olExt.createDragInteraction(featureOverlay.getFeatures());
     }
 
     function clearFeaturesOverlay() {

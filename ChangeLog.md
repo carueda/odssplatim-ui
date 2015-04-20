@@ -1,3 +1,6 @@
+- 2015-04-20: (branch: geom-ol3)
+  - preliminary drag interaction
+
 - 2015-04-13: (branch: geom-ol3)
   - initial coordination between timeline and map for geometry editing, loading and saving
   - preliminary mechanism to add brand new geometry
