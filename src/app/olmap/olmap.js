@@ -402,13 +402,6 @@ function olMap($rootScope, olExt) {
             draw = new ol.interaction.Draw({
                 features: featureOverlay.getFeatures(),
                 type: type
-                ,style: {
-                    stroke: new ol.style.Stroke({
-                        color: 'rgba(0, 0, 0, 0.5)',
-                        lineDash: [10, 10],
-                        width: 2
-                    })
-                }
             });
             map.addInteraction(draw);
         }
