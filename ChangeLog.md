@@ -1,3 +1,7 @@
+- 2015-04-22: (branch: geom-ol3)
+  - trigger token modification at the end of edit action: drag, add.
+  - tooltips
+
 - 2015-04-21: (branch: geom-ol3)
   - improved geometry editing control via main radio-buttons: View, Move, Modify, Add.
   - initial mechanism to highlight geometry when mouse is over corresponding token (this requires

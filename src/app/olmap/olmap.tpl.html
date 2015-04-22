@@ -3,16 +3,19 @@
 
         <nav class="navbar navbar-default header-navbar">
             <form class="navbar-form" style="display: inline-block">
-                <span >Geometries:</span>
+                <span tooltip-html-unsafe="Select a timeline token<br/>to enable edit options" tooltip-placement="bottom"
+                >Geometries:</span>
                 <div ng-repeat="mode in vm.mode.modeList" style="display: inline-block; position: relative">
-                    <label class="btn btn-primary btn-xs"
-                           ng-disabled="mode !== 'View' && vm.viewOnly"
-                           ng-model="vm.mode.selectedMode" btn-radio="mode">
-                        {{mode}}
-                    </label>
-                    <span ng-show="vm.mode.selectedMode === mode" style="font-size: xx-small; position: absolute; top: -9px; right: 1px">
-                        <span class="glyphicon glyphicon-ok"></span>
-                    </span>
+                    <div tooltip-html-unsafe="{{mode.tooltip}}" tooltip-placement="bottom">
+                        <label class="btn btn-primary btn-xs"
+                               ng-disabled="mode.name !== 'View' && vm.viewOnly"
+                               ng-model="vm.mode.selectedMode" btn-radio="mode.name">
+                            {{mode.name}}
+                        </label>
+                        <span ng-show="vm.mode.selectedMode === mode.name" style="font-size: xx-small; position: absolute; top: -9px; right: 1px">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </span>
+                    </div>
                 </div>
 
                 <div ng-show="vm.mode.selectedMode === 'Add'" style="display: inline-block">

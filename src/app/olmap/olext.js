@@ -10,10 +10,10 @@ function olExt() {
         createDragInteraction:  createDragInteraction
     };
 
-    function createDragInteraction(features) {
+    function createDragInteraction(features, dragEnd) {
         return new app.Drag({
             features: features
-        });
+        }, dragEnd);
     }
 
 }
@@ -24,8 +24,9 @@ var app = {};
  * @constructor
  * @extends {ol.interaction.Pointer}
  */
-app.Drag = function(opts) {
+app.Drag = function(opts, dragEnd) {
     this.features_ = opts.features;
+    this.dragEnd_  = dragEnd;
     //console.log("olExt: this.features_=", this.features_);
 
     opts.handleDownEvent = app.Drag.prototype.handleDownEvent;
@@ -147,6 +148,11 @@ app.Drag.prototype.handleMoveEvent = function(evt) {
 app.Drag.prototype.handleUpEvent = function(evt) {
     this.coordinate_ = null;
     this.feature_ = null;
+
+    if (typeof this.dragEnd_ === 'function') {
+        this.dragEnd_(evt);
+    }
+
     return false;
 };
 

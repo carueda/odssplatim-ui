@@ -13,7 +13,12 @@ function MapCtrl($scope, olMap) {
 
     var vm = {
         mode: {
-            modeList: ["View", "Move", "Modify",  "Add"],
+            modeList: [
+                {name: "View",   tooltip: "View-only mode"},
+                {name: "Move",   tooltip: "Move selected geometry"},
+                {name: "Modify", tooltip: "Modify selected geometry"},
+                {name: "Add",    tooltip: "Add geometry to selected token"}
+            ],
             selectedMode: "View"
         },
         viewOnly: true,
@@ -143,7 +148,6 @@ function olMap($rootScope, olExt) {
 
         createDragInteraction();
         createModifyInteraction();
-        createDrawInteraction(drawType);
 
         function syncMapMove() {
             //console.log('syncMapMove', view.getCenter());
@@ -457,7 +461,7 @@ function olMap($rootScope, olExt) {
     }
 
     function createDragInteraction() {
-        dragInteraction = olExt.createDragInteraction(featureOverlay.getFeatures());
+        dragInteraction = olExt.createDragInteraction(featureOverlay.getFeatures(), changeEnded);
     }
 
     /**
@@ -469,6 +473,8 @@ function olMap($rootScope, olExt) {
             features: featureOverlay.getFeatures(),
             type: type
         });
+
+        drawInteraction.on('drawend', changeEnded);
     }
 
     /**
@@ -485,6 +491,18 @@ function olMap($rootScope, olExt) {
         if (currentMode === "Add" || nextMode === "Add") {
             map.addInteraction(drawInteraction);
         }
+    }
+
+    /**
+     * Common callback for when any edit action completes
+     * @param evt
+     */
+    function changeEnded(evt) {
+        //console.log("changeEnded evt=", evt, "tokenSelection[0]=", tokenSelection[0]);
+
+        // the mechanism to reflect the change is just leave-and-reenter the current mode:
+        leaveEditMode(currentMode);
+        enterEditMode(currentMode);
     }
 
     function clearFeaturesOverlay() {
