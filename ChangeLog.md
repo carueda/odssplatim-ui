@@ -1,4 +1,4 @@
-- 2015-04-22: (branch: geom-ol3)
+- 2015-04-22: (branch: geom-ol3 toward v.0.7.0)
   - trigger token modification at the end of edit action: drag, add.  TODO: modify.
   - tooltips
   - add delete interaction based on select interaction plus click listener
