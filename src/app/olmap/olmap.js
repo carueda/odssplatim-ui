@@ -12,37 +12,44 @@ function MapCtrl($scope, olMap) {
     olMap.insertMap();
 
     var vm = {
+        mode: {
+            modeList: ["View", "Move", "Modify",  "Add"],
+            selectedMode: "View"
+        },
         viewOnly: true,
-        editMode: false,
         draw: {
             typeList: [
-                {name: "Polygon", value: ol.geom.GeometryType.POLYGON},
+                {name: "Polygon",    value: ol.geom.GeometryType.POLYGON},
                 {name: "LineString", value: ol.geom.GeometryType.LINE_STRING},
-                {name: "Point", value: ol.geom.GeometryType.POINT},
-                {name: "(no)", value: ""}
+                {name: "Point",      value: ol.geom.GeometryType.POINT}
             ],
-            selectedType: ""
+            selectedType: "Polygon"
         }
     };
     $scope.vm = vm;
-    $scope.$watch('vm.editMode', function(editMode) {
-        olMap.setEditMode(editMode);
-        if (!editMode) {
-            vm.draw.selectedType = "";
+
+    $scope.$watch('vm.mode.selectedMode', function(mode, prevMode) {
+        if (!olMap.setMode(mode)) {
+            vm.mode.selectedMode = prevMode;
         }
-        olMap.setDrawType(vm.draw.selectedType);
     });
-    $scope.$watch('vm.draw.selectedType', olMap.setDrawType);
+
+    $scope.$watch('vm.draw.selectedType', olMap.setDrawInteraction);
+
+    $scope.$on("tokenMouseOver", function(e, tokenId, enter) {
+        olMap.setTokenMouseOver(tokenId, enter);
+    });
 
     $scope.$on("tokenSelection", function(e, selected) {
         vm.viewOnly = selected.length != 1;
-        if (vm.viewOnly) {
-            olMap.setEditMode(false);
-            vm.editMode = false;
-            vm.draw.selectedType = "";
-            olMap.setDrawType(vm.draw.selectedType);
-        }
         olMap.setTokenSelection(selected);
+    });
+
+    $scope.$on("refreshStarting", function() {
+        //console.log("=== on refreshStarting");
+        olMap.reinit();
+        vm.mode.selectedMode = "View";
+        vm.viewOnly = olMap.getTokenSelection().length != 1;
     });
 }
 
@@ -52,8 +59,14 @@ function olMap($rootScope, olExt) {
     var styles = getStyles();
 
     var gmap, view, vectorLayer;
-    var map, draw, modify, dragInteraction, featureOverlay;
+    var map, featureOverlay;
+    var drawInteraction, modifyInteraction, dragInteraction;
     var vectorsByGeomId = {};
+
+    var currentMode = "View";
+
+    // draw type when drawInteraction is enabled
+    var drawType = "Polygon";
 
     var tokenSelection = [];
     var editInfo = {
@@ -64,11 +77,13 @@ function olMap($rootScope, olExt) {
         insertMap:           insertMap
         ,reinit:             reinit
         ,addGeometry:        addGeometry
-        ,setTokenSelection:  tokenSelectionUpdated
+        ,getTokenSelection:  getTokenSelection
+        ,setTokenMouseOver:  setTokenMouseOver
+        ,setTokenSelection:  setTokenSelection
+        ,setMode:            setMode
+        ,setDrawInteraction: setDrawInteraction
         ,setCenter:          setCenter
         ,setZoom:            setZoom
-        ,setEditMode:        setEditMode
-        ,setDrawType:        setDrawType
     };
 
     function insertMap() {
@@ -118,15 +133,17 @@ function olMap($rootScope, olExt) {
         });
         map.on('moveend', syncMapMove);
 
-        setCenter([-122.0, 36.83]);
+        setCenter([-122.23, 36.83]);
         setZoom(10);
 
         olMapDiv.parentNode.removeChild(olMapDiv);
         gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
 
         createFeatureOverlay();
+
         createDragInteraction();
         createModifyInteraction();
+        createDrawInteraction(drawType);
 
         function syncMapMove() {
             //console.log('syncMapMove', view.getCenter());
@@ -137,6 +154,7 @@ function olMap($rootScope, olExt) {
 
     function reinit() {
         clearFeaturesOverlay();
+        tokenSelection = [];
         if (map) {
             map.getLayers().clear();
         }
@@ -173,20 +191,109 @@ function olMap($rootScope, olExt) {
         vectorsByGeomId[geomId] = vectorLayer;
     }
 
-    function tokenSelectionUpdated(selectedTokens) {
-        console.log("******* tokenSelectionUpdated=", selectedTokens);
+    function getTokenSelection() {
+        return tokenSelection;
+    }
 
-        if (editInfo.editingToken) {
-            endEditing();
+    function setTokenMouseOver(tokenId, enter) {
+        console.log("******* setTokenMouseOver tokenId=", tokenId, "enter=", enter);
+        updateStyleForMouseOver(tokenId, enter);
+    }
+
+    function setTokenSelection(selectedTokens) {
+        //console.log("******* setTokenSelection=", selectedTokens, "currentMode=", currentMode);
+        if (currentMode !== "View") {
+            leaveEditMode(currentMode);
         }
 
         tokenSelection = selectedTokens;
         updateStylesForSelection();
+
+        if (currentMode !== "View") {
+            if (tokenSelection.length === 1) {
+                enterEditMode(currentMode);
+            }
+        }
+    }
+
+    function setMode(mode) {
+        console.log("setMode: currentMode=", currentMode, " setMode=", mode);
+        if (currentMode === mode) {
+            return true;
+        }
+        var ok = true;
+
+        if (currentMode === "View") {
+            if (!enterEditMode(mode)) {
+                ok = false;
+            }
+        }
+        else {
+            leaveEditMode(currentMode);
+            updateStylesForSelection();
+            if (mode !== "View") {
+                if (!enterEditMode(mode)) {
+                    ok = false;
+                }
+            }
+        }
+
+        if (ok) {
+            currentMode = mode;
+        }
+        return ok;
+    }
+
+    function enterEditMode(mode) {
+        if (tokenSelection.length != 1) {
+            return false;
+        }
+
+        if (!startEditing(tokenSelection[0])) {
+            return false;
+        }
+
+        if (mode === "Move") {
+            //createDragInteraction();
+            console.log("enterEditMode: adding dragInteraction=", dragInteraction);
+            map.addInteraction(dragInteraction);
+        }
+        else if (mode === "Modify") {
+            console.log("enterEditMode: adding modifyInteraction=", modifyInteraction);
+            map.addInteraction(modifyInteraction);
+        }
+        else if (mode === "Add") {
+            setDrawInteraction(drawType, "Add");
+        }
+        return true;
+    }
+
+    function leaveEditMode(mode) {
+        endEditing();
+        if (mode === "Move") {
+            console.log("leaveEditMode: removing dragInteraction=", dragInteraction);
+            map.removeInteraction(dragInteraction);
+        }
+        else if (mode === "Modify") {
+            console.log("leaveEditMode: removing modifyInteraction=", modifyInteraction);
+            map.removeInteraction(modifyInteraction);
+        }
+        else if (mode === "Add") {
+            console.log("leaveEditMode: removing drawInteraction=", drawInteraction);
+            map.removeInteraction(drawInteraction);
+        }
+    }
+
+    function updateStyleForMouseOver(tokenId, enter) {
+        var vectorLayer = vectorsByGeomId[tokenId];
+        if (vectorLayer) {
+            vectorLayer.setStyle(enter ? styles.styleMouseEntered : styles.styleNormal);
+        }
     }
 
     function updateStylesForSelection() {
         var selectedGeomIds = _.map(tokenSelection, "token_id");
-        console.log("selectedGeomIds=", selectedGeomIds);
+        //console.log("selectedGeomIds=", selectedGeomIds);
         _.each(vectorsByGeomId, function(vectorLayer, geomId) {
             if (_.contains(selectedGeomIds, geomId)) {
                 vectorLayer.setStyle(styles.styleSelected);
@@ -197,50 +304,16 @@ function olMap($rootScope, olExt) {
         });
     }
 
-    function setEditMode(editMode) {
-        console.log("******* setEditMode=", editMode);
-        if (editMode) {
-            if (editInfo.editingToken) {
-                return;
-            }
-            map.addInteraction(dragInteraction);
-            map.addInteraction(modify);
-
-            clearFeaturesOverlay();
-
-            // TODO for now not handling multiple selection for editing
-            if (tokenSelection.length == 1) {
-                startEditing(tokenSelection[0]);
-            }
-            else if (tokenSelection.length > 1) {
-                console.log("tokenSelectionUpdated: No multiple selection handled for editing");
-            }
-
-        }
-        else {
-            if (!editInfo.editingToken) {
-                return;
-            }
-            map.removeInteraction(modify);
-            map.removeInteraction(dragInteraction);
-
-            endEditing();
-            //setDrawType(null); // no draw type
-
-            updateStylesForSelection();
-        }
-    }
-
     function startEditing(token) {
         if (!token.geometry) {
             console.log("WARN: startEditing token_id=", token.token_id, " doesn't have geometry");
-            return;
+            return false;
         }
         var geomId = token.token_id;
         var vectorLayer = vectorsByGeomId[geomId];
         if (!vectorLayer) {
             console.log("WARN: startEditing geomId=", geomId, "no such vector");
-            return;
+            return false;
         }
         console.log("startEditing geomId=", geomId, "vectorLayer=", vectorLayer);
 
@@ -258,10 +331,11 @@ function olMap($rootScope, olExt) {
         var source = vectorLayer.getSource();
         var features = source.getFeatures();
         addFeaturesToOverlay(features);
+        return true;
     }
 
     function addFeaturesToOverlay(features) {
-        console.warn("addFeaturesToOverlay", features);
+        //console.log("addFeaturesToOverlay", features);
         for (var ii = 0; ii < features.length; ii++) {
             var feature = features[ii];
             featureOverlay.addFeature(feature);
@@ -273,7 +347,7 @@ function olMap($rootScope, olExt) {
         if (editInfo.editingToken) {
             var token = editInfo.editingToken;
             editInfo.editingToken = null;
-            var vectorLayer = updateLayer();
+            var vectorLayer = createLayerFromOverlay();
             vectorsByGeomId[token.token_id] = vectorLayer;
             map.addLayer(vectorLayer);
 
@@ -289,35 +363,35 @@ function olMap($rootScope, olExt) {
             $rootScope.$broadcast("tokenGeometryUpdated", token.token_id, token.geometry);
         }
         clearFeaturesOverlay();
-
-        // returns new layer with features in overlay
-        function updateLayer() {
-            var overlayFeatures = featureOverlay.getFeatures();
-            console.log("---updateLayer, overlayFeatures=", overlayFeatures.getLength());
-
-            var vectorSource = new ol.source.GeoJSON({
-                projection: 'EPSG:3857',
-                object: {
-                    type: 'FeatureCollection',
-                    crs: {
-                        type: 'name',
-                        properties: {'name': 'EPSG:4326'}
-                    }
-                    , features: []
-                }
-            });
-            for(var ii = 0; ii < overlayFeatures.getLength(); ii++) {
-                var feature = overlayFeatures.item(ii);
-                vectorSource.addFeature(feature);
-            }
-            vectorLayer = new ol.layer.Vector({
-                source: vectorSource,
-                style:  styles.styleNormal
-            });
-            return vectorLayer;
-        }
     }
-    
+
+    // returns new layer with features in overlay
+    function createLayerFromOverlay() {
+        var overlayFeatures = featureOverlay.getFeatures();
+        console.log("---createLayerFromOverlay, overlayFeatures=", overlayFeatures.getLength());
+
+        var vectorSource = new ol.source.GeoJSON({
+            projection: 'EPSG:3857',
+            object: {
+                type: 'FeatureCollection',
+                crs: {
+                    type: 'name',
+                    properties: {'name': 'EPSG:4326'}
+                }
+                , features: []
+            }
+        });
+        for(var ii = 0; ii < overlayFeatures.getLength(); ii++) {
+            var feature = overlayFeatures.item(ii);
+            vectorSource.addFeature(feature);
+        }
+        vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+            style:  styles.styleNormal
+        });
+        return vectorLayer;
+    }
+
     function setCenter(ll) {
         view.setCenter(transform(ll));
     }
@@ -363,7 +437,7 @@ function olMap($rootScope, olExt) {
     }
 
     function createModifyInteraction() {
-        modify = new ol.interaction.Modify({
+        modifyInteraction = new ol.interaction.Modify({
             features: featureOverlay.getFeatures(),
             // "the SHIFT key must be pressed to delete vertices, so
             // that new vertices can be drawn at the same position
@@ -379,31 +453,40 @@ function olMap($rootScope, olExt) {
         dragInteraction = olExt.createDragInteraction(featureOverlay.getFeatures());
     }
 
+    /**
+     * @param type {ol.geom.GeometryType}
+     */
+    function createDrawInteraction(type) {
+        console.log("createDrawInteraction type=", type);
+        drawInteraction = new ol.interaction.Draw({
+            features: featureOverlay.getFeatures(),
+            type: type
+        });
+    }
+
+    /**
+     * @param type {ol.geom.GeometryType}
+     */
+    function setDrawInteraction(type, nextMode) {
+        if (!type) throw new Error("setDrawInteraction: type required");
+        console.log("setDrawInteraction type=", type);
+        drawType = type;
+        if (drawInteraction) {
+            map.removeInteraction(drawInteraction);
+        }
+        createDrawInteraction(type);
+        if (currentMode === "Add" || nextMode === "Add") {
+            map.addInteraction(drawInteraction);
+        }
+    }
+
     function clearFeaturesOverlay() {
         if (featureOverlay) {
             var overlayFeatures = featureOverlay.getFeatures();
             if (overlayFeatures) {
-                console.log("!!!clearFeaturesOverlay, overlayFeatures=", overlayFeatures);
+                //console.log("!!!clearFeaturesOverlay, overlayFeatures=", overlayFeatures);
                 overlayFeatures.clear();
             }
-        }
-    }
-
-    /**
-     * @param type {ol.geom.GeometryType} or falsy to disable
-     */
-    function setDrawType(type) {
-        //console.log("setDrawType=", type);
-        if (draw) {
-            map.removeInteraction(draw);
-            draw = null;
-        }
-        if (type) {
-            draw = new ol.interaction.Draw({
-                features: featureOverlay.getFeatures(),
-                type: type
-            });
-            map.addInteraction(draw);
         }
     }
 
@@ -418,20 +501,27 @@ function olMap($rootScope, olExt) {
                 })
             })
 
+            ,styleMouseEntered: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.1)'}),
+                stroke: new ol.style.Stroke({color: '#4deaf4', width: 6})
+                ,image: new ol.style.Circle({
+                    radius: 6,
+                    fill: new ol.style.Fill({ color: '#4deaf4' })
+                })
+            })
+
             ,styleSelected: new ol.style.Style({
                 fill: new ol.style.Fill({color: 'rgba(255, 255, 255, 0.2)' }),
-                //fill: new ol.style.Fill({ color: 'rgba(255, 0, 0, 0.4)'}),
-                stroke: new ol.style.Stroke({color: '#ffcc33', width: 4})
+                stroke: new ol.style.Stroke({color: '#f2ea00', width: 4})
                 ,image: new ol.style.Circle({
                     radius: 4,
-                    fill: new ol.style.Fill({ color: '#ffcc33' })
+                    fill: new ol.style.Fill({ color: '#f2ea00' })
                 })
             })
 
             ,styleOverlay: new ol.style.Style({
                 fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
-                //stroke: new ol.style.Stroke({ color: '#ffdd44', width: 4 }),
-                stroke: new ol.style.Stroke({ color: '#f2ea00', width: 4 }),
+                stroke: new ol.style.Stroke({ color: '#ffcc33', width: 5 }),
                 image: new ol.style.Circle({
                     radius: 6,
                     fill: new ol.style.Fill({ color: '#ffcc33' })

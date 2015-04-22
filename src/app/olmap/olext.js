@@ -26,7 +26,7 @@ var app = {};
  */
 app.Drag = function(opts) {
     this.features_ = opts.features;
-    console.log("olExt: this.features_=", this.features_);
+    //console.log("olExt: this.features_=", this.features_);
 
     opts.handleDownEvent = app.Drag.prototype.handleDownEvent;
     opts.handleDragEvent = app.Drag.prototype.handleDragEvent;

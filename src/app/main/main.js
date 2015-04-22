@@ -16,6 +16,8 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
     $scope.activities = status.activities;
     $scope.errors     = status.errors;
 
+    $scope.isRefreshing = false;
+
     function updateLastUpdated() {
         var dur = moment.duration($scope.lastUpdated.on.diff(moment()));
         $scope.lastUpdated.durHumanized = dur.humanize(true);
@@ -130,8 +132,9 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
         status.errors.removeAll();
         angular.element(document.getElementById('logarea')).html("");
         //console.log("refreshing...");
+        $scope.isRefreshing = true;
+        $scope.$broadcast("refreshStarting");
         timelineWidget.reinit();
-        olMap.reinit();
 
         var fns = {
             gotGeneralInfo:       gotGeneralInfo,
@@ -209,6 +212,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
 
     function refreshComplete() {
         //console.log("refreshing... done.");
+        $scope.isRefreshing = false;
         platformOptionsUpdated(false);
     }
 

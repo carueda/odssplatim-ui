@@ -71,6 +71,11 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
             return Math.round(date / hour) * hour;
         }
 
+        // template initially used only to associate ID and then a listener for mouse-over events
+        ,template: function (item) {
+            return '<span id="token_' +item.id+ '">' + item.content + '</span>';
+        }
+
         ,onAdd:       onAdd
         ,onUpdate:    onUpdate
         ,onMove:      onMove
@@ -366,6 +371,8 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
         }
         //console.log("addToken: body", body);
         items.add(body);
+
+        setTokenMouseListener(token._id);
     }
 
     function redraw() {
@@ -495,6 +502,34 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
     function removeToken(tokenInfo) {
         //console.log("removeToken", tokenInfo);
         items.remove(tokenInfo.id);
+    }
+
+    function setTokenMouseListener(tokenId) {
+        //console.log("setTokenMouseListener tokenId=", tokenId);
+        setTimeout(function() {
+            //console.log("setTokenMouseListener tokenId=", tokenId);
+            var elementId = "token_" + tokenId;
+            var elm = document.getElementById(elementId);
+
+            // note: the following is to get the grand-parent, which corresponds to
+            // to whole extend of the item
+            if (elm && elm.parentNode) {
+                elm = elm.parentNode;
+                if (elm && elm.parentNode) {
+                    elm = elm.parentNode;
+                }
+            }
+
+            if (elm) {
+                elm.addEventListener("mouseenter", function(event) {
+                    $rootScope.$broadcast("tokenMouseOver", tokenId, true);
+                }, false);
+
+                elm.addEventListener("mouseleave", function(event) {
+                    $rootScope.$broadcast("tokenMouseOver", tokenId, false);
+                }, false);
+            }
+        },2000);
     }
 
     function addSelectListener() {

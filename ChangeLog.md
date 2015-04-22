@@ -1,3 +1,9 @@
+- 2015-04-21: (branch: geom-ol3)
+  - improved geometry editing control via main radio-buttons: View, Move, Modify, Add.
+  - initial mechanism to highlight geometry when mouse is over corresponding token (this requires
+    the use of the template option to associate an id and a listener).
+  - other: disable Refresh button when a refresh is in progress.
+
 - 2015-04-20: (branch: geom-ol3)
   - preliminary drag interaction
 
