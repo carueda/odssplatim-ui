@@ -61,7 +61,7 @@ function olMap($rootScope, olExt) {
     var gmap, view, vectorLayer;
     var map, featureOverlay;
     var drawInteraction, modifyInteraction, dragInteraction;
-    var vectorsByGeomId = {};
+    var geoInfoById = {};
 
     var currentMode = "View";
 
@@ -188,7 +188,7 @@ function olMap($rootScope, olExt) {
             style:  styles.styleNormal
         });
         map.addLayer(vectorLayer);
-        vectorsByGeomId[geomId] = vectorLayer;
+        geoInfoById[geomId] = {layer: vectorLayer};
     }
 
     function getTokenSelection() {
@@ -196,7 +196,7 @@ function olMap($rootScope, olExt) {
     }
 
     function setTokenMouseOver(tokenId, enter) {
-        console.log("******* setTokenMouseOver tokenId=", tokenId, "enter=", enter);
+        //console.log("setTokenMouseOver tokenId=", tokenId, "enter=", enter);
         updateStyleForMouseOver(tokenId, enter);
     }
 
@@ -285,21 +285,29 @@ function olMap($rootScope, olExt) {
     }
 
     function updateStyleForMouseOver(tokenId, enter) {
-        var vectorLayer = vectorsByGeomId[tokenId];
-        if (vectorLayer) {
-            vectorLayer.setStyle(enter ? styles.styleMouseEntered : styles.styleNormal);
+        var info = geoInfoById[tokenId];
+        if (info && info.layer) {
+            if (enter) {
+                if (info.saveStyle !== styles.styleSelected) {
+                    info.saveStyle = info.layer.getStyle();
+                    info.layer.setStyle(styles.styleMouseEntered);
+                }
+            }
+            else {
+                info.layer.setStyle(info.saveStyle ? info.saveStyle : styles.styleNormal);
+            }
         }
     }
 
     function updateStylesForSelection() {
         var selectedGeomIds = _.map(tokenSelection, "token_id");
         //console.log("selectedGeomIds=", selectedGeomIds);
-        _.each(vectorsByGeomId, function(vectorLayer, geomId) {
+        _.each(geoInfoById, function(info, geomId) {
             if (_.contains(selectedGeomIds, geomId)) {
-                vectorLayer.setStyle(styles.styleSelected);
+                info.layer.setStyle(info.saveStyle = styles.styleSelected);
             }
             else {
-                vectorLayer.setStyle(styles.styleNormal);
+                info.layer.setStyle(info.saveStyle = styles.styleNormal);
             }
         });
     }
@@ -310,12 +318,12 @@ function olMap($rootScope, olExt) {
             return false;
         }
         var geomId = token.token_id;
-        var vectorLayer = vectorsByGeomId[geomId];
-        if (!vectorLayer) {
+        var info = geoInfoById[geomId];
+        if (!info || !info.layer) {
             console.log("WARN: startEditing geomId=", geomId, "no such vector");
             return false;
         }
-        console.log("startEditing geomId=", geomId, "vectorLayer=", vectorLayer);
+        console.log("startEditing geomId=", geomId, "info=", info);
 
         if (editInfo.editingToken) {
             endEditing();
@@ -323,12 +331,12 @@ function olMap($rootScope, olExt) {
 
         editInfo.editingToken = token;
 
-        var rm = map.removeLayer(vectorLayer);
-        if ( rm !== vectorLayer) {
+        var rm = map.removeLayer(info.layer);
+        if ( rm !== info.layer) {
             console.warn("removeLayer")
         }
 
-        var source = vectorLayer.getSource();
+        var source = info.layer.getSource();
         var features = source.getFeatures();
         addFeaturesToOverlay(features);
         return true;
@@ -348,7 +356,7 @@ function olMap($rootScope, olExt) {
             var token = editInfo.editingToken;
             editInfo.editingToken = null;
             var vectorLayer = createLayerFromOverlay();
-            vectorsByGeomId[token.token_id] = vectorLayer;
+            geoInfoById[token.token_id].layer = vectorLayer;
             map.addLayer(vectorLayer);
 
             // update token.geometry and notify:
