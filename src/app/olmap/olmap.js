@@ -58,7 +58,7 @@ olMap.$inject = ['$rootScope', 'olExt'];
 function olMap($rootScope, olExt) {
     var styles = getStyles();
 
-    var gmap, view, vectorLayer;
+    var gmap, view;
     var map, featureOverlay;
     var drawInteraction, modifyInteraction, dragInteraction;
     var geoInfoById = {};
@@ -171,7 +171,7 @@ function olMap($rootScope, olExt) {
         var object = geometry;
         if (!object.crs) {
             // TODO perhaps force crs to always be stored.
-            // for now, just manually assigning out "well-knwon crs.
+            // for now, just manually assigning our "well-known" crs.
             object.crs = {
                 type: 'name',
                 properties: {'name': 'EPSG:4326'}
@@ -183,7 +183,7 @@ function olMap($rootScope, olExt) {
             object: object
         });
 
-        vectorLayer = new ol.layer.Vector({
+        var vectorLayer = new ol.layer.Vector({
             source: vectorSource,
             style:  styles.styleNormal
         });
@@ -393,11 +393,10 @@ function olMap($rootScope, olExt) {
             var feature = overlayFeatures.item(ii);
             vectorSource.addFeature(feature);
         }
-        vectorLayer = new ol.layer.Vector({
+        return new ol.layer.Vector({
             source: vectorSource,
             style:  styles.styleNormal
         });
-        return vectorLayer;
     }
 
     function setCenter(ll) {
