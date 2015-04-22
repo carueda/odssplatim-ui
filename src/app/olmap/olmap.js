@@ -14,10 +14,25 @@ function MapCtrl($scope, olMap) {
     var vm = {
         mode: {
             modeList: [
-                {name: "View",   tooltip: "View-only mode"},
-                {name: "Move",   tooltip: "Move selected geometry"},
-                {name: "Modify", tooltip: "Modify selected geometry"},
-                {name: "Add",    tooltip: "Add geometry to selected token"}
+                {
+                    name: "View",
+                    tooltip: "View-only mode"
+                },
+                {
+                    name: "Move",
+                    tooltip: "Move selected geometry"
+                },
+                {
+                    name: "Modify",
+                    tooltip: "Modify selected geometry"
+                },
+                {
+                    name: "Delete",
+                    tooltip: "<div style='width: 140px'>Shift-click on the particular geometry to be deleted</div>"
+                },
+                {
+                    name: "Add",    tooltip: "Add geometry to selected token"
+                }
             ],
             selectedMode: "View"
         },
@@ -65,7 +80,7 @@ function olMap($rootScope, olExt) {
 
     var gmap, view;
     var map, featureOverlay;
-    var drawInteraction, modifyInteraction, dragInteraction;
+    var drawInteraction, modifyInteraction, deleteInteraction, dragInteraction;
     var geoInfoById = {};
 
     var currentMode = "View";
@@ -104,9 +119,6 @@ function olMap($rootScope, olExt) {
                 rotate: false
             }).extend([
                 new ol.interaction.DragPan({kinetic: null})
-                //,new ol.interaction.Select({
-                //    condition: ol.events.condition.pointerMove
-                //})
                 ,new ol.interaction.DragBox({
                     condition: ol.events.condition.shiftKeyOnly,
                     style: new ol.style.Style({
@@ -259,33 +271,43 @@ function olMap($rootScope, olExt) {
 
         if (mode === "Move") {
             //createDragInteraction();
-            console.log("enterEditMode: adding dragInteraction=", dragInteraction);
+            console.log("enterEditMode: adding dragInteraction");
             map.addInteraction(dragInteraction);
         }
         else if (mode === "Modify") {
-            console.log("enterEditMode: adding modifyInteraction=", modifyInteraction);
+            console.log("enterEditMode: adding modifyInteraction");
             map.addInteraction(modifyInteraction);
+        }
+        else if (mode === "Delete") {
+            setDeleteInteraction();
         }
         else if (mode === "Add") {
             setDrawInteraction(drawType, "Add");
         }
+        else throw new Error("unexpected mode='" + mode + "'");
+
         return true;
     }
 
     function leaveEditMode(mode) {
         endEditing();
         if (mode === "Move") {
-            console.log("leaveEditMode: removing dragInteraction=", dragInteraction);
+            //console.log("leaveEditMode: removing dragInteraction=", dragInteraction);
             map.removeInteraction(dragInteraction);
         }
         else if (mode === "Modify") {
-            console.log("leaveEditMode: removing modifyInteraction=", modifyInteraction);
+            //console.log("leaveEditMode: removing modifyInteraction=", modifyInteraction);
             map.removeInteraction(modifyInteraction);
+        }
+        else if (mode === "Delete") {
+            //console.log("leaveEditMode: removing deleteInteraction=", deleteInteraction);
+            map.removeInteraction(deleteInteraction);
         }
         else if (mode === "Add") {
             console.log("leaveEditMode: removing drawInteraction=", drawInteraction);
             map.removeInteraction(drawInteraction);
         }
+        else throw new Error("unexpected mode='" + mode + "'");
     }
 
     function updateStyleForMouseOver(tokenId, enter) {
@@ -327,7 +349,7 @@ function olMap($rootScope, olExt) {
             console.log("WARN: startEditing geomId=", geomId, "no such vector");
             return false;
         }
-        console.log("startEditing geomId=", geomId, "info=", info);
+        //console.log("startEditing geomId=", geomId, "info=", info);
 
         if (editInfo.editingToken) {
             endEditing();
@@ -380,7 +402,7 @@ function olMap($rootScope, olExt) {
     // returns new layer with features in overlay
     function createLayerFromOverlay() {
         var overlayFeatures = featureOverlay.getFeatures();
-        console.log("---createLayerFromOverlay, overlayFeatures=", overlayFeatures.getLength());
+        //console.log("---createLayerFromOverlay, overlayFeatures=", overlayFeatures.getLength());
 
         var vectorSource = new ol.source.GeoJSON({
             projection: 'EPSG:3857',
@@ -458,6 +480,74 @@ function olMap($rootScope, olExt) {
                     ol.events.condition.singleClick(event);
             }
         });
+    }
+
+    /**
+     * Sets a Select interaction with pointerMove condition for immediate visual
+     * feedback about the particular feature that would be removed;
+     * Actual deletion triggered by shift-clicking on the selected feature.
+     */
+    function setDeleteInteraction() {
+        console.log("setDeleteInteraction");
+        if (deleteInteraction) {
+            map.removeInteraction(deleteInteraction);
+        }
+        deleteInteraction = new ol.interaction.Select({
+            layers: [featureOverlay],
+            condition: ol.events.condition.pointerMove,
+            style: styles.styleDelete
+        });
+        map.addInteraction(deleteInteraction);
+
+        var selectedFeature = null;
+        var clickKey = null;
+
+        deleteInteraction.getFeatures().on('add', function() {
+            var interactionFeatures = deleteInteraction.getFeatures();
+            if (interactionFeatures.getLength() === 1) {
+                selectedFeature = interactionFeatures.item(0);
+                addMapClickListener();
+            }
+        });
+
+        deleteInteraction.getFeatures().on('remove', function() {
+            selectedFeature = null;
+            removeMapClickListener();
+        });
+
+
+        function addMapClickListener() {
+            if (!clickKey) {
+                clickKey = map.on('singleclick', function(evt) {
+                    if (!selectedFeature|| !evt.originalEvent.shiftKey) {
+                        return;
+                    }
+                    var feature = map.forEachFeatureAtPixel(evt.pixel,
+                        function(feature, layer) { return feature; }
+                    );
+                    if (selectedFeature === feature) {
+                        //console.log("shift-singleclick=", evt);
+                        removeMapClickListener();
+                        deleteFeature(feature);
+                    }
+                });
+            }
+        }
+
+        function removeMapClickListener() {
+            if (clickKey) {
+                map.unByKey(clickKey);
+                clickKey = null;
+            }
+        }
+
+        function deleteFeature(feature) {
+            console.log("deleteFeature", feature);
+            var overlayFeatures = featureOverlay.getFeatures();
+            overlayFeatures.remove(feature);
+            leaveEditMode(currentMode);
+            enterEditMode(currentMode);
+        }
     }
 
     function createDragInteraction() {
@@ -550,6 +640,15 @@ function olMap($rootScope, olExt) {
                 image: new ol.style.Circle({
                     radius: 6,
                     fill: new ol.style.Fill({ color: '#ffcc33' })
+                })
+            })
+
+            ,styleDelete: new ol.style.Style({
+                fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
+                stroke: new ol.style.Stroke({ color: '#ff2222', width: 5 }),
+                image: new ol.style.Circle({
+                    radius: 8,
+                    fill: new ol.style.Fill({ color: '#ff2222' })
                 })
             })
         };
