@@ -2,6 +2,8 @@
   - trigger token modification at the end of edit action: drag, add.  TODO: modify.
   - tooltips
   - add delete interaction based on select interaction plus click listener
+  - 'gulp dist' using ol-debug.js for now as ol.js triggers an initialization error (in MapCtrl it seems):
+      TypeError: Cannot read property 'POLYGON' of undefined
 
 - 2015-04-21: (branch: geom-ol3)
   - improved geometry editing control via main radio-buttons: View, Move, Modify, Add.

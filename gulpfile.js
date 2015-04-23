@@ -103,7 +103,7 @@ gulp.task('vendor-js', function() {
             'vendor/angular-sanitize/angular-sanitize.min.js',
             'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
             'vendor/vis/dist/vis.min.js',
-            'vendor/ol3/build/ol.js'
+            'vendor/ol3/build/ol-debug.js' // TODO use ol.js
         ])
             .pipe(concat('vendor.min.js'))
             .pipe(gulp.dest(distDest + '/js'))
