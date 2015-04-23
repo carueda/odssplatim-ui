@@ -5,6 +5,9 @@
   - 'gulp dist' using ol-debug.js for now as ol.js triggers an initialization error (in MapCtrl it seems):
       TypeError: Cannot read property 'POLYGON' of undefined
 
+  - 'gulp dist': include vendor.js with concatenated non-minified vendor scripts to facilitate debugging:
+    manual adjustment in dist/index.html to include vendor.js and app.js
+
 - 2015-04-21: (branch: geom-ol3)
   - improved geometry editing control via main radio-buttons: View, Move, Modify, Add.
   - initial mechanism to highlight geometry when mouse is over corresponding token (this requires
