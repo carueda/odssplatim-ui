@@ -234,3 +234,13 @@ div.fill {
     background-color: rgba(255, 255, 255, 0.65);
     padding: 0 3px 0 3px;
 }
+
+div.tooltip190 {
+    text-align: left;
+    width: 190px;
+}
+
+div.tooltip190 ul {
+    padding-left: 12px;
+    /*list-style-position: inside;*/
+}

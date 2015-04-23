@@ -16,22 +16,56 @@ function MapCtrl($scope, olMap) {
             modeList: [
                 {
                     name: "View",
-                    tooltip: "View-only mode"
+                    tooltip: "<div class='tooltip190'>" +
+                        "View-only mode.<br/>" +
+                        "Select (click) a timeline token above to enable edit options" +
+                        " for corresponding geometries" +
+                        "</div>"
                 },
                 {
                     name: "Move",
-                    tooltip: "Move selected geometry"
+                    tooltip: "<div class='tooltip190'>" +
+                        "<ul>" +
+                        "<li>Hover pointer over component</li>" +
+                        "<li>Drag to desired position</li>" +
+                        "</ul>" +
+                        "</div>"
                 },
                 {
                     name: "Modify",
-                    tooltip: "Modify selected geometry"
+                    tooltip: "<div class='tooltip190'>" +
+                        "<ul>" +
+                        "<li>Hover pointer over component</li>" +
+                        "<li>Depending on type:" +
+                            "<ul>" +
+                                "<li>Drag vertex to change position</li>" +
+                                "<li>Click to add a vertex</li>" +
+                                "<li>Shift-click to remove a vertex</li>" +
+                            "</ul>" +
+                        "</li>" +
+                        "</div>"
                 },
                 {
                     name: "Delete",
-                    tooltip: "<div style='width: 140px'>Shift-click on the particular geometry to be deleted</div>"
+                    tooltip: "<div class='tooltip190'>" +
+                        "<ul>" +
+                        "<li>Hover pointer over component</li>" +
+                        "<li>Shift-click to delete</li>" +
+                        "</ul>" +
+                        "</div>"
                 },
                 {
-                    name: "Add",    tooltip: "Add geometry to selected token"
+                    name: "Add",
+                    tooltip: "<div class='tooltip190'>" +
+                        "<ul>" +
+                        "<li>Select geometry type</li>" +
+                        "<li>Click map to start drawing</li>" +
+                        "<li>Depending on type:" +
+                            "<ul>" +
+                                "<li>Double click to complete</li>" +
+                            "</ul>" +
+                        "</li>" +
+                        "</div>"
                 }
             ],
             selectedMode: "View"
