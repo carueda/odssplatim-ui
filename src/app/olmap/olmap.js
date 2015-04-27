@@ -114,7 +114,8 @@ function olMap($rootScope, olExt) {
 
     var gmap, view;
     var map, featureOverlay;
-    var drawInteraction, modifyInteraction, deleteInteraction, dragInteraction;
+    var modifyHandler = createModifyHandler();
+    var drawInteraction, deleteInteraction, dragInteraction;
     var geoInfoById = {};
 
     var currentMode = "View";
@@ -193,7 +194,6 @@ function olMap($rootScope, olExt) {
         createFeatureOverlay();
 
         createDragInteraction();
-        createModifyInteraction();
 
         function syncMapMove() {
             //console.log('syncMapMove', view.getCenter());
@@ -309,8 +309,7 @@ function olMap($rootScope, olExt) {
             map.addInteraction(dragInteraction);
         }
         else if (mode === "Modify") {
-            console.log("enterEditMode: adding modifyInteraction");
-            map.addInteraction(modifyInteraction);
+            modifyHandler.setInteraction();
         }
         else if (mode === "Delete") {
             setDeleteInteraction();
@@ -330,8 +329,7 @@ function olMap($rootScope, olExt) {
             map.removeInteraction(dragInteraction);
         }
         else if (mode === "Modify") {
-            //console.log("leaveEditMode: removing modifyInteraction=", modifyInteraction);
-            map.removeInteraction(modifyInteraction);
+            modifyHandler.unsetInteraction();
         }
         else if (mode === "Delete") {
             //console.log("leaveEditMode: removing deleteInteraction=", deleteInteraction);
@@ -493,27 +491,43 @@ function olMap($rootScope, olExt) {
     }
 
     function createFeatureOverlay() {
-        // "The features are not added to a regular vector layer/source,
-        // but to a feature overlay which holds a collection of features.
-        // This collection is passed to the modify and also the draw
-        // interaction, so that both can add or modify features."
         featureOverlay = new ol.FeatureOverlay({
             style: styles.styleOverlay
         });
         featureOverlay.setMap(map);
     }
 
-    function createModifyInteraction() {
-        modifyInteraction = new ol.interaction.Modify({
-            features: featureOverlay.getFeatures(),
-            // "the SHIFT key must be pressed to delete vertices, so
-            // that new vertices can be drawn at the same position
-            // of existing vertices"
-            deleteCondition: function(event) {
-                return ol.events.condition.shiftKeyOnly(event) &&
-                    ol.events.condition.singleClick(event);
+    function createModifyHandler() {
+
+        var modifyInteraction = null;
+
+        return {
+            setInteraction:    setInteraction,
+            unsetInteraction:  unsetInteraction
+        };
+
+        function setInteraction() {
+            unsetInteraction();
+            map.addInteraction(modifyInteraction = createModifyInteraction());
+        }
+
+        function unsetInteraction() {
+            if (modifyInteraction) {
+                map.removeInteraction(modifyInteraction);
+                modifyInteraction = null;
             }
-        });
+        }
+
+        function createModifyInteraction() {
+            //console.log("createModifyInteraction");
+            return new ol.interaction.Modify({
+                features: featureOverlay.getFeatures(),
+                deleteCondition: function(event) {
+                    return ol.events.condition.shiftKeyOnly(event) &&
+                        ol.events.condition.singleClick(event);
+                }
+            });
+        }
     }
 
     /**
