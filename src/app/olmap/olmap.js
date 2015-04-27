@@ -6,6 +6,8 @@ angular.module('odssPlatimApp.olmap', ['odssPlatimApp.olmap.directives', 'odssPl
     .factory('olMap', olMap)
 ;
 
+var DEFAULT_DRAW_TYPE = "Polygon";
+
 MapCtrl.$inject = ['$scope', 'olMap'];
 
 function MapCtrl($scope, olMap) {
@@ -77,7 +79,7 @@ function MapCtrl($scope, olMap) {
                 {name: "LineString", value: ol.geom.GeometryType.LINE_STRING},
                 {name: "Point",      value: ol.geom.GeometryType.POINT}
             ],
-            selectedType: "Polygon"
+            selectedType: DEFAULT_DRAW_TYPE
         }
     };
     $scope.vm = vm;
@@ -116,13 +118,11 @@ function olMap($rootScope, olExt) {
     var map, featureOverlay;
     var modifyHandler = createModifyHandler();
     var dragHandler = createDragHandler();
-    var drawInteraction, deleteInteraction;
+    var drawHandler = createDrawHandler();
+    var deleteInteraction;
     var geoInfoById = {};
 
     var currentMode = "View";
-
-    // draw type when drawInteraction is enabled
-    var drawType = "Polygon";
 
     var tokenSelection = [];
     var editInfo = {
@@ -315,7 +315,7 @@ function olMap($rootScope, olExt) {
             setDeleteInteraction();
         }
         else if (mode === "Add") {
-            setDrawInteraction(drawType, "Add");
+            drawHandler.setInteraction("Add");
         }
         else throw new Error("unexpected mode='" + mode + "'");
 
@@ -335,8 +335,7 @@ function olMap($rootScope, olExt) {
             map.removeInteraction(deleteInteraction);
         }
         else if (mode === "Add") {
-            console.log("leaveEditMode: removing drawInteraction=", drawInteraction);
-            map.removeInteraction(drawInteraction);
+            drawHandler.unsetInteraction();
         }
         else throw new Error("unexpected mode='" + mode + "'");
     }
@@ -619,33 +618,61 @@ function olMap($rootScope, olExt) {
         }
     }
 
-    /**
-     * @param type {ol.geom.GeometryType}
-     */
-    function createDrawInteraction(type) {
-        console.log("createDrawInteraction type=", type);
-        drawInteraction = new ol.interaction.Draw({
-            features: featureOverlay.getFeatures(),
-            type: type
-        });
+    function createDrawHandler() {
+        var drawType = DEFAULT_DRAW_TYPE;
 
-        drawInteraction.on('drawend', changeEnded);
+        var drawInteraction = null;
+
+        return {
+            setDrawType:       setDrawType,
+            setInteraction:    setInteraction,
+            unsetInteraction:  unsetInteraction
+        };
+
+        function setDrawType(type) {
+            if (!type) throw new Error("setDrawType: type required");
+            drawType = type;
+        }
+
+        /**
+         * Sets a draw interaction for the current drawType if the currentMode
+         * is "Add" or the given parameter nextMode is "Add".
+         * @param nextMode next edit mode; can be undefined
+         */
+        function setInteraction(nextMode) {
+            unsetInteraction();
+            if (currentMode === "Add" || nextMode === "Add") {
+                if (!drawInteraction) {
+                    createDrawInteraction();
+                }
+                map.addInteraction(drawInteraction);
+            }
+        }
+
+        function createDrawInteraction() {
+            //console.log("createDrawInteraction drawType=", drawType);
+            drawInteraction = new ol.interaction.Draw({
+                features: featureOverlay.getFeatures(),
+                type: drawType
+            });
+            drawInteraction.on('drawend', changeEnded);
+        }
+
+        function unsetInteraction() {
+            if (drawInteraction) {
+                map.removeInteraction(drawInteraction);
+                drawInteraction = null;
+            }
+        }
     }
 
     /**
-     * @param type {ol.geom.GeometryType}
+     * Called by the controller when the user selects a draw type.
+     * @param type {ol.geom.GeometryType} draw type
      */
-    function setDrawInteraction(type, nextMode) {
-        if (!type) throw new Error("setDrawInteraction: type required");
-        console.log("setDrawInteraction type=", type);
-        drawType = type;
-        if (drawInteraction) {
-            map.removeInteraction(drawInteraction);
-        }
-        createDrawInteraction(type);
-        if (currentMode === "Add" || nextMode === "Add") {
-            map.addInteraction(drawInteraction);
-        }
+    function setDrawInteraction(type) {
+        drawHandler.setDrawType(type);
+        drawHandler.setInteraction();
     }
 
     /**
