@@ -116,10 +116,12 @@ function olMap($rootScope, olExt) {
 
     var gmap, view;
     var map, featureOverlay;
+
     var modifyHandler = createModifyHandler();
-    var dragHandler = createDragHandler();
-    var drawHandler = createDrawHandler();
-    var deleteInteraction;
+    var dragHandler   = createDragHandler();
+    var drawHandler   = createDrawHandler();
+    var deleteHandler = createDeleteHandler();
+
     var geoInfoById = {};
 
     var currentMode = "View";
@@ -312,7 +314,7 @@ function olMap($rootScope, olExt) {
             modifyHandler.setInteraction();
         }
         else if (mode === "Delete") {
-            setDeleteInteraction();
+            deleteHandler.setInteraction();
         }
         else if (mode === "Add") {
             drawHandler.setInteraction("Add");
@@ -331,8 +333,7 @@ function olMap($rootScope, olExt) {
             modifyHandler.unsetInteraction();
         }
         else if (mode === "Delete") {
-            //console.log("leaveEditMode: removing deleteInteraction=", deleteInteraction);
-            map.removeInteraction(deleteInteraction);
+            deleteHandler.unsetInteraction();
         }
         else if (mode === "Add") {
             drawHandler.unsetInteraction();
@@ -529,38 +530,52 @@ function olMap($rootScope, olExt) {
     }
 
     /**
-     * Sets a Select interaction with pointerMove condition for immediate visual
+     * Uses a Select interaction with pointerMove condition for immediate visual
      * feedback about the particular feature that would be removed;
      * Actual deletion triggered by shift-clicking on the selected feature.
      */
-    function setDeleteInteraction() {
-        console.log("setDeleteInteraction");
-        if (deleteInteraction) {
-            map.removeInteraction(deleteInteraction);
-        }
-        deleteInteraction = new ol.interaction.Select({
-            layers: [featureOverlay],
-            condition: ol.events.condition.pointerMove,
-            style: styles.styleDelete
-        });
-        map.addInteraction(deleteInteraction);
-
+    function createDeleteHandler() {
         var selectedFeature = null;
         var clickKey = null;
+        var deleteInteraction = null;
 
-        deleteInteraction.getFeatures().on('add', function() {
-            var interactionFeatures = deleteInteraction.getFeatures();
-            if (interactionFeatures.getLength() === 1) {
-                selectedFeature = interactionFeatures.item(0);
-                addMapClickListener();
+        return {
+            setInteraction:    setInteraction,
+            unsetInteraction:  unsetInteraction
+        };
+
+        function setInteraction() {
+            //console.log("deleteHandler.setDeleteInteraction");
+            unsetInteraction();
+            deleteInteraction = new ol.interaction.Select({
+                layers: [featureOverlay],
+                condition: ol.events.condition.pointerMove,
+                style: styles.styleDelete
+            });
+            map.addInteraction(deleteInteraction);
+
+            deleteInteraction.getFeatures().on('add', function() {
+                var interactionFeatures = deleteInteraction.getFeatures();
+                //console.log("add: interactionFeatures.getLength()=", interactionFeatures.getLength());
+                if (interactionFeatures.getLength() === 1) {
+                    selectedFeature = interactionFeatures.item(0);
+                    addMapClickListener();
+                }
+            });
+
+            deleteInteraction.getFeatures().on('remove', function() {
+                //console.log("remove: interactionFeatures.getLength()=", deleteInteraction.getFeatures().getLength());
+                selectedFeature = null;
+                removeMapClickListener();
+            });
+        }
+
+        function unsetInteraction() {
+            if (deleteInteraction) {
+                map.removeInteraction(deleteInteraction);
+                deleteInteraction = null;
             }
-        });
-
-        deleteInteraction.getFeatures().on('remove', function() {
-            selectedFeature = null;
-            removeMapClickListener();
-        });
-
+        }
 
         function addMapClickListener() {
             if (!clickKey) {
@@ -588,7 +603,7 @@ function olMap($rootScope, olExt) {
         }
 
         function deleteFeature(feature) {
-            console.log("deleteFeature", feature);
+            //console.log("deleteFeature", feature);
             var overlayFeatures = featureOverlay.getFeatures();
             overlayFeatures.remove(feature);
             leaveEditMode(currentMode);
