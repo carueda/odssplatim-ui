@@ -115,7 +115,8 @@ function olMap($rootScope, olExt) {
     var gmap, view;
     var map, featureOverlay;
     var modifyHandler = createModifyHandler();
-    var drawInteraction, deleteInteraction, dragInteraction;
+    var dragHandler = createDragHandler();
+    var drawInteraction, deleteInteraction;
     var geoInfoById = {};
 
     var currentMode = "View";
@@ -193,7 +194,8 @@ function olMap($rootScope, olExt) {
 
         createFeatureOverlay();
 
-        createDragInteraction();
+        // drag interaction set here for better dispatch in terms of restoring pointer
+        dragHandler.setInteraction();
 
         function syncMapMove() {
             //console.log('syncMapMove', view.getCenter());
@@ -304,9 +306,7 @@ function olMap($rootScope, olExt) {
         }
 
         if (mode === "Move") {
-            //createDragInteraction();
-            console.log("enterEditMode: adding dragInteraction");
-            map.addInteraction(dragInteraction);
+            dragHandler.setInteraction();
         }
         else if (mode === "Modify") {
             modifyHandler.setInteraction();
@@ -325,8 +325,7 @@ function olMap($rootScope, olExt) {
     function leaveEditMode(mode) {
         endEditing();
         if (mode === "Move") {
-            //console.log("leaveEditMode: removing dragInteraction=", dragInteraction);
-            map.removeInteraction(dragInteraction);
+            dragHandler.unsetInteraction();
         }
         else if (mode === "Modify") {
             modifyHandler.unsetInteraction();
@@ -406,7 +405,7 @@ function olMap($rootScope, olExt) {
             var feature = features[ii];
             featureOverlay.addFeature(feature);
         }
-        console.log("---startEditing, overlayFeatures=", featureOverlay.getFeatures().getLength());
+        //console.log("---startEditing, overlayFeatures=", featureOverlay.getFeatures().getLength());
     }
 
     function endEditing() {
@@ -425,7 +424,7 @@ function olMap($rootScope, olExt) {
                 featureProjection: 'EPSG:3857'
             });
             token.geometry = angular.fromJson(geometryString);
-            console.warn("---endEditing token.geometry=", token.geometry);
+            //console.log("---endEditing token.geometry=", token.geometry);
             $rootScope.$broadcast("tokenGeometryUpdated", token.token_id, token.geometry);
         }
         clearFeaturesOverlay();
@@ -598,8 +597,26 @@ function olMap($rootScope, olExt) {
         }
     }
 
-    function createDragInteraction() {
-        dragInteraction = olExt.createDragInteraction(featureOverlay.getFeatures(), changeEnded);
+    function createDragHandler() {
+        var dragInteraction = null;
+
+        return {
+            setInteraction:    setInteraction,
+            unsetInteraction:  unsetInteraction
+        };
+
+        function setInteraction() {
+            if (!dragInteraction) {
+                dragInteraction = olExt.createDragInteraction(featureOverlay.getFeatures(), changeEnded);
+            }
+            map.addInteraction(dragInteraction);
+        }
+
+        function unsetInteraction() {
+            if (dragInteraction) {
+                map.removeInteraction(dragInteraction);
+            }
+        }
     }
 
     /**
