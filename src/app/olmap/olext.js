@@ -63,7 +63,7 @@ function olExt() {
     function createModifyHandler(map, featureOverlay, changeDetected) {
         var selectInteraction = null;
         var modifyInteraction = null;
-        var geometry = null, geomKey = null; // geometry and change listener key
+        var geometryKeyPairs = [];  // geometries and keys of change listeners
 
         return {
             setInteraction:    setInteraction,
@@ -85,10 +85,10 @@ function olExt() {
                 map.removeInteraction(selectInteraction);
                 selectInteraction = null;
             }
-            if (geometry) {
-                geometry.unByKey(geomKey);
-                geometry = geomKey = null;
-            }
+            _.each(geometryKeyPairs, function(pair) {
+                pair.geometry.unByKey(pair.geomKey);
+            });
+            geometryKeyPairs = [];
         }
 
         function createSelectInteraction() {
@@ -99,14 +99,17 @@ function olExt() {
                     style: styleOverlay2
                 });
 
+                // add a geometry change listener per feature in the overlay:
+                geometryKeyPairs = [];
                 var overlayFeatures = featureOverlay.getFeatures();
-                if (overlayFeatures.getLength() === 1) { // the expected case
-                    geometry = overlayFeatures.item(0).getGeometry();
+                overlayFeatures.forEach(function(feature) {
+                    var geometry = feature.getGeometry();
                     //console.log("ADD: geometry=", geometry);
-                    geomKey = geometry.on('change', function() {
+                    var geomKey = geometry.on('change', function() {
                         changeDetected();
-                    })
-                }
+                    });
+                    geometryKeyPairs.push({geometry: geometry, geomKey:geomKey});
+                });
             }
 
             return selectInteraction;
