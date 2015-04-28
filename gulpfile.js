@@ -102,9 +102,22 @@ gulp.task('vendor-js', function() {
             'vendor/angular/angular.min.js',
             'vendor/angular-sanitize/angular-sanitize.min.js',
             'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
-            'vendor/vis/dist/vis.min.js'
+            'vendor/vis/dist/vis.min.js',
+            'vendor/ol3/build/ol-debug.js' // TODO use ol.js
         ])
             .pipe(concat('vendor.min.js'))
+            .pipe(gulp.dest(distDest + '/js')),
+
+        gulp.src([
+            'vendor/moment/moment.js',
+            'vendor/lodash/dist/lodash.js',
+            'vendor/angular/angular.js',
+            'vendor/angular-sanitize/angular-sanitize.js',
+            'vendor/angular-bootstrap/ui-bootstrap-tpls.js',
+            'vendor/vis/dist/vis.js',
+            'vendor/ol3/build/ol-debug.js'
+        ])
+            .pipe(concat('vendor.js'))
             .pipe(gulp.dest(distDest + '/js'))
     )
 });
@@ -113,7 +126,8 @@ gulp.task('vendor-css', function() {
     return gulp.src([
         'vendor/bootstrap-css/css/**/*.min.css',
         'vendor/font-awesome/css/**/*.min.css',
-        'vendor/vis/dist/vis.min.css'
+        'vendor/vis/dist/vis.min.css',
+        'vendor/ol3/css/ol.css'
     ])
         .pipe(concat('vendor.min.css'))
         .pipe(gulp.dest(distDest + '/css'))

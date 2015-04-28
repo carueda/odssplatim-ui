@@ -31,7 +31,8 @@
         </div>
         <div class="pull-right">
             <button class="btn btn-default btn-sm" ng-click="refresh()"
-                    tooltip="Reloads the timeline from the database"
+                    ng-disabled="isRefreshing"
+                    tooltip="Reloads the planning information from the database"
                     tooltip-placement="bottom"
                     >Refresh</button>
 
@@ -63,6 +64,10 @@
          ng-click="click()"
          ng-keypress="keyPressed($event)"
     ></div>
+
+    <br>
+
+    <olmap></olmap>
 
     <div ng-show="debug">
         <div>

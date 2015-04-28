@@ -5,9 +5,9 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
 
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus'];
+MainCtrl.$inject = ['$scope', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus', 'olMap'];
 
-function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus) {
+function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus, olMap) {
     $scope.debug = utl.getDebug();
 
     $scope.cfg = cfg;
@@ -15,6 +15,8 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
     $scope.messages   = status.messages;
     $scope.activities = status.activities;
     $scope.errors     = status.errors;
+
+    $scope.isRefreshing = false;
 
     function updateLastUpdated() {
         var dur = moment.duration($scope.lastUpdated.on.diff(moment()));
@@ -130,12 +132,16 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
         status.errors.removeAll();
         angular.element(document.getElementById('logarea')).html("");
         //console.log("refreshing...");
+        $scope.isRefreshing = true;
+        $scope.$broadcast("refreshStarting");
         timelineWidget.reinit();
 
+        // callback functions for refresh sequence
         var fns = {
             gotGeneralInfo:       gotGeneralInfo,
             gotDefaultPeriodId:   gotDefaultPeriodId,
-            refreshComplete:      refreshComplete
+            refreshComplete:      refreshComplete,
+            refreshError:         refreshError
         };
 
         tokens.getGeneralInfo(fns, function(fns) {
@@ -150,7 +156,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
     }
 
     /**
-     * Inserts a timeline (a platform and its tokens) in the widget.
+     * Inserts a timeline (i.e., a platform and its tokens) in the widget.
      * @param tml
      */
     var insertTimeline = function(tml) {
@@ -161,7 +167,21 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
             if (!token.ttype) {
                 token.ttype = "ttdeployment";
             }
-            timelineWidget.addToken(token);
+
+            if (!token.geometry) {
+                // TODO temporary mechanism to allow "adding" a brand new geometry
+                token.geometry = {
+                    type: "FeatureCollection",
+                    features: []
+                };
+            }
+
+            var item = timelineWidget.addToken(token);
+
+            //console.log("insertTimeline: item=", item.id, " geometry=", item.geometry)
+            if (token.geometry) {
+                olMap.addGeometry(item.id, token.geometry);
+            }
         });
     };
 
@@ -174,6 +194,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
         setTimeout(function() {
             var selectedPlatforms = platimModel.getSelectedPlatforms();
             timelineWidget.reinit(platimModel.holidays);
+            olMap.reinit();
             //console.log("selectedPlatforms", selectedPlatforms);
             _.each(selectedPlatforms, insertTimeline);
             timelineWidget.redraw();
@@ -189,7 +210,12 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
 
     function refreshComplete() {
         //console.log("refreshing... done.");
+        $scope.isRefreshing = false;
         platformOptionsUpdated(false);
+    }
+
+    function refreshError() {
+        $scope.isRefreshing = false;
     }
 
     $scope.$on('platformOptionsUpdated', platformOptionsUpdated);

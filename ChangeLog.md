@@ -1,3 +1,48 @@
+## change log ##
+
+- 2015-04-28: (branch: geom-ol3 - v.0.7.1)
+  - refactor: all edit interaction handlers now in submodules in olext.js
+  - trigger token modification also at the end of each modify interaction
+  - save token geometry prior to edits to do update and notification if there's a change
+  - allow to add geometry to brand new item in the timeline
+  - delete item now also removes associated geometry
+  - NOTE: loosely using "item" to refer to timeline elements, and "token" to corresponding
+    elements for database purposes. However, olMap uses a mix of both terms, but uses the 'id'
+    field for identification, which applies to both saved "tokens" and brand new "items."
+  
+  - Other: include refreshError callback in refresh sequence (immediate goal: re-enable refresh button in case of error).
+    TODO: overall refresh sequence logic needs to be revisited for clean-up and eventual use of $q.
+
+- 2015-04-22: (branch: geom-ol3 toward v.0.7.0)
+  - trigger token modification at the end of edit action: drag, add.  TODO: modify.
+  - tooltips
+  - add delete interaction based on select interaction plus click listener
+  - 'gulp dist' using ol-debug.js for now as ol.js triggers an initialization error (in MapCtrl it seems):
+      TypeError: Cannot read property 'POLYGON' of undefined
+
+  - 'gulp dist': include vendor.js with concatenated non-minified vendor scripts to facilitate debugging:
+    manual adjustment in dist/index.html to include vendor.js and app.js
+
+- 2015-04-21: (branch: geom-ol3)
+  - improved geometry editing control via main radio-buttons: View, Move, Modify, Add.
+  - initial mechanism to highlight geometry when mouse is over corresponding token (this requires
+    the use of the template option to associate an id and a listener).
+  - other: disable Refresh button when a refresh is in progress.
+
+- 2015-04-20: (branch: geom-ol3)
+  - preliminary drag interaction
+
+- 2015-04-13: (branch: geom-ol3)
+  - initial coordination between timeline and map for geometry editing, loading and saving
+  - preliminary mechanism to add brand new geometry
+
+- 2015-04-08: (branch: geom-ol3)
+  - geometry editing testing with openlayers3
+  - Enabling Google Map base layer based on http://openlayers.org/en/v3.0.0/examples/google-map.html
+  
+- 2015-04-08: (branch: geom-prep)
+  - preliminary preparations for definition/editing of geometries associated with tokens
+  
 - 2015-04-07: (0.5.0)
   - internal: move platform, token, period services to their own modules
   - focus timeline upon click to save and refresh buttons

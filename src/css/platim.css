@@ -214,3 +214,33 @@ div.status_modified {
     margin-left: 3px !important;
     margin-right: 3px !important;
 }
+
+#olmap {
+    border: 1px solid rgb(212,212,212);
+    width: 100%;
+    height: 600px;
+}
+div.fill {
+    width: 100%;
+    height: 100%;
+}
+
+.custom-mouse-position {
+    top: 8px;
+    right: 8px;
+    position: absolute;
+    font-family: monospace, serif;
+    font-size: 12px;
+    background-color: rgba(255, 255, 255, 0.65);
+    padding: 0 3px 0 3px;
+}
+
+div.tooltip190 {
+    text-align: left;
+    width: 190px;
+}
+
+div.tooltip190 ul {
+    padding-left: 12px;
+    /*list-style-position: inside;*/
+}
