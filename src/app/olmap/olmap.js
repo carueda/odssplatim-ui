@@ -117,10 +117,7 @@ function olMap($rootScope, olExt) {
     var gmap, view;
     var map, featureOverlay;
 
-    var modifyHandler = createModifyHandler();
-    var dragHandler   = createDragHandler();
-    var drawHandler   = createDrawHandler();
-    var deleteHandler = createDeleteHandler();
+    var dragHandler, modifyHandler, deleteHandler, drawHandler;
 
     var geoInfoById = {};
 
@@ -195,6 +192,11 @@ function olMap($rootScope, olExt) {
         gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
 
         createFeatureOverlay();
+
+        dragHandler   = olExt.createDragHandler(map, featureOverlay, changeEnded);
+        modifyHandler = olExt.createModifyHandler(map, featureOverlay);
+        deleteHandler = olExt.createDeleteHandler(map, featureOverlay, changeEnded);
+        drawHandler   = olExt.createDrawHandler(map, featureOverlay, DEFAULT_DRAW_TYPE, changeEnded);
 
         // drag interaction set here for better dispatch in terms of restoring pointer
         dragHandler.setInteraction();
@@ -317,7 +319,7 @@ function olMap($rootScope, olExt) {
             deleteHandler.setInteraction();
         }
         else if (mode === "Add") {
-            drawHandler.setInteraction("Add");
+            drawHandler.setInteraction();
         }
         else throw new Error("unexpected mode='" + mode + "'");
 
@@ -496,208 +498,18 @@ function olMap($rootScope, olExt) {
         featureOverlay.setMap(map);
     }
 
-    function createModifyHandler() {
-
-        var modifyInteraction = null;
-
-        return {
-            setInteraction:    setInteraction,
-            unsetInteraction:  unsetInteraction
-        };
-
-        function setInteraction() {
-            unsetInteraction();
-            map.addInteraction(modifyInteraction = createModifyInteraction());
-        }
-
-        function unsetInteraction() {
-            if (modifyInteraction) {
-                map.removeInteraction(modifyInteraction);
-                modifyInteraction = null;
-            }
-        }
-
-        function createModifyInteraction() {
-            //console.log("createModifyInteraction");
-            return new ol.interaction.Modify({
-                features: featureOverlay.getFeatures(),
-                deleteCondition: function(event) {
-                    return ol.events.condition.shiftKeyOnly(event) &&
-                        ol.events.condition.singleClick(event);
-                }
-            });
-        }
-    }
-
-    /**
-     * Uses a Select interaction with pointerMove condition for immediate visual
-     * feedback about the particular feature that would be removed;
-     * Actual deletion triggered by shift-clicking on the selected feature.
-     */
-    function createDeleteHandler() {
-        var selectedFeature = null;
-        var clickKey = null;
-        var deleteInteraction = null;
-
-        return {
-            setInteraction:    setInteraction,
-            unsetInteraction:  unsetInteraction
-        };
-
-        function setInteraction() {
-            //console.log("deleteHandler.setDeleteInteraction");
-            unsetInteraction();
-            deleteInteraction = new ol.interaction.Select({
-                layers: [featureOverlay],
-                condition: ol.events.condition.pointerMove,
-                style: styles.styleDelete
-            });
-            map.addInteraction(deleteInteraction);
-
-            deleteInteraction.getFeatures().on('add', function() {
-                var interactionFeatures = deleteInteraction.getFeatures();
-                //console.log("add: interactionFeatures.getLength()=", interactionFeatures.getLength());
-                if (interactionFeatures.getLength() === 1) {
-                    selectedFeature = interactionFeatures.item(0);
-                    addMapClickListener();
-                }
-            });
-
-            deleteInteraction.getFeatures().on('remove', function() {
-                //console.log("remove: interactionFeatures.getLength()=", deleteInteraction.getFeatures().getLength());
-                selectedFeature = null;
-                removeMapClickListener();
-            });
-        }
-
-        function unsetInteraction() {
-            if (deleteInteraction) {
-                map.removeInteraction(deleteInteraction);
-                deleteInteraction = null;
-            }
-        }
-
-        function addMapClickListener() {
-            if (!clickKey) {
-                clickKey = map.on('singleclick', function(evt) {
-                    if (!selectedFeature|| !evt.originalEvent.shiftKey) {
-                        return;
-                    }
-                    var feature = map.forEachFeatureAtPixel(evt.pixel,
-                        function(feature, layer) { return feature; }
-                    );
-                    if (selectedFeature === feature) {
-                        //console.log("shift-singleclick=", evt);
-                        removeMapClickListener();
-                        deleteFeature(feature);
-                    }
-                });
-            }
-        }
-
-        function removeMapClickListener() {
-            if (clickKey) {
-                map.unByKey(clickKey);
-                clickKey = null;
-            }
-        }
-
-        function deleteFeature(feature) {
-            //console.log("deleteFeature", feature);
-            var overlayFeatures = featureOverlay.getFeatures();
-            overlayFeatures.remove(feature);
-            leaveEditMode(currentMode);
-            enterEditMode(currentMode);
-        }
-    }
-
-    function createDragHandler() {
-        var dragInteraction = null;
-
-        return {
-            setInteraction:    setInteraction,
-            unsetInteraction:  unsetInteraction
-        };
-
-        function setInteraction() {
-            if (!dragInteraction) {
-                dragInteraction = olExt.createDragInteraction(featureOverlay.getFeatures(), changeEnded);
-            }
-            map.addInteraction(dragInteraction);
-        }
-
-        function unsetInteraction() {
-            if (dragInteraction) {
-                map.removeInteraction(dragInteraction);
-            }
-        }
-    }
-
-    function createDrawHandler() {
-        var drawType = DEFAULT_DRAW_TYPE;
-
-        var drawInteraction = null;
-
-        return {
-            setDrawType:       setDrawType,
-            setInteraction:    setInteraction,
-            unsetInteraction:  unsetInteraction
-        };
-
-        function setDrawType(type) {
-            if (!type) throw new Error("setDrawType: type required");
-            drawType = type;
-        }
-
-        /**
-         * Sets a draw interaction for the current drawType if the currentMode
-         * is "Add" or the given parameter nextMode is "Add".
-         * @param nextMode next edit mode; can be undefined
-         */
-        function setInteraction(nextMode) {
-            unsetInteraction();
-            if (currentMode === "Add" || nextMode === "Add") {
-                if (!drawInteraction) {
-                    createDrawInteraction();
-                }
-                map.addInteraction(drawInteraction);
-            }
-        }
-
-        function createDrawInteraction() {
-            //console.log("createDrawInteraction drawType=", drawType);
-            drawInteraction = new ol.interaction.Draw({
-                features: featureOverlay.getFeatures(),
-                type: drawType
-            });
-            drawInteraction.on('drawend', changeEnded);
-        }
-
-        function unsetInteraction() {
-            if (drawInteraction) {
-                map.removeInteraction(drawInteraction);
-                drawInteraction = null;
-            }
-        }
-    }
-
     /**
      * Called by the controller when the user selects a draw type.
      * @param type {ol.geom.GeometryType} draw type
      */
     function setDrawInteraction(type) {
         drawHandler.setDrawType(type);
-        drawHandler.setInteraction();
     }
 
     /**
      * Common callback for when any edit action completes
-     * @param evt
      */
-    function changeEnded(evt) {
-        //console.log("changeEnded evt=", evt, "tokenSelection[0]=", tokenSelection[0]);
-
-        // the mechanism to reflect the change is just leave-and-reenter the current mode:
+    function changeEnded() {
         leaveEditMode(currentMode);
         enterEditMode(currentMode);
     }
@@ -747,15 +559,6 @@ function olMap($rootScope, olExt) {
                 image: new ol.style.Circle({
                     radius: 6,
                     fill: new ol.style.Fill({ color: '#ffcc33' })
-                })
-            })
-
-            ,styleDelete: new ol.style.Style({
-                fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
-                stroke: new ol.style.Stroke({ color: '#ff2222', width: 5 }),
-                image: new ol.style.Circle({
-                    radius: 8,
-                    fill: new ol.style.Fill({ color: '#ff2222' })
                 })
             })
         };

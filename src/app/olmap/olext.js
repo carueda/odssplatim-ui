@@ -7,15 +7,200 @@ angular.module('odssPlatimApp.olmap.ext', [])
 
 function olExt() {
     return {
-        createDragInteraction:  createDragInteraction
+        createDragHandler:      createDragHandler,
+        createModifyHandler:    createModifyHandler,
+        createDeleteHandler:    createDeleteHandler,
+        createDrawHandler:      createDrawHandler
     };
 
-    function createDragInteraction(features, dragEnd) {
-        return new app.Drag({
-            features: features
-        }, dragEnd);
+    function createDragHandler(map, featureOverlay, changeEnded) {
+        var dragInteraction = null;
+
+        return {
+            setInteraction:    setInteraction,
+            unsetInteraction:  unsetInteraction
+        };
+
+        function setInteraction() {
+            if (!dragInteraction) {
+                dragInteraction = new app.Drag({
+                    features: featureOverlay.getFeatures()
+                }, changeEnded);
+            }
+            map.addInteraction(dragInteraction);
+        }
+
+        function unsetInteraction() {
+            if (dragInteraction) {
+                map.removeInteraction(dragInteraction);
+            }
+        }
     }
 
+    function createModifyHandler(map, featureOverlay) {
+
+        var modifyInteraction = null;
+
+        return {
+            setInteraction:    setInteraction,
+            unsetInteraction:  unsetInteraction
+        };
+
+        function setInteraction() {
+            unsetInteraction();
+            map.addInteraction(modifyInteraction = createModifyInteraction());
+        }
+
+        function unsetInteraction() {
+            if (modifyInteraction) {
+                map.removeInteraction(modifyInteraction);
+                modifyInteraction = null;
+            }
+        }
+
+        function createModifyInteraction() {
+            //console.log("createModifyInteraction");
+            return new ol.interaction.Modify({
+                features: featureOverlay.getFeatures(),
+                deleteCondition: function(event) {
+                    return ol.events.condition.shiftKeyOnly(event) &&
+                        ol.events.condition.singleClick(event);
+                }
+            });
+        }
+    }
+
+    /**
+     * Uses a Select interaction with pointerMove condition for immediate visual
+     * feedback about the particular feature that would be removed;
+     * Actual deletion triggered by shift-clicking on the selected feature.
+     */
+    function createDeleteHandler(map, featureOverlay, featureRemoved) {
+        var selectedFeature = null;
+        var clickKey = null;
+        var deleteInteraction = null;
+
+        var styleDelete = new ol.style.Style({
+            fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
+            stroke: new ol.style.Stroke({ color: '#ff2222', width: 5 }),
+            image: new ol.style.Circle({
+                radius: 8,
+                fill: new ol.style.Fill({ color: '#ff2222' })
+            })
+        });
+
+        return {
+            setInteraction:    setInteraction,
+            unsetInteraction:  unsetInteraction
+        };
+
+        function setInteraction() {
+            //console.log("deleteHandler.setDeleteInteraction");
+            unsetInteraction();
+            deleteInteraction = new ol.interaction.Select({
+                layers: [featureOverlay],
+                condition: ol.events.condition.pointerMove,
+                style: styleDelete
+            });
+            map.addInteraction(deleteInteraction);
+
+            deleteInteraction.getFeatures().on('add', function() {
+                var interactionFeatures = deleteInteraction.getFeatures();
+                //console.log("add: interactionFeatures.getLength()=", interactionFeatures.getLength());
+                if (interactionFeatures.getLength() === 1) {
+                    selectedFeature = interactionFeatures.item(0);
+                    addMapClickListener();
+                }
+            });
+
+            deleteInteraction.getFeatures().on('remove', function() {
+                //console.log("remove: interactionFeatures.getLength()=", deleteInteraction.getFeatures().getLength());
+                selectedFeature = null;
+                removeMapClickListener();
+            });
+        }
+
+        function unsetInteraction() {
+            if (deleteInteraction) {
+                map.removeInteraction(deleteInteraction);
+                deleteInteraction = null;
+            }
+        }
+
+        function addMapClickListener() {
+            if (!clickKey) {
+                clickKey = map.on('singleclick', function(evt) {
+                    if (!selectedFeature|| !evt.originalEvent.shiftKey) {
+                        return;
+                    }
+                    var feature = map.forEachFeatureAtPixel(evt.pixel,
+                        function(feature, layer) { return feature; }
+                    );
+                    if (selectedFeature === feature) {
+                        //console.log("shift-singleclick=", evt);
+                        removeMapClickListener();
+                        deleteFeature(feature);
+                    }
+                });
+            }
+        }
+
+        function removeMapClickListener() {
+            if (clickKey) {
+                map.unByKey(clickKey);
+                clickKey = null;
+            }
+        }
+
+        function deleteFeature(feature) {
+            //console.log("deleteFeature", feature);
+            var overlayFeatures = featureOverlay.getFeatures();
+            overlayFeatures.remove(feature);
+            featureRemoved();
+        }
+    }
+
+    function createDrawHandler(map, featureOverlay, type, changeEnded) {
+        var drawType = type;
+
+        var drawInteraction = null;
+
+        return {
+            setDrawType:       setDrawType,
+            setInteraction:    setInteraction,
+            unsetInteraction:  unsetInteraction
+        };
+
+        function setDrawType(type) {
+            if (!type) throw new Error("setDrawType: type required");
+            drawType = type;
+            if (drawInteraction) {
+                setInteraction();
+            }
+        }
+
+        function setInteraction() {
+            unsetInteraction();
+            createDrawInteraction();
+            map.addInteraction(drawInteraction);
+        }
+
+        function createDrawInteraction() {
+            //console.log("createDrawInteraction drawType=", drawType);
+            drawInteraction = new ol.interaction.Draw({
+                features: featureOverlay.getFeatures(),
+                type: drawType
+            });
+            drawInteraction.on('drawend', changeEnded);
+        }
+
+        function unsetInteraction() {
+            if (drawInteraction) {
+                map.removeInteraction(drawInteraction);
+                drawInteraction = null;
+            }
+        }
+    }
 }
 
 var app = {};
