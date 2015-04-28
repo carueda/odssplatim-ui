@@ -7,9 +7,9 @@ var gTW = {};
 angular.module('odssPlatimApp.timelineWidget', [])
     .factory('timelineWidget', timelineWidgetFactory);
 
-timelineWidgetFactory.$inject = ['$rootScope', 'cfg', 'tokens', 'vis', 'utl'];
+timelineWidgetFactory.$inject = ['$rootScope', 'cfg', 'tokens', 'vis', 'utl', 'olMap'];
 
-function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
+function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap) {
 
     var visRangeMin = moment(cfg.opts.visRange.min);
     var visRangeMax = moment(cfg.opts.visRange.max);
@@ -343,13 +343,19 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
         });
     }
 
+    /**
+     * Adds a token retrieved from the database in the timeline.
+     * The database token._id value is used as the item.id for timeline purposes.
+     * @param token from database
+     * @returns the item added to the timeline
+     */
     function addToken(token) {
         var tooltip = token.state;
         if (token.description !== undefined) {
             tooltip += " - " + token.description;
         }
 
-        var body = {
+        var item = {
             'id':             token._id,
             'className':      token.status + " " + token.ttype,
             'content':        getTokenContent(token),
@@ -370,12 +376,12 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
         };
 
         if (cfg.opts.useSubgroups) {
-            body.subgroup = token.ttype;
+            item.subgroup = token.ttype;
         }
-        //console.log("addToken: body", body);
-        items.add(body);
-
-        setTokenMouseListener(token._id);
+        //console.log("addToken: item", item);
+        items.add(item);
+        setTokenMouseListener(item.id);
+        return item;
     }
 
     function redraw() {
@@ -400,6 +406,12 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
         // "" by default to force missing info --skip save, etc
         item.state = item.content = "";
 
+        // "empty" geometry:
+        item.geometry = {
+            type: "FeatureCollection",
+            features: []
+        };
+
         if (copiedItem) {
             pasteToken(item);
         }
@@ -413,6 +425,8 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
         item.platform_name = item.group;
         item.status        = "status_new";
         item.className     = item.status + " " + item.ttype;
+
+        olMap.addGeometry(item.id, item.geometry);
 
         callback(item);
     }
@@ -502,9 +516,17 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
         //console.log("modified status set to: " + tokenInfo.status);
     }
 
+    /**
+     * Assumes this is called for the currently selected item, so this
+     * method ends by broadcasting a "tokenSelection" with empty array.
+     * @param tokenInfo
+     */
     function removeToken(tokenInfo) {
         //console.log("removeToken", tokenInfo);
         items.remove(tokenInfo.id);
+        olMap.removeGeometry(tokenInfo.id);
+        $rootScope.$broadcast("tokenSelection", []);
+        logarea.html(utl.tablify([]));
     }
 
     function setTokenMouseListener(tokenId) {

@@ -156,7 +156,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
     }
 
     /**
-     * Inserts a timeline (a platform and its tokens) in the widget.
+     * Inserts a timeline (i.e., a platform and its tokens) in the widget.
      * @param tml
      */
     var insertTimeline = function(tml) {
@@ -176,15 +176,11 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
                 };
             }
 
-            timelineWidget.addToken(token);
+            var item = timelineWidget.addToken(token);
 
-            //console.log("refreshTokens: token=", token.token_id, " geometry=", token.geometry)
+            //console.log("insertTimeline: item=", item.id, " geometry=", item.geometry)
             if (token.geometry) {
-                //token.geometry = {
-                //    type: "Polygon",
-                //    coordinates :[[[-122.0, 36.83],[-122.5, 36.83],[-122.5, 37]]]
-                //};
-                olMap.addGeometry(token.token_id, token.geometry);
+                olMap.addGeometry(item.id, token.geometry);
             }
         });
     };

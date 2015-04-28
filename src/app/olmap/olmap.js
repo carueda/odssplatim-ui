@@ -98,6 +98,9 @@ function MapCtrl($scope, olMap) {
 
     $scope.$on("tokenSelection", function(e, selected) {
         vm.viewOnly = selected.length != 1;
+        if (vm.viewOnly) {
+            vm.mode.selectedMode = "View";
+        }
         olMap.setTokenSelection(selected);
     });
 
@@ -133,6 +136,7 @@ function olMap($rootScope, olExt) {
         insertMap:           insertMap
         ,reinit:             reinit
         ,addGeometry:        addGeometry
+        ,removeGeometry:     removeGeometry
         ,getTokenSelection:  getTokenSelection
         ,setTokenMouseOver:  setTokenMouseOver
         ,setTokenSelection:  setTokenSelection
@@ -220,7 +224,7 @@ function olMap($rootScope, olExt) {
      * @param geometry  GeoJSON object
      */
     function addGeometry(geomId, geometry) {
-        //console.warn("addGeometry geomId=", geomId, "geometry=", geometry);
+        //console.log("addGeometry geomId=", geomId, "geometry=", geometry);
 
         var object = geometry;
         if (!object.crs) {
@@ -243,6 +247,24 @@ function olMap($rootScope, olExt) {
         });
         map.addLayer(vectorLayer);
         geoInfoById[geomId] = {layer: vectorLayer};
+    }
+
+    /**
+     * Removes a geometry from the map.
+     * @param geomId    ID of geometry
+     */
+    function removeGeometry(geomId) {
+        console.log("removeGeometry geomId=", geomId);
+        var info = geoInfoById[geomId];
+        if (info && info.layer) {
+            map.removeLayer(info.layer);
+            delete geoInfoById[geomId];
+        }
+        if (editInfo.editingToken) {
+            editInfo.editingToken = null;
+            editInfo.geometryString = null;
+        }
+        clearFeaturesOverlay();
     }
 
     function getTokenSelection() {
@@ -357,7 +379,7 @@ function olMap($rootScope, olExt) {
     }
 
     function updateStylesForSelection() {
-        var selectedGeomIds = _.map(tokenSelection, "token_id");
+        var selectedGeomIds = _.map(tokenSelection, "id");
         //console.log("selectedGeomIds=", selectedGeomIds);
         _.each(geoInfoById, function(info, geomId) {
             if (_.contains(selectedGeomIds, geomId)) {
@@ -370,11 +392,12 @@ function olMap($rootScope, olExt) {
     }
 
     function startEditing(token) {
+        //console.log("startEditing token=", token);
         if (!token.geometry) {
-            console.log("WARN: startEditing token_id=", token.token_id, " doesn't have geometry");
+            console.log("WARN: startEditing id=", token.id, " doesn't have geometry");
             return false;
         }
-        var geomId = token.token_id;
+        var geomId = token.id;
         var info = geoInfoById[geomId];
         if (!info || !info.layer) {
             console.log("WARN: startEditing geomId=", geomId, "no such vector");
@@ -426,7 +449,7 @@ function olMap($rootScope, olExt) {
             var vectorLayer = createLayerFromOverlay();
             map.addLayer(vectorLayer);
             updateTokenGeometryAndNotify(token, vectorLayer);
-            geoInfoById[token.token_id].layer = vectorLayer;
+            geoInfoById[token.id].layer = vectorLayer;
             editInfo.editingToken = null;
             editInfo.geometryString = null;
         }
@@ -442,7 +465,7 @@ function olMap($rootScope, olExt) {
         if (editInfo.geometryString !== geometryString) {
             token.geometry = angular.fromJson(geometryString);
             //console.log("---changeDetected token.geometry=", token.geometry);
-            $rootScope.$broadcast("tokenGeometryUpdated", token.token_id, token.geometry);
+            $rootScope.$broadcast("tokenGeometryUpdated", token.id, token.geometry);
         }
     }
 

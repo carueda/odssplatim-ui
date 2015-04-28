@@ -1,7 +1,14 @@
+## change log ##
+
 - 2015-04-28: (branch: geom-ol3 toward v.0.7.0)
   - refactor: all edit interaction handlers now in submodules in olext.js
   - trigger token modification also at the end of each modify interaction
   - save token geometry prior to edits to do update and notification if there's a change
+  - allow to add geometry to brand new item in the timeline
+  - delete item now also removes associated geometry
+  - NOTE: loosely using "item" to refer to timeline elements, and "token" to corresponding
+    elements for database purposes. However, olMap uses a mix of both terms, but uses the 'id'
+    field for identification, which applies to both saved "tokens" and brand new "items."
   
   - Other: include refreshError callback in refresh sequence (immediate goal: re-enable refresh button in case of error).
     TODO: overall refresh sequence logic needs to be revisited for clean-up and eventual use of $q.
