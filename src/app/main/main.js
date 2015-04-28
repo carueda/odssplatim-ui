@@ -136,10 +136,12 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
         $scope.$broadcast("refreshStarting");
         timelineWidget.reinit();
 
+        // callback functions for refresh sequence
         var fns = {
             gotGeneralInfo:       gotGeneralInfo,
             gotDefaultPeriodId:   gotDefaultPeriodId,
-            refreshComplete:      refreshComplete
+            refreshComplete:      refreshComplete,
+            refreshError:         refreshError
         };
 
         tokens.getGeneralInfo(fns, function(fns) {
@@ -214,6 +216,10 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
         //console.log("refreshing... done.");
         $scope.isRefreshing = false;
         platformOptionsUpdated(false);
+    }
+
+    function refreshError() {
+        $scope.isRefreshing = false;
     }
 
     $scope.$on('platformOptionsUpdated', platformOptionsUpdated);

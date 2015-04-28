@@ -40,6 +40,7 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
                 activities.remove(actId);
                 fns.gotGeneralInfo();
                 if (next) next(fns);
+                else fns.refreshError();
             })
         ;
     }
@@ -72,7 +73,7 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
                 if (next) next(fns);
             })
 
-            .error(httpErrorHandler(actId));
+            .error(httpErrorHandler(actId, fns.refreshError));
     }
 
     /**

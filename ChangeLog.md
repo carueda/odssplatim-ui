@@ -1,3 +1,11 @@
+- 2015-04-28: (branch: geom-ol3 toward v.0.7.0)
+  - refactor: all edit interaction handlers now in submodules in olext.js
+  - trigger token modification also at the end of each modify interaction
+  - save token geometry prior to edits to do update and notification if there's a change
+  
+  - Other: include refreshError callback in refresh sequence (immediate goal: re-enable refresh button in case of error).
+    TODO: overall refresh sequence logic needs to be revisited for clean-up and eventual use of $q.
+
 - 2015-04-22: (branch: geom-ol3 toward v.0.7.0)
   - trigger token modification at the end of edit action: drag, add.  TODO: modify.
   - tooltips

@@ -37,7 +37,7 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
                 getDefaultPeriodId(fns);
             })
 
-            .error(httpErrorHandler(actId));
+            .error(httpErrorHandler(actId, fns.refreshError));
     }
 
     function periodSelected() {
@@ -68,7 +68,7 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
                     fns.refreshComplete();
                 }
                 else {
-                    httpErrorHandler(actId)(data, status, headers, config)
+                    httpErrorHandler(actId, fns.refreshError)(data, status, headers, config)
                 }
             });
     }
@@ -190,9 +190,10 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
                     activities.remove(actId);
                     // but continue sequence:
                     if (next) next(fns);
+                    else fns.refreshError();
                 }
                 else {
-                    httpErrorHandler(actId)(data, status, headers, config)
+                    httpErrorHandler(actId, fns.refreshError)(data, status, headers, config)
                 }
             });
     }

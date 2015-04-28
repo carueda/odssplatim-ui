@@ -46,7 +46,7 @@ function platforms($rootScope, $http, cfg, platimModel, status, utl, httpErrorHa
                 if (next) next(fns);
             })
 
-            .error(httpErrorHandler(actId))
+            .error(httpErrorHandler(actId, fns.refreshError))
         ;
     }
 
@@ -66,7 +66,7 @@ function platforms($rootScope, $http, cfg, platimModel, status, utl, httpErrorHa
                 platimModel.setSelectedPlatforms(res.selectedPlatforms);
                 if (next) next(res.selectedPlatforms, fns);
             })
-            .error(httpErrorHandler(actId));
+            .error(httpErrorHandler(actId, fns.refreshError));
     }
 
     function savePlatformOptions(selectedPlatforms, successFn) {
