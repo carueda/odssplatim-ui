@@ -14,7 +14,18 @@ function olExt() {
     };
 
     function createDragHandler(map, featureOverlay, changeEnded) {
+        var selectInteraction = null;
         var dragInteraction = null;
+
+        // similar to styleOverlay but with more prominent lines
+        var styleDrag = new ol.style.Style({
+            fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
+            stroke: new ol.style.Stroke({ color: '#ffcc33', width: 7 }),
+            image: new ol.style.Circle({
+                radius: 7,
+                fill: new ol.style.Fill({ color: '#ffcc33' })
+            })
+        });
 
         return {
             setInteraction:    setInteraction,
@@ -22,8 +33,17 @@ function olExt() {
         };
 
         function setInteraction() {
+            if (!selectInteraction) {
+                selectInteraction = new ol.interaction.Select({
+                    layers: [featureOverlay],
+                    condition: ol.events.condition.pointerMove,
+                    style: styleDrag
+                });
+            }
+            map.addInteraction(selectInteraction);
+
             if (!dragInteraction) {
-                dragInteraction = new app.Drag({
+                dragInteraction = new Drag({
                     features: featureOverlay.getFeatures()
                 }, changeEnded);
             }
@@ -33,6 +53,9 @@ function olExt() {
         function unsetInteraction() {
             if (dragInteraction) {
                 map.removeInteraction(dragInteraction);
+            }
+            if (selectInteraction) {
+                map.removeInteraction(selectInteraction);
             }
         }
     }
@@ -203,21 +226,20 @@ function olExt() {
     }
 }
 
-var app = {};
-
 /**
+ * Adapted from: http://openlayers.org/en/v3.4.0/examples/drag-features.html
  * @constructor
  * @extends {ol.interaction.Pointer}
  */
-app.Drag = function(opts, dragEnd) {
+var Drag = function(opts, dragEnd) {
     this.features_ = opts.features;
     this.dragEnd_  = dragEnd;
     //console.log("olExt: this.features_=", this.features_);
 
-    opts.handleDownEvent = app.Drag.prototype.handleDownEvent;
-    opts.handleDragEvent = app.Drag.prototype.handleDragEvent;
-    opts.handleMoveEvent = app.Drag.prototype.handleMoveEvent;
-    opts.handleUpEvent   = app.Drag.prototype.handleUpEvent;
+    opts.handleDownEvent = Drag.prototype.handleDownEvent;
+    opts.handleDragEvent = Drag.prototype.handleDragEvent;
+    opts.handleMoveEvent = Drag.prototype.handleMoveEvent;
+    opts.handleUpEvent   = Drag.prototype.handleUpEvent;
 
     ol.interaction.Pointer.call(this, opts);
 
@@ -246,7 +268,7 @@ app.Drag = function(opts, dragEnd) {
     this.previousCursor_ = undefined;
 
 };
-ol.inherits(app.Drag, ol.interaction.Pointer);
+ol.inherits(Drag, ol.interaction.Pointer);
 
 /**
  * Gets the feature in this.features_ at the pixel location.
@@ -254,7 +276,7 @@ ol.inherits(app.Drag, ol.interaction.Pointer);
  * @param {ol.MapBrowserEvent} evt Map browser event.
  * @return {ol.Feature} The feature or null.
  */
-app.Drag.prototype.getFeatureAtPixel_ = function(evt) {
+Drag.prototype.getFeatureAtPixel_ = function(evt) {
     var map = evt.map;
     var features = this.features_;
     var feature = null;
@@ -276,7 +298,7 @@ app.Drag.prototype.getFeatureAtPixel_ = function(evt) {
  * @param {ol.MapBrowserEvent} evt Map browser event.
  * @return {boolean} `true` to start the drag sequence.
  */
-app.Drag.prototype.handleDownEvent = function(evt) {
+Drag.prototype.handleDownEvent = function(evt) {
     var feature = this.getFeatureAtPixel_(evt);
     if (feature) {
         this.coordinate_ = evt.coordinate;
@@ -290,7 +312,7 @@ app.Drag.prototype.handleDownEvent = function(evt) {
 /**
  * @param {ol.MapBrowserEvent} evt Map browser event.
  */
-app.Drag.prototype.handleDragEvent = function(evt) {
+Drag.prototype.handleDragEvent = function(evt) {
     if (!this.coordinate_) {
         return;
     }
@@ -309,7 +331,7 @@ app.Drag.prototype.handleDragEvent = function(evt) {
 /**
  * @param {ol.MapBrowserEvent} evt Event.
  */
-app.Drag.prototype.handleMoveEvent = function(evt) {
+Drag.prototype.handleMoveEvent = function(evt) {
     if (this.cursor_) {
         var feature = this.getFeatureAtPixel_(evt);
         var element = evt.map.getTargetElement();
@@ -330,7 +352,7 @@ app.Drag.prototype.handleMoveEvent = function(evt) {
  * @param {ol.MapBrowserEvent} evt Map browser event.
  * @return {boolean} `false` to stop the drag sequence.
  */
-app.Drag.prototype.handleUpEvent = function(evt) {
+Drag.prototype.handleUpEvent = function(evt) {
     this.coordinate_ = null;
     this.feature_ = null;
 
