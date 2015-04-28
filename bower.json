@@ -1,6 +1,6 @@
 {
   "name": "odssplatim-ui",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "dependencies": {
     "angular": "~1.2.25",
     "angular-sanitize": "~1.2.25",

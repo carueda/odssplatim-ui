@@ -1,6 +1,6 @@
 ## change log ##
 
-- 2015-04-28: (branch: geom-ol3 toward v.0.7.0)
+- 2015-04-28: (branch: geom-ol3 - v.0.7.1)
   - refactor: all edit interaction handlers now in submodules in olext.js
   - trigger token modification also at the end of each modify interaction
   - save token geometry prior to edits to do update and notification if there's a change
