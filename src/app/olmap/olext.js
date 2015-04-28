@@ -101,14 +101,10 @@ function olExt() {
 
                 // add a geometry change listener per feature in the overlay:
                 geometryKeyPairs = [];
-                var overlayFeatures = featureOverlay.getFeatures();
-                overlayFeatures.forEach(function(feature) {
+                featureOverlay.getFeatures().forEach(function(feature) {
                     var geometry = feature.getGeometry();
-                    //console.log("ADD: geometry=", geometry);
-                    var geomKey = geometry.on('change', function() {
-                        changeDetected();
-                    });
-                    geometryKeyPairs.push({geometry: geometry, geomKey:geomKey});
+                    var geomKey = geometry.on('change', changeDetected);
+                    geometryKeyPairs.push({geometry: geometry, geomKey: geomKey});
                 });
             }
 
