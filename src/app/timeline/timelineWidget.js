@@ -121,11 +121,14 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl) {
     addSelectListener();
 
     $rootScope.$on("tokenGeometryUpdated", function(e, token_id, geometry) {
-        //console.warn("$on tokenGeometryUpdated: token_id=", token_id, "geometry=", geometry);
         var item = items.get(token_id);
-        item.geometry = geometry;
-        items.update(item);
-        updateStatusModified(item);
+        //console.log("$on tokenGeometryUpdated: token_id=", token_id, "geometry=", geometry, "item=", item);
+        // check there's actually an item by the given id:
+        if (item) {
+            item.geometry = geometry;
+            items.update(item);
+            updateStatusModified(item);
+        }
     });
 
     return {
