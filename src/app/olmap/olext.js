@@ -6,6 +6,16 @@ angular.module('odssPlatimApp.olmap.ext', [])
 ;
 
 function olExt() {
+    // similar to styleOverlay but with more prominent lines
+    var styleOverlay2 = new ol.style.Style({
+        fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
+        stroke: new ol.style.Stroke({ color: '#ffcc33', width: 7 }),
+        image: new ol.style.Circle({
+            radius: 7,
+            fill: new ol.style.Fill({ color: '#ffcc33' })
+        })
+    });
+
     return {
         createDragHandler:      createDragHandler,
         createModifyHandler:    createModifyHandler,
@@ -17,16 +27,6 @@ function olExt() {
         var selectInteraction = null;
         var dragInteraction = null;
 
-        // similar to styleOverlay but with more prominent lines
-        var styleDrag = new ol.style.Style({
-            fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
-            stroke: new ol.style.Stroke({ color: '#ffcc33', width: 7 }),
-            image: new ol.style.Circle({
-                radius: 7,
-                fill: new ol.style.Fill({ color: '#ffcc33' })
-            })
-        });
-
         return {
             setInteraction:    setInteraction,
             unsetInteraction:  unsetInteraction
@@ -37,7 +37,7 @@ function olExt() {
                 selectInteraction = new ol.interaction.Select({
                     layers: [featureOverlay],
                     condition: ol.events.condition.pointerMove,
-                    style: styleDrag
+                    style: styleOverlay2
                 });
             }
             map.addInteraction(selectInteraction);
@@ -60,9 +60,10 @@ function olExt() {
         }
     }
 
-    function createModifyHandler(map, featureOverlay) {
-
+    function createModifyHandler(map, featureOverlay, changeDetected) {
+        var selectInteraction = null;
         var modifyInteraction = null;
+        var geometry = null, geomKey = null; // geometry and change listener key
 
         return {
             setInteraction:    setInteraction,
@@ -71,6 +72,7 @@ function olExt() {
 
         function setInteraction() {
             unsetInteraction();
+            map.addInteraction(selectInteraction = createSelectInteraction());
             map.addInteraction(modifyInteraction = createModifyInteraction());
         }
 
@@ -79,6 +81,35 @@ function olExt() {
                 map.removeInteraction(modifyInteraction);
                 modifyInteraction = null;
             }
+            if (selectInteraction) {
+                map.removeInteraction(selectInteraction);
+                selectInteraction = null;
+            }
+            if (geometry) {
+                geometry.unByKey(geomKey);
+                geometry = geomKey = null;
+            }
+        }
+
+        function createSelectInteraction() {
+            if (!selectInteraction) {
+                selectInteraction = new ol.interaction.Select({
+                    layers: [featureOverlay],
+                    condition: ol.events.condition.pointerMove,
+                    style: styleOverlay2
+                });
+
+                var overlayFeatures = featureOverlay.getFeatures();
+                if (overlayFeatures.getLength() === 1) { // the expected case
+                    geometry = overlayFeatures.item(0).getGeometry();
+                    //console.log("ADD: geometry=", geometry);
+                    geomKey = geometry.on('change', function() {
+                        changeDetected();
+                    })
+                }
+            }
+
+            return selectInteraction;
         }
 
         function createModifyInteraction() {

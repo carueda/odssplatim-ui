@@ -194,12 +194,9 @@ function olMap($rootScope, olExt) {
         createFeatureOverlay();
 
         dragHandler   = olExt.createDragHandler(map, featureOverlay, changeEnded);
-        modifyHandler = olExt.createModifyHandler(map, featureOverlay);
+        modifyHandler = olExt.createModifyHandler(map, featureOverlay, changeDetected);
         deleteHandler = olExt.createDeleteHandler(map, featureOverlay, changeEnded);
         drawHandler   = olExt.createDrawHandler(map, featureOverlay, DEFAULT_DRAW_TYPE, changeEnded);
-
-        // drag interaction set here for better dispatch in terms of restoring pointer
-        dragHandler.setInteraction();
 
         function syncMapMove() {
             //console.log('syncMapMove', view.getCenter());
@@ -410,26 +407,39 @@ function olMap($rootScope, olExt) {
         //console.log("---startEditing, overlayFeatures=", featureOverlay.getFeatures().getLength());
     }
 
+    /**
+     * Just broadcasts tokenGeometryUpdated but does not change current edit mode.
+     */
+    function changeDetected() {
+        if (editInfo.editingToken) {
+            var token = editInfo.editingToken;
+            var vectorLayer = createLayerFromOverlay();
+            updateTokenGeometryAndNotify(token, vectorLayer);
+        }
+    }
+
     function endEditing() {
         if (editInfo.editingToken) {
             var token = editInfo.editingToken;
             editInfo.editingToken = null;
             var vectorLayer = createLayerFromOverlay();
-            geoInfoById[token.token_id].layer = vectorLayer;
             map.addLayer(vectorLayer);
-
-            // update token.geometry and notify:
-            var features = vectorLayer.getSource().getFeatures();
-            var jsonFormat = new ol.format.GeoJSON();
-            var geometryString = jsonFormat.writeFeatures(features, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
-            token.geometry = angular.fromJson(geometryString);
-            //console.log("---endEditing token.geometry=", token.geometry);
-            $rootScope.$broadcast("tokenGeometryUpdated", token.token_id, token.geometry);
+            updateTokenGeometryAndNotify(token, vectorLayer);
         }
         clearFeaturesOverlay();
+    }
+
+    function updateTokenGeometryAndNotify(token, vectorLayer) {
+        geoInfoById[token.token_id].layer = vectorLayer;
+        var features = vectorLayer.getSource().getFeatures();
+        var jsonFormat = new ol.format.GeoJSON();
+        var geometryString = jsonFormat.writeFeatures(features, {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:3857'
+        });
+        token.geometry = angular.fromJson(geometryString);
+        //console.log("---changeDetected token.geometry=", token.geometry);
+        $rootScope.$broadcast("tokenGeometryUpdated", token.token_id, token.geometry);
     }
 
     // returns new layer with features in overlay
