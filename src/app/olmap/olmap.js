@@ -125,7 +125,8 @@ function olMap($rootScope, olExt) {
 
     var tokenSelection = [];
     var editInfo = {
-        editingToken: null
+        editingToken: null,
+        geometryString: null
     };
 
     return {
@@ -386,6 +387,7 @@ function olMap($rootScope, olExt) {
         }
 
         editInfo.editingToken = token;
+        editInfo.geometryString = getGeometryString(info.layer);
 
         var rm = map.removeLayer(info.layer);
         if ( rm !== info.layer) {
@@ -421,25 +423,36 @@ function olMap($rootScope, olExt) {
     function endEditing() {
         if (editInfo.editingToken) {
             var token = editInfo.editingToken;
-            editInfo.editingToken = null;
             var vectorLayer = createLayerFromOverlay();
             map.addLayer(vectorLayer);
             updateTokenGeometryAndNotify(token, vectorLayer);
+            geoInfoById[token.token_id].layer = vectorLayer;
+            editInfo.editingToken = null;
+            editInfo.geometryString = null;
         }
         clearFeaturesOverlay();
     }
 
+    /**
+     * Updates token.geometry and broadcasts tokenGeometryUpdated if the new
+     * geometry is different from the one saved in editInfo.geometryString.
+     */
     function updateTokenGeometryAndNotify(token, vectorLayer) {
-        geoInfoById[token.token_id].layer = vectorLayer;
+        var geometryString = getGeometryString(vectorLayer);
+        if (editInfo.geometryString !== geometryString) {
+            token.geometry = angular.fromJson(geometryString);
+            //console.log("---changeDetected token.geometry=", token.geometry);
+            $rootScope.$broadcast("tokenGeometryUpdated", token.token_id, token.geometry);
+        }
+    }
+
+    function getGeometryString(vectorLayer) {
         var features = vectorLayer.getSource().getFeatures();
         var jsonFormat = new ol.format.GeoJSON();
-        var geometryString = jsonFormat.writeFeatures(features, {
+        return jsonFormat.writeFeatures(features, {
             dataProjection: 'EPSG:4326',
             featureProjection: 'EPSG:3857'
         });
-        token.geometry = angular.fromJson(geometryString);
-        //console.log("---changeDetected token.geometry=", token.geometry);
-        $rootScope.$broadcast("tokenGeometryUpdated", token.token_id, token.geometry);
     }
 
     // returns new layer with features in overlay
