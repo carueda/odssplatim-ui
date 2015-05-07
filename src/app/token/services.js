@@ -66,7 +66,7 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
                         token.token_id      = token._id;
                         token.status        = "status_saved";
 
-                        platimModel.byPlat[platform_name].tokens.push(token);
+                        platimModel.addToken(token);
                     });
                 });
 

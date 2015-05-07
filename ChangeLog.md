@@ -1,5 +1,9 @@
 ## change log ##
 
+- 2015-05-07: (0.7.2)
+  - \#132: "planning: platform selection update reloads previous token data"
+    - some model refactor, and partial solution
+
 - 2015-04-28: (branch: geom-ol3 - v.0.7.1)
   - refactor: all edit interaction handlers now in submodules in olext.js
   - trigger token modification also at the end of each modify interaction

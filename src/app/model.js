@@ -1,14 +1,18 @@
 (function() {
 'use strict';
 
+angular.module('odssPlatimApp.model', [])
+    .factory('platimModel', modelFactory);
+
+modelFactory.$inject = ['utl'];
+
+function modelFactory(utl) {
+
+    var byPlat = {};
+
     var model = {
-
-        byPlat:    {},
-
         platformOptions: {
-
             selectedPlatforms:      {}
-
             // cbtree preparations
             ,allSelected:               false
             ,selectedPlatformTypes:     {}
@@ -20,13 +24,17 @@
         selectedPeriodId: undefined
     };
 
+    if (utl.getDebug()) {
+        utl.getDebug().model = model;
+    }
+
     /**
      * Called to update the model with all retrieved platforms.
      */
     model.setAllPlatforms = function(tmls) {
         //console.log("setAllPlatforms", tmls);
 
-        model.byPlat = {};
+        byPlat = {};
         var byPlatformType = model.platformOptions.byPlatformType = {};
 
         var selectedPlatformTypes     = model.platformOptions.selectedPlatformTypes = {};
@@ -40,7 +48,7 @@
                 byPlatformType[typeName] = [];
             }
             byPlatformType[typeName].push(tml);
-            model.byPlat[tml.platform_name] = tml;
+            byPlat[tml.platform_name] = tml;
 
             selectedPlatformTypes[typeName] = false;
             platformTypeIndeterminate[typeName] = false;
@@ -68,15 +76,15 @@
         //console.log("getSelectedPlatforms");
         var selectedPlatforms = [];
         _.each(model.platformOptions.selectedPlatforms, function(selected, platform_name) {
-            if (selected && model.byPlat[platform_name]) {
-                selectedPlatforms.push(model.byPlat[platform_name]);
+            if (selected && byPlat[platform_name]) {
+                selectedPlatforms.push(byPlat[platform_name]);
             }
         });
         if (selectedPlatforms.length == 0) {
             // else: show only platforms with tokens:
-            _.each(model.byPlat, function(tml, platform_name) {
+            _.each(byPlat, function(tml, platform_name) {
                 if (tml.tokens.length > 0) {
-                    selectedPlatforms.push(model.byPlat[platform_name]);
+                    selectedPlatforms.push(byPlat[platform_name]);
                 }
             });
         }
@@ -94,11 +102,30 @@
         }
     };
 
-    angular.module('odssPlatimApp.model', [])
-        .factory('platimModel', [function() {
-            return model;
-        }])
-    ;
+    /**
+     * Adds a token to the model.
+     */
+    model.addToken = function(token) {
+        var platform_name = token.platform_name;
+        byPlat[platform_name].tokens.push(token);
+    };
 
+    /**
+     * Updates an token in the model
+     */
+    model.updateToken = function(tokenInfo) {
+        var tokens = byPlat[tokenInfo.platform_name].tokens;
+        var modelToken = _.find(tokens, {token_id: tokenInfo.token_id});
+        modelToken.platform_name = tokenInfo.platform_name;
+        modelToken.state         = tokenInfo.state;
+        modelToken.status        = tokenInfo.status;
+        modelToken.group         = tokenInfo.group;
+        modelToken.ttype         = tokenInfo.ttype;
+        modelToken.start         = utl.unparseDate(tokenInfo.start);
+        modelToken.end           = utl.unparseDate(tokenInfo.end);
+    };
+
+    return model;
+}
 
 })();

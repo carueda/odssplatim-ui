@@ -266,6 +266,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
             var index     = elm.index;
             tokens.saveToken(tokenInfo, index, function(index, tokenInfo) {
                 timelineWidget.updateStatus(tokenInfo, "status_saved");
+                platimModel.updateToken(tokenInfo);
                 doList(ii + 1);
             });
         }

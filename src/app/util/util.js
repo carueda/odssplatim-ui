@@ -176,10 +176,10 @@ function httpErrorHandler(status) {
     }
 }
 
-miscUtils.$inject = ['$rootScope', '$window', 'platimModel'];
-function miscUtils($rootScope, $window, platimModel) {
+miscUtils.$inject = ['$rootScope', '$window'];
+function miscUtils($rootScope, $window) {
     var debug = $window.location.toString().match(/.*\?debug/)
-        ? { collapsed: true, model: platimModel }
+        ? { collapsed: true }
         : undefined;
 
     return {
