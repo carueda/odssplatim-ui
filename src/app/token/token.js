@@ -164,7 +164,7 @@ function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, tokens, tim
                 $modalInstance.dismiss('delete token');
                 tokens.deleteToken(info.token, info.row, function(tokenInfo, index) {
                     timelineWidget.removeToken(tokenInfo, index, index);
-                    $rootScope.$broadcast('tokenDeleted');
+                    $rootScope.$broadcast('tokenDeleted', tokenInfo);
                 });
             }
         });

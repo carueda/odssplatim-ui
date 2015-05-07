@@ -66,6 +66,20 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
                         token.token_id      = token._id;
                         token.status        = "status_saved";
 
+                        // manually set ttype if not provided by backend.
+                        // TODO eventually remove this once all tokens in database are updated
+                        if (!token.ttype) {
+                            token.ttype = "ttdeployment";
+                        }
+
+                        // if absent, set an "empty geometry," in particular it will allow
+                        // "adding" a brand new geometry  -- see olMap module.
+                        if (!token.geometry) {
+                            token.geometry = {
+                                type: "FeatureCollection",
+                                features: []
+                            };
+                        }
                         platimModel.addToken(token);
                     });
                 });

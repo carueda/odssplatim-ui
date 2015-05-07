@@ -162,22 +162,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
     var insertTimeline = function(tml) {
         timelineWidget.addGroup(tml);
         _.each(tml.tokens, function(token) {
-            // manually set ttype if not provided by backend.
-            // TODO eventually remove this once all tokens in database are updated
-            if (!token.ttype) {
-                token.ttype = "ttdeployment";
-            }
-
-            if (!token.geometry) {
-                // TODO temporary mechanism to allow "adding" a brand new geometry
-                token.geometry = {
-                    type: "FeatureCollection",
-                    features: []
-                };
-            }
-
             var item = timelineWidget.addToken(token);
-
             //console.log("insertTimeline: item=", item.id, " geometry=", item.geometry)
             if (token.geometry) {
                 olMap.addGeometry(item.id, token.geometry);
@@ -192,9 +177,9 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
     var platformOptionsUpdated = function(doSave) {
         var actId = status.activities.add("updating display...");
         setTimeout(function() {
-            var selectedPlatforms = platimModel.getSelectedPlatforms();
             timelineWidget.reinit(platimModel.holidays);
             olMap.reinit();
+            var selectedPlatforms = platimModel.getSelectedPlatforms();
             //console.log("selectedPlatforms", selectedPlatforms);
             _.each(selectedPlatforms, insertTimeline);
             timelineWidget.redraw();
@@ -222,8 +207,9 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
 
     $scope.$on('periodSelected', setVisibleChartRange);
 
-    $scope.$on('tokenDeleted', function() {
-        //console.log("reacting to tokenDeleted");
+    $scope.$on('tokenDeleted', function(evt, token) {
+        //console.log("reacting to tokenDeleted", token);
+        platimModel.deleteToken(token);
         tokens.getGeneralInfo({gotGeneralInfo: gotGeneralInfo});
     });
 

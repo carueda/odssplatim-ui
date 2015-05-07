@@ -39,7 +39,6 @@ function platforms($rootScope, $http, cfg, platimModel, status, utl, httpErrorHa
                         platform_name: elm.name
                     }, elm);
                     tml = _.omit(tml, '_id', 'name');
-                    tml.tokens = [];
                     return tml;
                 });
                 platimModel.setAllPlatforms(tmls);

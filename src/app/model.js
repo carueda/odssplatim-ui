@@ -8,7 +8,13 @@ modelFactory.$inject = ['utl'];
 
 function modelFactory(utl) {
 
-    var byPlat = {};
+    var priv = {
+        // platforms set via setAllPlatforms
+        platformsByName: {},
+
+        // tokens added via addToken
+        tokensById: {}
+    };
 
     var model = {
         platformOptions: {
@@ -25,16 +31,30 @@ function modelFactory(utl) {
     };
 
     if (utl.getDebug()) {
-        utl.getDebug().model = model;
+        utl.getDebug().model = {
+            model: model,
+            private: priv
+        };
     }
 
     /**
      * Called to update the model with all retrieved platforms.
+     * This method basically initializes the model with the given
+     * platforms, and no tokens associated so far.
      */
     model.setAllPlatforms = function(tmls) {
         //console.log("setAllPlatforms", tmls);
 
-        byPlat = {};
+        priv.platformsByName = {};
+        _.each(tmls, function(tml) {
+            priv.platformsByName[tml.platform_name] = tml;
+        });
+
+        priv.tokensById = {};
+        // Note: no tokens are expected to be associated in the tmls.
+        // Tokens are added via addToken.
+        // Associated tokens are reported by getSelectedPlatforms.
+
         var byPlatformType = model.platformOptions.byPlatformType = {};
 
         var selectedPlatformTypes     = model.platformOptions.selectedPlatformTypes = {};
@@ -48,8 +68,6 @@ function modelFactory(utl) {
                 byPlatformType[typeName] = [];
             }
             byPlatformType[typeName].push(tml);
-            byPlat[tml.platform_name] = tml;
-
             selectedPlatformTypes[typeName] = false;
             platformTypeIndeterminate[typeName] = false;
         });
@@ -71,23 +89,27 @@ function modelFactory(utl) {
 
     /**
      * Gets the platforms selected according to the platform options.
+     * Each object in the returned array will contain a 'tokens' attribute
+     * with the array of associated tokens as provided via calls to addToken.
      */
     model.getSelectedPlatforms = function() {
         //console.log("getSelectedPlatforms");
         var selectedPlatforms = [];
         _.each(model.platformOptions.selectedPlatforms, function(selected, platform_name) {
-            if (selected && byPlat[platform_name]) {
-                selectedPlatforms.push(byPlat[platform_name]);
+            if (selected && priv.platformsByName[platform_name]) {
+                var tml = priv.platformsByName[platform_name];
+                selectedPlatforms.push(_.clone(tml, true));
             }
         });
-        if (selectedPlatforms.length == 0) {
-            // else: show only platforms with tokens:
-            _.each(byPlat, function(tml, platform_name) {
-                if (tml.tokens.length > 0) {
-                    selectedPlatforms.push(byPlat[platform_name]);
-                }
+
+        // set associated tokens:
+        if (selectedPlatforms.length > 0) {
+            var allTokens = _.values(priv.tokensById);
+            _.each(selectedPlatforms, function(tml) {
+                tml.tokens = _.filter(allTokens, {platform_name: tml.platform_name});
             });
         }
+
         return selectedPlatforms;
     };
 
@@ -106,23 +128,34 @@ function modelFactory(utl) {
      * Adds a token to the model.
      */
     model.addToken = function(token) {
-        var platform_name = token.platform_name;
-        byPlat[platform_name].tokens.push(token);
+        priv.tokensById[token.token_id] = token;
     };
 
     /**
-     * Updates an token in the model
+     * Updates a token in the model.
+     * The token is added if not already in the model.
      */
-    model.updateToken = function(tokenInfo) {
-        var tokens = byPlat[tokenInfo.platform_name].tokens;
-        var modelToken = _.find(tokens, {token_id: tokenInfo.token_id});
-        modelToken.platform_name = tokenInfo.platform_name;
-        modelToken.state         = tokenInfo.state;
-        modelToken.status        = tokenInfo.status;
-        modelToken.group         = tokenInfo.group;
-        modelToken.ttype         = tokenInfo.ttype;
-        modelToken.start         = utl.unparseDate(tokenInfo.start);
-        modelToken.end           = utl.unparseDate(tokenInfo.end);
+    model.updateToken = function(token) {
+        var modelToken = priv.tokensById[token.token_id];
+        if (!modelToken) {
+            modelToken = priv.tokensById[token.token_id] = token;
+        }
+
+        // some of the following may be redundant but OK
+        modelToken.platform_name = token.platform_name;
+        modelToken.state         = token.state;
+        modelToken.status        = token.status;
+        modelToken.group         = token.group;
+        modelToken.ttype         = token.ttype;
+        modelToken.start         = utl.unparseDate(token.start);
+        modelToken.end           = utl.unparseDate(token.end);
+    };
+
+    /**
+     * Removes a token from the model.
+     */
+    model.deleteToken = function(token) {
+        delete priv.tokensById[token.token_id];
     };
 
     return model;
