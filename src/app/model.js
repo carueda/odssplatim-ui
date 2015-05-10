@@ -128,7 +128,16 @@ function modelFactory(utl) {
      * Adds a token to the model.
      */
     model.addToken = function(token) {
-        priv.tokensById[token.token_id] = token;
+        //console.log("model.addToken", token);
+        if (token.token_id) {
+            priv.tokensById[token.token_id] = token;
+        }
+        else if (token.id) {
+            priv.tokensById[token.id] = token;
+        }
+        else {
+            console.error("unexpected token without .token_id or .id");
+        }
     };
 
     /**
@@ -136,6 +145,7 @@ function modelFactory(utl) {
      * The token is added if not already in the model.
      */
     model.updateToken = function(token) {
+        //console.log("model.updateToken", token);
         var modelToken = priv.tokensById[token.token_id];
         if (!modelToken) {
             modelToken = priv.tokensById[token.token_id] = token;
@@ -155,7 +165,16 @@ function modelFactory(utl) {
      * Removes a token from the model.
      */
     model.deleteToken = function(token) {
-        delete priv.tokensById[token.token_id];
+        //console.log("model.deleteToken", token);
+        if (priv.tokensById[token.token_id]) {
+            delete priv.tokensById[token.token_id];
+        }
+        else if (priv.tokensById[token.id]) {
+            delete priv.tokensById[token.id];
+        }
+        else {
+            console.error("unexpected token without .token_id or .id");
+        }
     };
 
     return model;

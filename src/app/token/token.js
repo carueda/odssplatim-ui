@@ -149,6 +149,7 @@ function TokenInstanceCtrl($rootScope, $scope, $modalInstance, info, tokens, tim
         //console.log("delete:", info);
         if (info.token.token_id === undefined) {
             // not in database; just remove token from timeline
+            $rootScope.$broadcast('tokenDeleted', info.token);
             timelineWidget.removeToken(info.token);
             timelineWidget.redraw();
             $modalInstance.dismiss('delete token');

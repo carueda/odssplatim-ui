@@ -171,19 +171,56 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
     };
 
     /**
+     * Removes a timeline (i.e., a platform and its tokens) from the widget.
+     * @param tml
+     */
+    var removeTimeline = function(tml) {
+        _.each(tml.tokens, function(token) {
+            timelineWidget.removeToken(token);
+        });
+        timelineWidget.removeGroup(tml);
+    };
+
+    /**
      * Called to reflect the selection options in the widget.
      * @param doSave the platform options are saved if this is undefined or true
      */
     var platformOptionsUpdated = function(doSave) {
         var actId = status.activities.add("updating display...");
         setTimeout(function() {
-            timelineWidget.reinit(platimModel.holidays);
-            olMap.reinit();
-            var selectedPlatforms = platimModel.getSelectedPlatforms();
-            //console.log("selectedPlatforms", selectedPlatforms);
-            _.each(selectedPlatforms, insertTimeline);
-            timelineWidget.redraw();
             status.activities.remove(actId);
+
+            // current platforms in the timeline:
+            var timelinePlatforms = timelineWidget.getGroups();
+            var timelinePlatformNames = _.map(timelinePlatforms, "platform_name");
+            console.log("platformOptionsUpdated timelinePlatforms=", timelinePlatformNames);
+
+            var selectedPlatforms = platimModel.getSelectedPlatforms();
+            var selectedPlatformNames = _.map(selectedPlatforms, "platform_name");
+            console.log("platformOptionsUpdated selectedPlatforms", selectedPlatformNames);
+
+            // insert timelines for new selected platforms:
+            _.each(selectedPlatforms, function(selectedPlatform) {
+                if (!_.contains(timelinePlatformNames, selectedPlatform.platform_name)) {
+                    console.log("platformOptionsUpdated inserting timeline", selectedPlatform.platform_name);
+                    insertTimeline(selectedPlatform);
+                }
+            });
+
+            // remove timelines for the just unselected platforms:
+            _.each(timelinePlatforms, function(timelinePlatform) {
+                if (!_.contains(selectedPlatformNames, timelinePlatform.platform_name)) {
+                    console.log("platformOptionsUpdated removing timeline", timelinePlatform.platform_name);
+                    removeTimeline(timelinePlatform);
+                }
+            });
+
+            //// previously
+            //timelineWidget.reinit(platimModel.holidays);
+            //olMap.reinit();
+            //_.each(selectedPlatforms, insertTimeline);
+
+            timelineWidget.redraw();
             $scope.$digest();
             if (doSave === undefined || doSave) {
                 platforms.savePlatformOptions(selectedPlatforms, function () {

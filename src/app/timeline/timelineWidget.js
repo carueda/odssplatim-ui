@@ -7,9 +7,9 @@ var gTW = {};
 angular.module('odssPlatimApp.timelineWidget', [])
     .factory('timelineWidget', timelineWidgetFactory);
 
-timelineWidgetFactory.$inject = ['$rootScope', 'cfg', 'tokens', 'vis', 'utl', 'olMap'];
+timelineWidgetFactory.$inject = ['$rootScope', 'cfg', 'tokens', 'vis', 'utl', 'olMap', 'platimModel'];
 
-function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap) {
+function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimModel) {
 
     var visRangeMin = moment(cfg.opts.visRange.min);
     var visRangeMax = moment(cfg.opts.visRange.max);
@@ -137,10 +137,12 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap) {
         setVisibleChartRange:      setVisibleChartRange,
         adjustVisibleChartRange:   adjustVisibleChartRange,
         addGroup:                  addGroup,
+        removeGroup:               removeGroup,
         addToken:                  addToken,
         removeToken:               removeToken,
         getDataSet:                getDataSet,
         getData:                   getData,
+        getGroups:                 function() { return groups.get() },
         updateStatus:              updateStatus,
         updateStatusModified:      updateStatusModified,
         redraw:                    redraw,
@@ -343,6 +345,10 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap) {
         });
     }
 
+    function removeGroup(tml) {
+        groups.remove(tml.platform_name);
+    }
+
     /**
      * Adds a token retrieved from the database in the timeline.
      * The database token._id value is used as the item.id for timeline purposes.
@@ -425,6 +431,8 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap) {
         item.platform_name = item.group;
         item.status        = "status_new";
         item.className     = item.status + " " + item.ttype;
+
+        platimModel.addToken(item);
 
         olMap.addGeometry(item.id, item.geometry);
 
@@ -517,6 +525,7 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap) {
     }
 
     /**
+     * Removes the token from the widget.
      * Assumes this is called for the currently selected item, so this
      * method ends by broadcasting a "tokenSelection" with empty array.
      * @param tokenInfo
