@@ -178,8 +178,8 @@ function httpErrorHandler(status) {
 
 miscUtils.$inject = ['$rootScope', '$window'];
 function miscUtils($rootScope, $window) {
-    var debug = $window.location.toString().match(/.*\?debug/)
-        ? { collapsed: true }
+    var debug = $window.location.toString().match(/.*\?debug.*/)
+        ? { collapsed: true, skipMapSync: $window.location.toString().match(/.*skipMapSync.*/) }
         : undefined;
 
     return {

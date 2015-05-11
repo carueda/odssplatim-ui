@@ -1,5 +1,13 @@
 ## change log ##
 
+- 2015-05-10: (0.7.2)
+  - \#133: "planning editor: Map sync issues when editor included directly within main ODSS"
+    Some extra update logic to reduce the occurrence of this misbehavior.
+    Enabled by default, and can be disabled by adding "?debug" and "skipMapSync" to the window location,
+    for example:
+       http://odss-test.shore.mbari.org/odss/?debug,skipMapSync
+       http://odss-test.shore.mbari.org/odss/odssplatim-ui/dist/?debug,skipMapSync
+
 - 2015-05-07: (0.7.2)
   - fix \#132: "planning: platform selection update reloads previous token data"
     - model refactor, and partial solution

@@ -112,9 +112,9 @@ function MapCtrl($scope, olMap) {
     });
 }
 
-olMap.$inject = ['$rootScope', 'olExt'];
+olMap.$inject = ['$rootScope', 'olExt', 'utl'];
 
-function olMap($rootScope, olExt) {
+function olMap($rootScope, olExt, utl) {
     var styles = getStyles();
 
     var gmap, view;
@@ -207,6 +207,39 @@ function olMap($rootScope, olExt) {
             //console.log('syncMapMove', view.getCenter());
             var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
             gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
+
+            // NOTE: only the 2 lines above are enough for correct sync when the planning editor
+            // is run outside of the main ODSS.
+            //
+            // #133: "planning editor: Map sync issues when editor included directly within main ODSS"
+            // But within the ODSS, there are issues, and the following is to try to lessen the bad map syncing
+            // upon resizing of the window or container.  Tested on odss-test with some success but the problem
+            // still happens sometimes, although much less frequently.
+            //
+            if (!skipMapSync) {
+                // Basically, here we also "schedule" a post-update to run in a second from now:
+                syncMapPostAdjustTime = new Date().getTime() + 1000;
+            }
+        }
+
+        // do the additional adjustments unless both "?debug" and "skipMapSync" are present in window location.
+        // This helps easily turn off the adjustment to demonstrate original problem.
+        var skipMapSync = !!(utl.getDebug() && utl.getDebug().skipMapSync);
+        console.log("#133: skipMapSync=", skipMapSync);
+        var syncMapPostAdjustTime = 0;
+        if (!skipMapSync) {
+            setInterval(function () {   // this timer checks if there's a pending post-update
+                if (syncMapPostAdjustTime > 0 && new Date().getTime() >= syncMapPostAdjustTime) {
+                    syncMapPostAdjustTime = 0;
+                    updateSize();                // this alone seems to address a good fraction of the misbehavior
+                    setTimeout(updateSize, 500); // this extra update helps a bit more, but it's not always enough
+                }
+            }, 500);
+            setTimeout(updateSize, 250); // the very initial update seems to always work fine.
+        }
+        function updateSize() {
+            google.maps.event.trigger(gmap, 'resize');
+            map.updateSize();
         }
     }
 
