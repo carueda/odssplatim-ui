@@ -107,13 +107,21 @@ function status() {
                 }
                 return undefined;
             },
-            ids: function() {
-                return _.keys(byId);
-            },
-            values: function() {
-                return _.values(byId);
-            }
+
+            // returns sorted array of current ids as numbers
+            ids: ids,
+
+            // returns sorted array of current values in the order they were added
+            values: values
         };
+
+        function ids() {
+          return _.chain(byId).keys().map(function (i) { return +i; }).sortBy().value();
+        }
+
+        function values() {
+          return _.map(ids(), function(id) { return byId[id]; });
+        }
     }
 }
 
