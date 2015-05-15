@@ -1,5 +1,11 @@
 ## change log ##
 
+- 2015-05-15:
+  - internal: adding some unit tests; using karma/jasmine directly (not via gulp yet)
+    $ npm install karma-jasmine karma-chrome-launcher
+    $ karma init  # then adjust generated karma.config.js
+    $ karma start
+
 - 2015-05-10: (0.7.2)
   - \#133: "planning editor: Map sync issues when editor included directly within main ODSS"
     Some extra update logic to reduce the occurrence of this misbehavior.

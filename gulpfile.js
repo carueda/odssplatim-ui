@@ -59,7 +59,8 @@ gulp.task('app-js', ['ngtemplates'], function() {
         gulp.src([
             'src/common/**/*.js',
             'src/app/**/*.js',
-            '!src/app/config.js'
+            '!src/app/config.js',
+            '!src/app/**/*.spec.js'
         ])
             .pipe(concat('app.js'))
             .pipe(gulp.dest(distDest + '/js'))
