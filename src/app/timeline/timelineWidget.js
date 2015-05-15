@@ -556,11 +556,12 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
 
             if (elm) {
                 elm.addEventListener("mouseenter", function(event) {
-                    $rootScope.$broadcast("tokenMouseOver", tokenId, true);
+                    //console.log("mouseenter event=", event);
+                    $rootScope.$broadcast("tokenMouseEnter", tokenId);
                 }, false);
 
                 elm.addEventListener("mouseleave", function(event) {
-                    $rootScope.$broadcast("tokenMouseOver", tokenId, false);
+                    $rootScope.$broadcast("tokenMouseLeave", tokenId);
                 }, false);
             }
         },2000);

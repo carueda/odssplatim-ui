@@ -92,8 +92,11 @@ function MapCtrl($scope, olMap) {
 
     $scope.$watch('vm.draw.selectedType', olMap.setDrawInteraction);
 
-    $scope.$on("tokenMouseOver", function(e, tokenId, enter) {
-        olMap.setTokenMouseOver(tokenId, enter);
+    $scope.$on("tokenMouseEnter", function(e, tokenId) {
+        olMap.setTokenMouseEnter(tokenId);
+    });
+    $scope.$on("tokenMouseLeave", function(e, tokenId) {
+        olMap.setTokenMouseLeave(tokenId);
     });
 
     $scope.$on("tokenSelection", function(e, selected) {
@@ -138,7 +141,8 @@ function olMap($rootScope, olExt, utl) {
         ,addGeometry:        addGeometry
         ,removeGeometry:     removeGeometry
         ,getTokenSelection:  getTokenSelection
-        ,setTokenMouseOver:  setTokenMouseOver
+        ,setTokenMouseEnter: setTokenMouseEnter
+        ,setTokenMouseLeave: setTokenMouseLeave
         ,setTokenSelection:  setTokenSelection
         ,setMode:            setMode
         ,setDrawInteraction: setDrawInteraction
@@ -304,9 +308,12 @@ function olMap($rootScope, olExt, utl) {
         return tokenSelection;
     }
 
-    function setTokenMouseOver(tokenId, enter) {
-        //console.log("setTokenMouseOver tokenId=", tokenId, "enter=", enter);
-        updateStyleForMouseOver(tokenId, enter);
+    function setTokenMouseEnter(tokenId) {
+        updateStyleForMouseOver(tokenId, true);
+    }
+
+    function setTokenMouseLeave(tokenId) {
+        updateStyleForMouseOver(tokenId, false);
     }
 
     function setTokenSelection(selectedTokens) {
