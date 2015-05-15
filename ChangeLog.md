@@ -1,5 +1,8 @@
 ## change log ##
 
+- 2015-05-15: (0.7.3)
+  - reduce timeline item padding to 1, mainly to save vertical estate
+  
 - 2015-05-15:
   - internal: adding some unit tests; using karma/jasmine directly (not via gulp yet)
     $ npm install karma-jasmine karma-chrome-launcher

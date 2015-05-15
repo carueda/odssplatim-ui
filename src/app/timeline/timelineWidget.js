@@ -49,7 +49,7 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
             'item': { horizontal: 0, vertical: 10 }
         }
 
-        //,padding: 2  // must correspond to css: .vis.timeline .item
+        ,padding: 1  // must correspond to css: .vis.timeline .item
 
         ,showCurrentTime: false   // don't need this for the time being
 
