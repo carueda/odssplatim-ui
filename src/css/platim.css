@@ -190,7 +190,8 @@ div.status_modified {
 /* token tooltip */
 .t3 {
     position: absolute;
-    width:350px;
+    max-width: 400px;
+    width: auto;
     font-size: small;
     background-color: #f6f6f6;
     border: 1px solid #000000;
