@@ -92,11 +92,11 @@ function MapCtrl($scope, olMap) {
 
     $scope.$watch('vm.draw.selectedType', olMap.setDrawInteraction);
 
-    $scope.$on("tokenMouseEnter", function(e, tokenId) {
-        olMap.setTokenMouseEnter(tokenId);
+    $scope.$on("tokenMouseEnter", function(e, token) {
+        olMap.setTokenMouseEnter(token.id);
     });
-    $scope.$on("tokenMouseLeave", function(e, tokenId) {
-        olMap.setTokenMouseLeave(tokenId);
+    $scope.$on("tokenMouseLeave", function(e, token) {
+        olMap.setTokenMouseLeave(token.id);
     });
 
     $scope.$on("tokenSelection", function(e, selected) {

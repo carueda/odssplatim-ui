@@ -138,7 +138,7 @@ div.range {
     border-radius: 0px;
     -moz-border-radius: 0px;  /* For Firefox 3.6 and older */
 }.range:hover {
-     box-shadow: 0 0 5px gray;
+     box-shadow: 0 0 5px #383380;
 }
 
 div.status_new {
@@ -185,6 +185,24 @@ div.status_modified {
 }
 .vis.timeline .item.background.weekend {
     background-color: #f4f8fd;
+}
+
+/* token tooltip */
+.t3 {
+    position: absolute;
+    width:350px;
+    font-size: small;
+    background-color: #f6f6f6;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    box-shadow: 0 0 5px #383380;
+    padding: 5px;
+    z-index: 999999
+}
+hr {
+    margin: 4px 4px;
+    border-color: #000000;
 }
 
 .periodSelectionItem {

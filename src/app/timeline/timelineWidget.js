@@ -368,7 +368,7 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
             'start':          utl.parseDate(token.start),
             'end':            utl.parseDate(token.end),
             'group':          token.platform_name,
-            'title':          tooltip,
+            //'title':          tooltip,
 
             'token_id':       token._id,
             'platform_name':  token.platform_name,
@@ -556,12 +556,13 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
 
             if (elm) {
                 elm.addEventListener("mouseenter", function(event) {
-                    //console.log("mouseenter event=", event);
-                    $rootScope.$broadcast("tokenMouseEnter", tokenId);
+                    var token = items.get(tokenId);
+                    $rootScope.$broadcast("tokenMouseEnter", token, event);
                 }, false);
 
                 elm.addEventListener("mouseleave", function(event) {
-                    $rootScope.$broadcast("tokenMouseLeave", tokenId);
+                    var token = items.get(tokenId);
+                    $rootScope.$broadcast("tokenMouseLeave", token, event);
                 }, false);
             }
         },2000);

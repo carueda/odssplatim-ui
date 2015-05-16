@@ -43,6 +43,24 @@ function UtilCtrl($scope, $modal) {
             //console.log('Confirmation dismissed', arguments);
         });
     };
+
+    // token tooltip
+    $scope.t3 = { style: {visibility: 'hidden'}, token: {} };
+    $scope.$on("tokenMouseEnter", function(e, token, jsEvent) {
+      //console.log("on tokenMouseEnter token=" , token, "jsEvent=", jsEvent);
+      _.assign($scope.t3.token, token);
+      $scope.t3.style = {
+          top:  (jsEvent.pageY + 12) + 'px',
+          left: (jsEvent.pageX + 1) + 'px',
+          visibility: 'visible'
+      };
+      $scope.$digest();
+    });
+    $scope.$on("tokenMouseLeave", function(e, tokenId, jsEvent) {
+      $scope.t3.style.visibility = 'hidden';
+      $scope.$digest();
+    });
+
 }
 
 ConfirmInstanceCtrl.$inject = ['$scope', '$modalInstance', 'info'];

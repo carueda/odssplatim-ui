@@ -1,6 +1,7 @@
 ## change log ##
 
 - 2015-05-15: (0.7.3)
+  - improve token tooltip 
   - split tokenMouseOver event into tokenMouseEnter and tokenMouseLeave event
   - reduce timeline item padding to 1, mainly to save vertical estate
   

@@ -64,6 +64,15 @@
          ng-click="click()"
          ng-keypress="keyPressed($event)"
     ></div>
+    <div class="t3" ng-style="t3.style">
+        <span style="font-weight: bold">{{t3.token.platform_name}}</span>: {{t3.token.state}}
+        <br/>
+        {{t3.token.start | date:'medium'}} &mdash; {{t3.token.end | date:'medium'}}
+        <div ng-show="t3.token.description">
+            <hr/>
+            {{t3.token.description}}
+        </div>
+    </div>
 
     <br>
 
