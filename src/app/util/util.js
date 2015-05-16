@@ -48,7 +48,7 @@ function UtilCtrl($scope, $modal) {
     $scope.t3 = { style: {visibility: 'hidden'}, token: {} };
     $scope.$on("tokenMouseEnter", function(e, token, jsEvent) {
       //console.log("on tokenMouseEnter token=" , token, "jsEvent=", jsEvent);
-      _.assign($scope.t3.token, token);
+      $scope.t3.token = _.cloneDeep(token);
       $scope.t3.style = {
           top:  (jsEvent.pageY + 12) + 'px',
           left: (jsEvent.pageX + 1) + 'px',
