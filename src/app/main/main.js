@@ -1,7 +1,7 @@
 (function() {
 'use strict';
 
-angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives'])
+angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives', 'odssPlatimApp.main.filters'])
 
     .controller('MainCtrl', MainCtrl) ;
 

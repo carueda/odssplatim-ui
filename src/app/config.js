@@ -10,9 +10,10 @@ var odssplatimConfig = {
 
     , opts: {
         // lower and upper limits of visible range
+        // TODO determine this dynamically, not fixed like this
         visRange: {
-            min: "2013-01-01",
-            max: "2015-12-31"
+            min: "2014-01-01",
+            max: "2017-12-31"
         },
 
         showHolidays: true,
