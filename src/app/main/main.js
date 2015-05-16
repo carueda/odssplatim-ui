@@ -193,16 +193,16 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
             // current platforms in the timeline:
             var timelinePlatforms = timelineWidget.getGroups();
             var timelinePlatformNames = _.map(timelinePlatforms, "platform_name");
-            console.log("platformOptionsUpdated timelinePlatforms=", timelinePlatformNames);
+            //console.log("platformOptionsUpdated timelinePlatforms=", timelinePlatformNames);
 
             var selectedPlatforms = platimModel.getSelectedPlatforms();
             var selectedPlatformNames = _.map(selectedPlatforms, "platform_name");
-            console.log("platformOptionsUpdated selectedPlatforms", selectedPlatformNames);
+            //console.log("platformOptionsUpdated selectedPlatforms", selectedPlatformNames);
 
             // insert timelines for new selected platforms:
             _.each(selectedPlatforms, function(selectedPlatform) {
                 if (!_.contains(timelinePlatformNames, selectedPlatform.platform_name)) {
-                    console.log("platformOptionsUpdated inserting timeline", selectedPlatform.platform_name);
+                    //console.log("platformOptionsUpdated inserting timeline", selectedPlatform.platform_name);
                     insertTimeline(selectedPlatform);
                 }
             });
