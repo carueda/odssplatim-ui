@@ -5,9 +5,11 @@ angular.module('odssPlatimApp.main', ['odssPlatimApp.main.directives', 'odssPlat
 
     .controller('MainCtrl', MainCtrl) ;
 
-MainCtrl.$inject = ['$scope', 'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus', 'olMap'];
+MainCtrl.$inject = ['$scope', '$timeout', '$interval',
+  'cfg', 'platimModel', 'periods', 'platforms', 'tokens', 'timelineWidget', 'status', 'utl', 'focus', 'olMap'];
 
-function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus, olMap) {
+function MainCtrl($scope, $timeout, $interval,
+                  cfg, platimModel, periods, platforms, tokens, timelineWidget, status, utl, focus, olMap) {
     $scope.debug = utl.getDebug();
 
     $scope.cfg = cfg;
@@ -32,13 +34,12 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
             updateLastUpdated();
         }
     };
-    setTimeout(function refreshLastUpdated() {
-        if ($scope.lastUpdated !== undefined) {
-            updateLastUpdated();
-            $scope.$digest();
-        }
-        setTimeout(refreshLastUpdated, 5 * 1000);
-    }, 0);
+    var updateRefresher = $interval(function() {
+      if ($scope.lastUpdated !== undefined) {
+        updateLastUpdated();
+      }
+    }, 15 * 1000);
+    $scope.$on('$destroy', function() { $interval.cancel(updateRefresher); });
 
     $scope.periods = {};
 
@@ -66,10 +67,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
 
     function pstatus(msg) {
         var actId = status.activities.add(msg);
-        setTimeout(function() {
-            status.activities.remove(actId);
-            $scope.$digest();
-        }, 3000);
+        $timeout(function() { status.activities.remove(actId); }, 3000);
     }
 
     function getSaveInfo() {
@@ -187,7 +185,7 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
      */
     var platformOptionsUpdated = function(doSave) {
         var actId = status.activities.add("updating display...");
-        setTimeout(function() {
+        $timeout(function() {
             status.activities.remove(actId);
 
             // current platforms in the timeline:
@@ -221,13 +219,12 @@ function MainCtrl($scope, cfg, platimModel, periods, platforms, tokens, timeline
             //_.each(selectedPlatforms, insertTimeline);
 
             timelineWidget.redraw();
-            $scope.$digest();
             if (doSave === undefined || doSave) {
                 platforms.savePlatformOptions(selectedPlatforms, function () {
                     //$scope.$digest();
                 });
             }
-        }, 10);
+        });
     };
 
     function refreshComplete() {
