@@ -7,9 +7,9 @@ var gTW = {};
 angular.module('odssPlatimApp.timelineWidget', [])
     .factory('timelineWidget', timelineWidgetFactory);
 
-timelineWidgetFactory.$inject = ['$rootScope', 'cfg', 'tokens', 'vis', 'utl', 'olMap', 'platimModel'];
+timelineWidgetFactory.$inject = ['$rootScope', '$timeout', 'cfg', 'tokens', 'vis', 'utl', 'olMap', 'platimModel'];
 
-function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimModel) {
+function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMap, platimModel) {
 
     var visRangeMin = moment(cfg.opts.visRange.min);
     var visRangeMax = moment(cfg.opts.visRange.max);
@@ -118,6 +118,9 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
     gTW.groups = groups;
     gTW.items = items;
 
+    var mouseListeners = {};
+
+    addRangeChangedListener();
     addSelectListener();
 
     $rootScope.$on("tokenGeometryUpdated", function(e, token_id, geometry) {
@@ -170,6 +173,7 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
         groups.clear();
 
         setBackgroundItems(withHolidays);
+        $timeout(setTokenMouseListeners);
     }
 
     function getSelection() {
@@ -204,18 +208,21 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
 
             order: stack ? tokenOrdering : null
         });
-        _.each(items.get(), function(tokenInfo) {
-            var isActualToken = tokenInfo.type === undefined || tokenInfo.type !== "background";
-            if (isActualToken) {
+        _.each(items.get(), function(item) {
+            if (isActualToken(item)) {
                 if (stack) {
-                    tokenInfo.subgroup = undefined;
+                    item.subgroup = undefined;
                 }
                 else {
-                    tokenInfo.subgroup = tokenInfo.ttype;
+                    item.subgroup = item.ttype;
                 }
-                updateItem(tokenInfo);
+                updateItem(item);
             }
         });
+    }
+
+    function isActualToken(item) {
+      return item !== undefined && (item.type === undefined || item.type !== "background");
     }
 
     /** Only to be applied when stacking (at least initially) */
@@ -356,19 +363,14 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
      * @returns the item added to the timeline
      */
     function addToken(token) {
-        var tooltip = token.state;
-        if (token.description !== undefined) {
-            tooltip += " - " + token.description;
-        }
-
         var item = {
             'id':             token._id,
             'className':      token.status + " " + token.ttype,
-            'content':        getTokenContent(token),
+            'content':        token.state,
             'start':          utl.parseDate(token.start),
             'end':            utl.parseDate(token.end),
             'group':          token.platform_name,
-            //'title':          tooltip,
+            //'title':          token.state + (token.description !== undefined ? " - " + token.description : ""),
 
             'token_id':       token._id,
             'platform_name':  token.platform_name,
@@ -384,9 +386,12 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
         if (cfg.opts.useSubgroups) {
             item.subgroup = token.ttype;
         }
-        //console.log("addToken: item", item);
+
+        delete mouseListeners[item.id];
+        $timeout(function() {setTokenMouseListener(item.id);});
+
+        //console.log("addToken:", item.platform_name, item.content, item);
         items.add(item);
-        setTokenMouseListener(item.id);
         return item;
     }
 
@@ -435,6 +440,8 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
         platimModel.addToken(item);
 
         olMap.addGeometry(item.id, item.geometry);
+
+        $timeout(function() {setTokenMouseListener(item.id);});
 
         callback(item);
     }
@@ -538,34 +545,68 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
         logarea.html(utl.tablify([]));
     }
 
+    /**
+     * Reacts to rangechanged to set, if not already, the mouseenter/leave listeners
+     * to the tokens that are visible.
+     */
+    function addRangeChangedListener() {
+      var rangeChangedReactTime = 0;
+      timeline.on('rangechanged', function(props) {
+        rangeChangedReactTime = new Date().getTime() + 500;
+      });
+      setInterval(function () {
+        if (rangeChangedReactTime > 0 && new Date().getTime() >= rangeChangedReactTime) {
+          rangeChangedReactTime = 0;
+          setTokenMouseListeners();
+        }
+      }, 1000);
+    }
+
+    function setTokenMouseListeners() {
+      //console.log("setTokenMouseListeners");
+      _.each(getVisibleTokenIds(), setTokenMouseListener);
+    }
+
+    // Sets the mouse listeners to the given token if not already
     function setTokenMouseListener(tokenId) {
-        //console.log("setTokenMouseListener tokenId=", tokenId);
-        setTimeout(function() {
-            //console.log("setTokenMouseListener tokenId=", tokenId);
-            var elementId = "token_" + tokenId;
-            var elm = document.getElementById(elementId);
+      if (mouseListeners[tokenId]) {
+        return;
+      }
+      //console.log('setTokenMouseListener tokenId=', tokenId, mouseListeners[tokenId]);
+      var elementId = "token_" + tokenId;
+      var elm = document.getElementById(elementId);
 
-            // note: the following is to get the grand-parent, which corresponds to
-            // to whole extend of the item
-            if (elm && elm.parentNode) {
-                elm = elm.parentNode;
-                if (elm && elm.parentNode) {
-                    elm = elm.parentNode;
-                }
-            }
+      // note: the following is to get the grand-parent, which corresponds to the whole extend of the item
+      if (elm && elm.parentNode) {
+        elm = elm.parentNode;
+        if (elm && elm.parentNode) {
+          elm = elm.parentNode;
+        }
+      }
 
-            if (elm) {
-                elm.addEventListener("mouseenter", function(event) {
-                    var token = items.get(tokenId);
-                    $rootScope.$broadcast("tokenMouseEnter", token, event);
-                }, false);
+      if (elm) {
+        elm.addEventListener("mouseenter", mouseEnter, false);
+        elm.addEventListener("mouseleave", mouseLeave, false);
+        mouseListeners[tokenId] = true;
+      }
+      else {
+        console.warn("unexpected: cannot get element by id=", elementId);
+      }
 
-                elm.addEventListener("mouseleave", function(event) {
-                    var token = items.get(tokenId);
-                    $rootScope.$broadcast("tokenMouseLeave", token, event);
-                }, false);
-            }
-        },2000);
+      function mouseEnter(event) {
+        //console.log('mouseEnter tokenId=', tokenId);
+        $rootScope.$broadcast("tokenMouseEnter", items.get(tokenId), event);
+      }
+
+      function mouseLeave(event) {
+        $rootScope.$broadcast("tokenMouseLeave", items.get(tokenId), event);
+      }
+    }
+
+    function getVisibleTokenIds() {
+      return _.filter(timeline.getVisibleItems(), function(itemId) {
+        return isActualToken(items.get(itemId));
+      })
     }
 
     function addSelectListener() {
@@ -579,16 +620,6 @@ function timelineWidgetFactory($rootScope, cfg, tokens, vis, utl, olMap, platimM
             logarea.html(utl.tablify(selected));
         };
         timeline.on('select', onSelect);
-    }
-
-    function getTokenContent(token) {
-
-        return token.state;
-
-//        var tooltip = utl.tablify(token);
-//        //console.log("tootip = " + tooltip);
-//        var content = "<div title='" +tooltip+ "'>" +token.state+ "</div>";
-//        return content;
     }
 
 }
