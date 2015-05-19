@@ -81,8 +81,7 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
             tokens = _.filter(tokens, function(token) {
               var tokBeg = moment(token.start);
               var tokEnd = moment(token.end);
-              return tokBeg.isAfter(sprBeg) && tokBeg.isBefore(sprEnd)
-                  || tokEnd.isAfter(sprBeg) && tokEnd.isBefore(sprEnd)
+              return tokBeg.isBefore(sprEnd) && tokEnd.isAfter(sprBeg)
             });
           }
 
