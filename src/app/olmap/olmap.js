@@ -121,9 +121,9 @@ function MapCtrl($scope, olMap, timelineWidget) {
     };
 }
 
-olMap.$inject = ['$rootScope', 'olExt', 'utl'];
+olMap.$inject = ['$rootScope', '$timeout', '$window', 'olExt', 'cfg'];
 
-function olMap($rootScope, olExt, utl) {
+function olMap($rootScope, $timeout, $window, olExt, cfg) {
     var styles = getStyles();
 
     var gmap, view;
@@ -201,7 +201,7 @@ function olMap($rootScope, olExt, utl) {
         });
         map.on('moveend', syncMapMove);
 
-        setCenter([-122.23, 36.83]);
+        setCenter([cfg.map.center.lon, cfg.map.center.lat]);
         setZoom(10);
 
         olMapDiv.parentNode.removeChild(olMapDiv);
@@ -278,11 +278,33 @@ function olMap($rootScope, olExt, utl) {
             }, 500);
             setTimeout(updateSize, 250); // the very initial update seems to always work fine.
         }
+        ----- */
+
         function updateSize() {
             google.maps.event.trigger(gmap, 'resize');
             map.updateSize();
         }
-        ----- */
+
+        (function prepareAdjustMapUponWindowResize() {
+          var mapContainer = document.getElementById('olmap');
+          var marginBottom = 5;
+
+          angular.element($window).bind('resize', function() {
+            $timeout(updateWindowSize);
+          });
+
+          $timeout(updateWindowSize, 700);
+
+          function updateWindowSize() {
+            var rect = mapContainer.getBoundingClientRect();
+            var restWindowHeight = $window.innerHeight - rect.top - marginBottom;
+            if (restWindowHeight < cfg.map.minHeight) {
+              restWindowHeight = cfg.map.minHeight;
+            }
+            mapContainer.style.height = restWindowHeight + 'px';
+            updateSize();
+          }
+        })();
     }
 
     function reinit() {

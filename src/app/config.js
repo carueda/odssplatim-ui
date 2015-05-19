@@ -8,6 +8,16 @@ var odssplatimConfig = {
 
     helpLink: "https://oceana.mbari.org/confluence/display/CANON/ODSS+Platform+Timeline+Editor"
 
+    ,map: {
+      // default center
+      center: {
+        lon: -122.23,
+        lat:   36.83
+      },
+
+      minHeight: 500
+    }
+
     , opts: {
         // lower and upper limits of visible range
         // TODO determine this dynamically, not fixed like this

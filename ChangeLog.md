@@ -1,6 +1,7 @@
 ## change log ##
 
 - 2015-05-19: (0.7.3)
+  - listen to window resize to adjust map height; include minimum height in config.
   - comment out additional logic to lessen \#133 misbehavior given that this
     component is again being included in ODSS via iframe.
   
