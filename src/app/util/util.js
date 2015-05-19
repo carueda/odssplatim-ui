@@ -46,7 +46,8 @@ function UtilCtrl($scope, $modal) {
                 info: function () { return $scope.info; }
             }
         });
-        modalInstance.result.then(function() { }, function () { });
+        var complete = info.ok || function() {};
+        modalInstance.result.then(complete, complete);
     });
 
     // token tooltip
