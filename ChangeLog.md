@@ -1,6 +1,9 @@
 ## change log ##
 
 - 2015-05-19: (0.7.4)
+  - change refresh sequence, in particular, to first get the selected period
+    and then only consider the tokens intersecting that period.
+
   - simply do a complete refresh upon change in period selection
   - period selection change dispatched only if no current unsaved changes; message dialog to notify user
     (note that other options in the period drop-down are still enabled).

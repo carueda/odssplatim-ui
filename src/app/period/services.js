@@ -23,7 +23,7 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
      * Retrieves the defined periods.
      * @param fns  Callback functions
      */
-    function refreshPeriods(fns) {
+    function refreshPeriods(fns, next) {
         var url = cfg.rest + "/periods";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add("refreshing periods");
@@ -34,7 +34,7 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
                 _.each(res, function(per) {
                     platimModel.periods[per._id] = per;
                 });
-                getDefaultPeriodId(fns);
+                getDefaultPeriodId(fns, next);
             })
 
             .error(httpErrorHandler(actId, fns.refreshError));
@@ -48,7 +48,7 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
      * Retrieves the default period.
      * @param fns  Callback functions
      */
-    function getDefaultPeriodId(fns) {
+    function getDefaultPeriodId(fns, next) {
         var url = cfg.rest + "/periods/default";
         if (utl.getDebug()) console.log("GET " + url);
         var actId = activities.add("getting default period");
@@ -58,14 +58,14 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
                 platimModel.selectedPeriodId = res.defaultPeriodId;
                 fns.gotDefaultPeriodId();
                 $rootScope.$broadcast('periodsRefreshed');
-                fns.refreshComplete();
+                if (next) next(fns);
             })
 
             .error(function(data, status, headers, config) {
                 if (status == 404) {
                     activities.remove(actId);
                     fns.gotDefaultPeriodId();
-                    fns.refreshComplete();
+                    if (next) next(fns);
                 }
                 else {
                     httpErrorHandler(actId, fns.refreshError)(data, status, headers, config)

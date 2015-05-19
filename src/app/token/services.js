@@ -48,46 +48,65 @@ function tokens($rootScope, $http, cfg, platimModel, status, utl, httpErrorHandl
     /**
      * Retrieves the tokens for the given platforms.
      * @param platformNames  Names of desired platforms
+     * @param spr            Selected period range.
+     *                       Only tokens intersecting this range are considered.
      * @param fns            Callback functions
      * @param next
      */
-    function refreshTokens(platformNames, fns, next) {
+    function refreshTokens(platformNames, spr, fns, next) {
         var url = cfg.rest + "/tokens";
-        var params = {platform_name: platformNames.join(',')};
+
+        var params = {
+          platform_name: platformNames.join(',')
+          // TODO pass selected period range to backend once it's able to process such parameters.
+          // For now, we are doing this filtering below.
+        };
         if (utl.getDebug()) console.log("GET " + url + " params=", params);
+
         var actId = activities.add('retrieving tokens');
         $http.get(url, {params: params})
             .success(function(tokens, status, headers, config) {
                 activities.remove(actId);
                 //console.log("GET response: tokens=", tokens);
-                var byPlatformName = _.groupBy(tokens, "platform_name");
-                _.each(byPlatformName, function(platTokens, platform_name) {
-                    _.each(platTokens, function(token) {
-                        token.token_id      = token._id;
-                        token.status        = "status_saved";
-
-                        // manually set ttype if not provided by backend.
-                        // TODO eventually remove this once all tokens in database are updated
-                        if (!token.ttype) {
-                            token.ttype = "ttdeployment";
-                        }
-
-                        // if absent, set an "empty geometry," in particular it will allow
-                        // "adding" a brand new geometry  -- see olMap module.
-                        if (!token.geometry) {
-                            token.geometry = {
-                                type: "FeatureCollection",
-                                features: []
-                            };
-                        }
-                        platimModel.addToken(token);
-                    });
-                });
-
+                gotTokens(tokens);
                 if (next) next(fns);
             })
+            .error(httpErrorHandler(actId, fns.refreshError))
+        ;
 
-            .error(httpErrorHandler(actId, fns.refreshError));
+        function gotTokens(tokens) {
+          if (spr) {  // only consider intersecting tokens:
+            var sprBeg = spr.start;
+            var sprEnd = spr.end;
+            tokens = _.filter(tokens, function(token) {
+              var tokBeg = moment(token.start);
+              var tokEnd = moment(token.end);
+              return tokBeg.isAfter(sprBeg) && tokBeg.isBefore(sprEnd)
+                  || tokEnd.isAfter(sprBeg) && tokEnd.isBefore(sprEnd)
+            });
+          }
+
+          _.each(tokens, function(token) {
+            token.token_id  = token._id;
+            token.status    = "status_saved";
+
+            // manually set ttype if not provided by backend.
+            // TODO eventually remove this once all tokens in database are updated
+            if (!token.ttype) {
+              token.ttype = "ttdeployment";
+            }
+
+            // if absent, set an "empty geometry," in particular it will allow
+            // "adding" a brand new geometry  -- see olMap module.
+            if (!token.geometry) {
+              token.geometry = {
+                type: "FeatureCollection",
+                features: []
+              };
+            }
+            platimModel.addToken(token);
+          });
+        }
     }
 
     /**

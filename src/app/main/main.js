@@ -48,16 +48,21 @@ function MainCtrl($scope, $timeout, $interval,
         timelineWidget.redraw();
     };
 
+    /**
+     *  Gets object {start: moment, end: moment} corresponding to selected period, if any.
+     */
+    function getSelectedPeriodRange() {
+        var selp = platimModel.getSelectedPeriod();
+        if (selp !== undefined && selp.start !== undefined && selp.end !== undefined) {
+          return {start: moment(selp.start), end: moment(selp.end)};
+        }
+    }
+
     function setVisibleChartRange() {
-        var selectedPeriod = platimModel.getSelectedPeriod();
-        if (selectedPeriod !== undefined
-            && selectedPeriod.start !== undefined
-            && selectedPeriod.end !== undefined
-            ) {
-            var start = selectedPeriod.start;
-            var end   = selectedPeriod.end;
-            timelineWidget.setVisibleChartRange(moment(start).add("d", -1),
-                                                moment(end).  add("d", +1));
+        var spr = getSelectedPeriodRange();
+        if (spr) {
+            timelineWidget.setVisibleChartRange(moment(spr.start).add("d", -1),
+                                                moment(spr.end).  add("d", +1));
         }
         else {
             timelineWidget.adjustVisibleChartRange();
@@ -110,14 +115,19 @@ function MainCtrl($scope, $timeout, $interval,
             refreshError:         refreshError
         };
 
-        tokens.getGeneralInfo(fns, function(fns) {
-            periods.getHolidays(fns, function(fns) {
-                platforms.getAllPlatforms(fns, function(fns) {
-                    platforms.getSelectedPlatforms(fns, function(selectedPlatforms, fns) {
-                        tokens.refreshTokens(selectedPlatforms, fns, periods.refreshPeriods);
-                    });
-                })
+        platforms.getAllPlatforms(fns, function(fns) {
+          periods.refreshPeriods(fns, function(fns) {
+            platforms.getSelectedPlatforms(fns, function(selectedPlatforms, fns) {
+              var spr = getSelectedPeriodRange();
+              tokens.refreshTokens(selectedPlatforms, spr, fns, function(fns) {
+                periods.getHolidays(fns, function(fns) {
+                  tokens.getGeneralInfo(fns, function(fns) {
+                    refreshComplete();
+                  });
+                });
+              });
             });
+          });
         });
     }
 
