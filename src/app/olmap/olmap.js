@@ -202,6 +202,28 @@ function olMap($rootScope, olExt, utl) {
 
         createFeatureOverlay();
 
+        olExt.setMouseListener(map,
+          function mouseEnter(feature, olEvent) {
+            var tokenId = feature.get('geomId');
+            if (tokenId) {
+              $rootScope.$broadcast("evtGeometryMouseEnter", tokenId, olEvent.originalEvent);
+            }
+          },
+          function mouseLeave(feature, olEvent) {
+            var tokenId = feature.get('geomId');
+            if (tokenId) {
+              $rootScope.$broadcast("evtGeometryMouseLeave", tokenId, olEvent.originalEvent);
+            }
+          },
+          function mouseClick(feature, olEvent) {
+            var tokenId = feature.get('geomId');
+            if (tokenId) {
+              //console.log("mouseClick tokenId=", tokenId);
+              $rootScope.$broadcast("evtGeometryMouseClick", tokenId, olEvent.originalEvent);
+            }
+          }
+        );
+
         dragHandler   = olExt.createDragHandler(map, featureOverlay, changeEnded);
         modifyHandler = olExt.createModifyHandler(map, featureOverlay, changeDetected);
         deleteHandler = olExt.createDeleteHandler(map, featureOverlay, changeEnded);
@@ -278,6 +300,11 @@ function olMap($rootScope, olExt, utl) {
             object: object
         });
 
+        vectorSource.forEachFeature(function(feature) {
+          //console.log("addGeometry: setting geomId=", geomId);
+          feature.set('geomId', geomId);
+        });
+
         var vectorLayer = new ol.layer.Vector({
             source: vectorSource,
             style:  styles.styleNormal
@@ -333,7 +360,7 @@ function olMap($rootScope, olExt, utl) {
     }
 
     function setMode(mode) {
-        console.log("setMode: currentMode=", currentMode, " setMode=", mode);
+        //console.log("setMode: currentMode=", currentMode, " setMode=", mode);
         if (currentMode === mode) {
             return true;
         }

@@ -1,5 +1,12 @@
 ## change log ##
 
+- 2015-05-18: (0.7.3)
+  - add mouseEnter/mouseLeave/mouseClick functionality to geometries.
+    This greatly improves usability:
+    - easier to see associated tokens while interacting with the geometries
+    - selection of token can also be done by clicking associated geometry
+    - so, just by clicking geometries, one can continue applying current edit mode
+  
 - 2015-05-15: (0.7.3)
   - improve token tooltip 
   - split tokenMouseOver event into tokenMouseEnter and tokenMouseLeave event

@@ -16,12 +16,55 @@ function olExt() {
         })
     });
 
+    var hoveredFeature = undefined;
+
     return {
+        setMouseListener:       setMouseListener,
         createDragHandler:      createDragHandler,
         createModifyHandler:    createModifyHandler,
         createDeleteHandler:    createDeleteHandler,
         createDrawHandler:      createDrawHandler
     };
+
+    function setMouseListener(map, mouseEnter, mouseLeave, mouseClick) {
+      map.on('pointermove', function(olEvent) {
+        //console.log("pointermove pixel=", olEvent.pixel);
+        if (olEvent.dragging) {
+          leave(olEvent);
+          //return;  // could return here to simply remove the tooltip while dragging
+        }
+        var feature = map.forEachFeatureAtPixel(olEvent.pixel,
+            function(feature, layer) { return feature; }
+        );
+        if (hoveredFeature !== feature) {
+          leave(olEvent);
+          hoveredFeature = feature;
+          enter(olEvent);
+        }
+      });
+
+      function leave(olEvent) {
+        if (hoveredFeature !== undefined) {
+          mouseLeave(hoveredFeature, olEvent);
+          hoveredFeature = undefined;
+        }
+      }
+      function enter(olEvent) {
+        if (hoveredFeature !== undefined) {
+          mouseEnter(hoveredFeature, olEvent)
+        }
+      }
+
+      map.on('click', function(olEvent) {
+        //console.log("singleclick pixel=", olEvent.pixel);
+        var feature = map.forEachFeatureAtPixel(olEvent.pixel,
+            function(feature, layer) { return feature; }
+        );
+        if (feature) {
+          mouseClick(feature, olEvent);
+        }
+      });
+    }
 
     function createDragHandler(map, featureOverlay, changeEnded) {
         var selectInteraction = null;

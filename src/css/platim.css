@@ -138,7 +138,10 @@ div.range {
     border-radius: 0px;
     -moz-border-radius: 0px;  /* For Firefox 3.6 and older */
 }.range:hover {
-     box-shadow: 0 0 5px #383380;
+     box-shadow: 0 0 8px #383380;
+}
+.direct_range_hover {
+    box-shadow: 0 0 8px #383380;
 }
 
 div.status_new {

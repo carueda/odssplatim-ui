@@ -134,6 +134,53 @@ function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMa
         }
     });
 
+    (function() {
+      // this block to react to mouse events on the geometries so the associated tokens
+      // reflect those events.
+      var hoverClassName = 'direct_range_hover';
+      $rootScope.$on("evtGeometryMouseEnter", function (e, token_id, jsEvent) {
+        var item = items.get(token_id);
+        //console.log("$on evtGeometryMouseEnter: token_id=", token_id, "item=", item);
+        if (item) {
+          updateClass(item, hoverClassName, true);
+          $rootScope.$broadcast("tokenMouseEnter", item, jsEvent);
+        }
+      });
+      $rootScope.$on("evtGeometryMouseLeave", function (e, token_id, jsEvent) {
+        var item = items.get(token_id);
+        //console.log("$on evtGeometryMouseLeave: token_id=", token_id, "item=", item);
+        if (item) {
+          updateClass(item, hoverClassName, false);
+          $rootScope.$broadcast("tokenMouseLeave", item, jsEvent);
+        }
+      });
+      $rootScope.$on("evtGeometryMouseClick", function (e, token_id, jsEvent) {
+        var item = items.get(token_id);
+        //console.log("$on evtGeometryMouseClick: token_id=", token_id, "item=", item);
+        if (item) {
+          timeline.setSelection(item.id);
+          $rootScope.$broadcast("tokenSelection", [item]);
+          logarea.html(utl.tablify([item]));
+        }
+      });
+
+      // todo: this function could be used in other places
+      function updateClass(token, className, include) {
+        var classes = token.className.split(/\s+/);
+        var alreadyIncluded = _.contains(classes, className);
+        if (include) {
+          if (!alreadyIncluded) {
+            classes.push(className)
+          }
+        }
+        else if (alreadyIncluded) {
+          classes = _.reject(classes, function(c) { return c === className });
+        }
+        token.className = classes.join(' ');
+        items.update(token);
+      }
+    })();
+
     return {
         reinit:                    reinit,
         getVisibleChartRange:      getVisibleChartRange,
@@ -590,7 +637,7 @@ function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMa
         mouseListeners[tokenId] = true;
       }
       else {
-        console.warn("unexpected: cannot get element by id=", elementId);
+        //console.warn("unexpected: cannot get element by id=", elementId);
       }
 
       function mouseEnter(event) {
