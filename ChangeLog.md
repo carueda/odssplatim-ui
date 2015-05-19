@@ -1,5 +1,9 @@
 ## change log ##
 
+- 2015-05-19: (0.7.3)
+  - comment out additional logic to lessen \#133 misbehavior given that this
+    component is again being included in ODSS via iframe.
+  
 - 2015-05-18: (0.7.3)
   - Escape (on timeline and map) now clears token selection
   - add icons to refresh and save buttons.

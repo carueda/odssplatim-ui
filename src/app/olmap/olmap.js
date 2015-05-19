@@ -250,14 +250,21 @@ function olMap($rootScope, olExt, utl) {
             // upon resizing of the window or container.  Tested on odss-test with some success but the problem
             // still happens sometimes, although much less frequently.
             //
+            // UPDATE 2015-05-19: Not actually doing the adjustment, see below.
+            /* -----
             if (!skipMapSync) {
                 // Basically, here we also "schedule" a post-update to run in a second from now:
                 syncMapPostAdjustTime = new Date().getTime() + 1000;
             }
+            ----- */
         }
 
         // do the additional adjustments unless both "?debug" and "skipMapSync" are present in window location.
         // This helps easily turn off the adjustment to demonstrate original problem.
+        //
+        // UPDATE 2015-05-19: Actually now always skip this post-update because the planning editor is
+        // again included in ODSS via iframe, so we don't have the issue.
+        /* ------
         var skipMapSync = !!(utl.getDebug() && utl.getDebug().skipMapSync);
         console.log("#133: skipMapSync=", skipMapSync);
         var syncMapPostAdjustTime = 0;
@@ -275,6 +282,7 @@ function olMap($rootScope, olExt, utl) {
             google.maps.event.trigger(gmap, 'resize');
             map.updateSize();
         }
+        ----- */
     }
 
     function reinit() {
