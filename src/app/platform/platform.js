@@ -6,31 +6,45 @@ angular.module('odssPlatimApp.platform', ['odssPlatimApp.platform.services'])
     .controller('PlatformInstanceCtrl', PlatformInstanceCtrl)
 ;
 
-PlatformCtrl.$inject = ['$scope', '$modal', 'platimModel', 'platforms', 'focus'];
+PlatformCtrl.$inject = ['$scope', '$modal', 'timelineWidget', 'platimModel', 'platforms', 'focus', 'utl'];
 
-function PlatformCtrl($scope, $modal, platimModel, platforms, focus) {
+function PlatformCtrl($scope, $modal, timelineWidget, platimModel, platforms, focus, utl) {
     $scope.open = function () {
 
-        $scope.platformOptions = platimModel.platformOptions;
-        //console.log("$scope.platformOptions:", $scope.platformOptions);
+        var saveInfo = timelineWidget.getSaveInfo();
+        var unsaved = saveInfo.toBeSaved;
+        if (unsaved.length > 0) {
+          utl.message({
+            title:     "Unsaved tokens",
+            message:   'Please first save or discard your unsaved token changes'
+          });
+        }
+        else {
+          dispatch();
+        }
 
-        var modalInstance = $modal.open({
-            templateUrl: 'platform/platform.tpl.html',
-            controller: 'PlatformInstanceCtrl',
-            resolve: {
-                platformOptions: function () {
-                    return $scope.platformOptions;
-                }
-            }
-        });
+        function dispatch() {
+          $scope.platformOptions = platimModel.platformOptions;
+          //console.log("$scope.platformOptions:", $scope.platformOptions);
 
-        modalInstance.result.then(function (platformOptions) {
-            platimModel.platformOptions = $scope.platformOptions = platformOptions;
-            platforms.platformOptionsUpdated();
-            focus('focusTimeline');
-        }, function () {
-            focus('focusTimeline');
-        });
+          var modalInstance = $modal.open({
+              templateUrl: 'platform/platform.tpl.html',
+              controller: 'PlatformInstanceCtrl',
+              resolve: {
+                  platformOptions: function () {
+                      return $scope.platformOptions;
+                  }
+              }
+          });
+
+          modalInstance.result.then(function (platformOptions) {
+              platimModel.platformOptions = $scope.platformOptions = platformOptions;
+              platforms.platformOptionsUpdated();
+              focus('focusTimeline');
+          }, function () {
+              focus('focusTimeline');
+          });
+        }
     };
 }
 

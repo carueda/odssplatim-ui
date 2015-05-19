@@ -3,7 +3,7 @@
 
 angular.module('odssPlatimApp.util', [])
     .controller('UtilCtrl', UtilCtrl)
-    .controller('ConfirmInstanceCtrl', ConfirmInstanceCtrl)
+    .controller('MessageInstanceCtrl', MessageInstanceCtrl)
 
     .factory('status', status)
 
@@ -18,31 +18,36 @@ angular.module('odssPlatimApp.util', [])
 UtilCtrl.$inject = ['$scope', '$modal'];
 
 function UtilCtrl($scope, $modal) {
-    $scope.$on('confirm', function(event, info) {
-        //console.log("UtilCtrl.confirm:", info);
+    $scope.$on('evtConfirm', function(event, info) {
         $scope.info = info;
-        $scope.open();
-    });
-
-    $scope.open = function () {
         var modalInstance = $modal.open({
             templateUrl: 'util/confirm.tpl.html',
-            controller: 'ConfirmInstanceCtrl',
+            controller: 'MessageInstanceCtrl',
             size:       'sm',
             resolve: {
-                info: function () {
-                    return $scope.info;
-                }
+                info: function () { return $scope.info; }
             }
         });
-
         modalInstance.result.then(function() {
             //console.log('Confirmation accepted', arguments);
             $scope.info.ok()
         }, function () {
             //console.log('Confirmation dismissed', arguments);
         });
-    };
+    });
+
+    $scope.$on('evtMessage', function(event, info) {
+        $scope.info = info;
+        var modalInstance = $modal.open({
+            templateUrl: 'util/message.tpl.html',
+            controller: 'MessageInstanceCtrl',
+            size:       'sm',
+            resolve: {
+                info: function () { return $scope.info; }
+            }
+        });
+        modalInstance.result.then(function() { }, function () { });
+    });
 
     // token tooltip
     $scope.t3 = { style: {visibility: 'hidden'}, token: {} };
@@ -63,9 +68,10 @@ function UtilCtrl($scope, $modal) {
 
 }
 
-ConfirmInstanceCtrl.$inject = ['$scope', '$modalInstance', 'info'];
+// MessageInstanceCtrl: for confirm, message, and the like dialog boxes
+MessageInstanceCtrl.$inject = ['$scope', '$modalInstance', 'info'];
 
-function ConfirmInstanceCtrl($scope, $modalInstance, info) {
+function MessageInstanceCtrl($scope, $modalInstance, info) {
     $scope.title   = info.title;
     $scope.message = info.message;
 
@@ -210,8 +216,11 @@ function miscUtils($rootScope, $window) {
 
     return {
         confirm: function(info) {
-            //console.log("utl.confirm:", info);
-            $rootScope.$broadcast('confirm', info);
+            $rootScope.$broadcast('evtConfirm', info);
+        },
+
+        message: function(info) {
+            $rootScope.$broadcast('evtMessage', info);
         },
 
         getDebug: function () {

@@ -204,6 +204,8 @@ function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMa
         ,setTokenTypeForAddition:   setTokenTypeForAddition
         ,updateItem:                updateItem
         ,updateStackSetting:        updateStackSetting
+
+        ,getSaveInfo:               getSaveInfo
     };
 
     function getDataSet() {
@@ -674,6 +676,39 @@ function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMa
             logarea.html(utl.tablify(selected));
         };
         timeline.on('select', onSelect);
+    }
+
+    function getSaveInfo() {
+      var toBeSaved = [];
+      var skipped = 0;
+
+      _.each(getData(), function(item, index) {
+        if (isActualToken(item)) {
+          //console.log("item=", item);
+          if (isNewOrModifiedToken(item)) {
+            if (isOkToBeSaved(item)) {
+              toBeSaved.push({tokenInfo: item, index: index});
+            }
+            else {
+              skipped += 1;
+            }
+          }
+        }
+      });
+
+      return {toBeSaved: toBeSaved, skipped: skipped};
+
+      function isNewOrModifiedToken(tokenInfo) {
+        return tokenInfo.status !== undefined &&
+            (tokenInfo.status === "status_new" ||
+            tokenInfo.status.indexOf("_modified") >= 0);
+      }
+
+      function isOkToBeSaved(tokenInfo) {
+        return tokenInfo.status !== undefined &&
+            tokenInfo.state !== undefined &&
+            tokenInfo.state.trim() !== "";
+      }
     }
 
 }

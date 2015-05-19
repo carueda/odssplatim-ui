@@ -70,45 +70,13 @@ function MainCtrl($scope, $timeout, $interval,
         $timeout(function() { status.activities.remove(actId); }, 3000);
     }
 
-    function getSaveInfo() {
-        function isNewOrModifiedToken(tokenInfo) {
-            return tokenInfo.status !== undefined &&
-                (tokenInfo.status === "status_new" ||
-                    tokenInfo.status.indexOf("_modified") >= 0);
-        }
-
-        function isOkToBeSaved(tokenInfo) {
-            return tokenInfo.status !== undefined &&
-                tokenInfo.state !== undefined &&
-                tokenInfo.state.trim() !== "";
-        }
-
-        var skipped = 0;
-        var toBeSaved = [];
-        _.each(timelineWidget.getData(), function(tokenInfo, index) {
-            var isActualToken = tokenInfo.type === undefined || tokenInfo.type !== "background";
-            if (isActualToken) {
-                //console.log("tokenInfo=", tokenInfo);
-                if (isNewOrModifiedToken(tokenInfo)) {
-                    if (isOkToBeSaved(tokenInfo)) {
-                        toBeSaved.push({tokenInfo: tokenInfo, index: index});
-                    }
-                    else {
-                        skipped += 1;
-                    }
-                }
-            }
-        });
-        return {toBeSaved: toBeSaved, skipped: skipped};
-    }
-
     /**
      * Triggers the refresh of the model, first confirming with the user
      * in case of any unsaved changes.
      */
     $scope.refresh = function() {
         focus('focusTimeline');
-        var toBeSavedInfo = getSaveInfo();
+        var toBeSavedInfo = timelineWidget.getSaveInfo();
         var unsaved = toBeSavedInfo.toBeSaved;
         if (unsaved.length > 0) {
             utl.confirm({
@@ -255,7 +223,7 @@ function MainCtrl($scope, $timeout, $interval,
 
         status.errors.removeAll();
 
-        var saveInfo = getSaveInfo();
+        var saveInfo = timelineWidget.getSaveInfo();
         var toBeSaved = saveInfo.toBeSaved;
 
         var msg, skippedMsg = saveInfo.skipped > 0

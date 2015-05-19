@@ -1,5 +1,8 @@
 ## change log ##
 
+- 2015-05-19: (0.7.4)
+  - platform selection dispatched only if no current unsaved changes; message dialog to notify user.
+  
 - 2015-05-19: (0.7.3)
   - listen to window resize to adjust map height; include minimum height in config.
   - comment out additional logic to lessen \#133 misbehavior given that this
