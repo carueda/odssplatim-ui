@@ -69,6 +69,7 @@
          focus-on="focusTimeline"
          ng-click="click()"
          ng-keypress="keyPressed($event)"
+         ng-keyup="keyDown($event)"
     ></div>
     <div class="t3" ng-style="t3.style">
         <span style="font-weight: bold">{{t3.token.platform_name}}</span>: {{t3.token.state}}

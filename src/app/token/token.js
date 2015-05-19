@@ -57,6 +57,12 @@ function TimelineCtrl($scope, $modal, cfg, timelineWidget, status, focus) {
 
     focus('focusTimeline');
 
+    $scope.keyDown = function($event) {
+      if ($event.keyCode === 27) {
+        timelineWidget.clearSelection();
+      }
+    };
+
     $scope.keyPressed = function($event) {
         var chr = String.fromCharCode($event.charCode);
         var chrLc = chr.toLowerCase();

@@ -197,6 +197,7 @@ function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMa
         updateStatusModified:      updateStatusModified,
         redraw:                    redraw,
         getSelection:              getSelection,
+        clearSelection:            clearSelection,
         getItemById:               getItemById,
         setCopiedToken:            setCopiedToken
 
@@ -225,6 +226,12 @@ function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMa
 
     function getSelection() {
         return timeline.getSelection();
+    }
+
+    function clearSelection() {
+      timeline.setSelection([]);
+      $rootScope.$broadcast("tokenSelection", []);
+      logarea.html(utl.tablify([]));
     }
 
     function getItemById(itemId) {

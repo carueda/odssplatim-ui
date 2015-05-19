@@ -8,9 +8,9 @@ angular.module('odssPlatimApp.olmap', ['odssPlatimApp.olmap.directives', 'odssPl
 
 var DEFAULT_DRAW_TYPE = "Polygon";
 
-MapCtrl.$inject = ['$scope', 'olMap'];
+MapCtrl.$inject = ['$scope', 'olMap', 'timelineWidget'];
 
-function MapCtrl($scope, olMap) {
+function MapCtrl($scope, olMap, timelineWidget) {
     olMap.insertMap();
 
     var vm = {
@@ -113,6 +113,12 @@ function MapCtrl($scope, olMap) {
         vm.mode.selectedMode = "View";
         vm.viewOnly = olMap.getTokenSelection().length != 1;
     });
+
+    $scope.keyDown = function($event) {
+      if ($event.keyCode === 27) {
+        timelineWidget.clearSelection();
+      }
+    };
 }
 
 olMap.$inject = ['$rootScope', 'olExt', 'utl'];
