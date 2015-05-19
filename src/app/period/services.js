@@ -41,7 +41,7 @@ function periods($rootScope, $http, cfg, platimModel, status, utl, httpErrorHand
     }
 
     function periodSelected() {
-        $rootScope.$broadcast('periodSelected');
+        $rootScope.$broadcast('evtPeriodSelected');
     }
 
     /**

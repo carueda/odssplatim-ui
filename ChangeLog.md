@@ -1,6 +1,8 @@
 ## change log ##
 
 - 2015-05-19: (0.7.4)
+  - period selection change dispatched only if no current unsaved changes; message dialog to notify user
+    (note that other options in the period drop-down are still enabled).
   - simply do a complete refresh upon change in platform selection
   - platform selection dispatched only if no current unsaved changes; message dialog to notify user.
   

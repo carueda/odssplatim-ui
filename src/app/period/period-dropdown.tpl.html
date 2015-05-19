@@ -11,6 +11,7 @@
     <ul class="dropdown-menu" role="menu">
         <li ng-repeat="period in vm.periods | orderBy:'-start'"
             class="periodSelectionItem"
+            tooltip-placement="bottom"
             tooltip="{{period.start}} – {{period.end}}">
 
             <span ng-click="selectPeriod(period)">

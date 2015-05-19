@@ -12,9 +12,14 @@ angular.module('odssPlatimApp.period', ['odssPlatimApp.period.directives', 'odss
     .controller('PeriodInstanceCtrl', PeriodInstanceCtrl)
 ;
 
-PeriodCtrl.$inject = ['$scope', '$modal', 'platimModel', 'timelineWidget', 'periods', 'focus'];
+PeriodCtrl.$inject = ['$scope', '$modal', 'platimModel', 'timelineWidget', 'periods', 'focus', 'utl'];
 
-function PeriodCtrl($scope, $modal, platimModel, timelineWidget, periods, focus) {
+function PeriodCtrl($scope, $modal, platimModel, timelineWidget, periods, focus, utl) {
+
+    $scope.unsavedTokenChanges = function() {
+      var saveInfo = timelineWidget.getSaveInfo();
+      return saveInfo.toBeSaved.length > 0;
+    };
 
     $scope.vm = {};
     $scope.$on('periodsRefreshed', periodsRefreshed);
@@ -30,22 +35,32 @@ function PeriodCtrl($scope, $modal, platimModel, timelineWidget, periods, focus)
         //console.log('on periodsRefreshed', $scope.vm.periods);
     }
 
-    // selects the given period as the default
+    // unless there are unsaved token changes, selects the given period as the default
     $scope.selectPeriod = function(period) {
-        //console.log('selectPeriod:', period);
-        if (platimModel.selectedPeriodId !== period._id) {
-            periods.setDefaultPeriodId(period._id, function(error) {
-                if (!error) {
-                    periodsRefreshed();
-                    periods.periodSelected();
-                }
-            });
+      if (platimModel.selectedPeriodId !== period._id) {
+        if ($scope.unsavedTokenChanges()) {
+          utl.message({
+            title:     "Unsaved tokens",
+            message:   'Before changing the selected period, please save or discard your unsaved token changes',
+            ok: function() { focus('focusTimeline'); }
+          });
         }
         else {
-            // no change in selected period, but adjust window in case visible range has changed
-            periods.periodSelected();
+          //console.log('selectPeriod:', period);
+          periods.setDefaultPeriodId(period._id, function(error) {
+              if (!error) {
+                  periodsRefreshed();
+                  periods.periodSelected();
+              }
+          });
         }
-        focus('focusTimeline');
+      }
+      else {
+          // no change in selected period; adjust window in case visible range has changed
+          periods.periodSelected();
+      }
+
+      focus('focusTimeline');
     };
 
     function openModal(period) {

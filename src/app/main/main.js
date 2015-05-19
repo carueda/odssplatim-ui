@@ -178,7 +178,7 @@ function MainCtrl($scope, $timeout, $interval,
       });
     });
 
-    $scope.$on('periodSelected', setVisibleChartRange);
+    $scope.$on('evtPeriodSelected', setVisibleChartRange);
 
     $scope.$on('tokenDeleted', function(evt, token) {
         //console.log("reacting to tokenDeleted", token);
