@@ -1,6 +1,7 @@
 ## change log ##
 
 - 2015-05-18: (0.7.3)
+  - add icons to refresh and save buttons.
   - add mouseEnter/mouseLeave/mouseClick functionality to geometries.
     This greatly improves usability:
     - easier to see associated tokens while interacting with the geometries
