@@ -15,7 +15,7 @@ function platforms($rootScope, $http, cfg, platimModel, status, utl, httpErrorHa
         savePlatformOptions:   savePlatformOptions
 
         ,platformOptionsUpdated: function() {
-            $rootScope.$broadcast('platformOptionsUpdated');
+            $rootScope.$broadcast('evtPlatformOptionsUpdated');
         }
     };
 

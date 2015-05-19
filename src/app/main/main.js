@@ -148,64 +148,35 @@ function MainCtrl($scope, $timeout, $interval,
     };
 
     /**
-     * Called to reflect the selection options in the widget.
-     * @param doSave the platform options are saved if this is undefined or true
+     * Called upon a refresh has completed to insert the timelines in the widget.
      */
-    var platformOptionsUpdated = function(doSave) {
+    function insertTimelines() {
         var actId = status.activities.add("updating display...");
         $timeout(function() {
-            status.activities.remove(actId);
-
-            // current platforms in the timeline:
-            var timelinePlatforms = timelineWidget.getGroups();
-            var timelinePlatformNames = _.map(timelinePlatforms, "platform_name");
-            //console.log("platformOptionsUpdated timelinePlatforms=", timelinePlatformNames);
-
             var selectedPlatforms = platimModel.getSelectedPlatforms();
-            var selectedPlatformNames = _.map(selectedPlatforms, "platform_name");
-            //console.log("platformOptionsUpdated selectedPlatforms", selectedPlatformNames);
-
-            // insert timelines for new selected platforms:
-            _.each(selectedPlatforms, function(selectedPlatform) {
-                if (!_.contains(timelinePlatformNames, selectedPlatform.platform_name)) {
-                    //console.log("platformOptionsUpdated inserting timeline", selectedPlatform.platform_name);
-                    insertTimeline(selectedPlatform);
-                }
-            });
-
-            // remove timelines for the just unselected platforms:
-            _.each(timelinePlatforms, function(timelinePlatform) {
-                if (!_.contains(selectedPlatformNames, timelinePlatform.platform_name)) {
-                    console.log("platformOptionsUpdated removing timeline", timelinePlatform.platform_name);
-                    removeTimeline(timelinePlatform);
-                }
-            });
-
-            //// previously
-            //timelineWidget.reinit(platimModel.holidays);
-            //olMap.reinit();
-            //_.each(selectedPlatforms, insertTimeline);
-
+            _.each(selectedPlatforms, insertTimeline);
             timelineWidget.redraw();
-            if (doSave === undefined || doSave) {
-                platforms.savePlatformOptions(selectedPlatforms, function () {
-                    //$scope.$digest();
-                });
-            }
+            status.activities.remove(actId);
         });
-    };
+    }
 
     function refreshComplete() {
         //console.log("refreshing... done.");
         $scope.isRefreshing = false;
-        platformOptionsUpdated(false);
+        insertTimelines();
     }
 
     function refreshError() {
         $scope.isRefreshing = false;
     }
 
-    $scope.$on('platformOptionsUpdated', platformOptionsUpdated);
+    $scope.$on('evtPlatformOptionsUpdated', function() {
+      // save selected platforms info, and do a complete refresh:
+      var selectedPlatforms = platimModel.getSelectedPlatforms();
+      platforms.savePlatformOptions(selectedPlatforms, function() {
+        $scope.refresh();
+      });
+    });
 
     $scope.$on('periodSelected', setVisibleChartRange);
 

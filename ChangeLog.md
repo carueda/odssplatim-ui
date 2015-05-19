@@ -1,6 +1,7 @@
 ## change log ##
 
 - 2015-05-19: (0.7.4)
+  - simply do a complete refresh upon change in platform selection
   - platform selection dispatched only if no current unsaved changes; message dialog to notify user.
   
 - 2015-05-19: (0.7.3)
