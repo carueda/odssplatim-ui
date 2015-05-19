@@ -256,7 +256,7 @@ function olExt() {
         }
     }
 
-    function createDrawHandler(map, featureOverlay, type, changeEnded) {
+    function createDrawHandler(map, featureOverlay, type, featureAdded) {
         var drawType = type;
 
         var drawInteraction = null;
@@ -287,7 +287,9 @@ function olExt() {
                 features: featureOverlay.getFeatures(),
                 type: drawType
             });
-            drawInteraction.on('drawend', changeEnded);
+            drawInteraction.on('drawend', function(e) {
+              featureAdded(e.feature);
+            });
         }
 
         function unsetInteraction() {

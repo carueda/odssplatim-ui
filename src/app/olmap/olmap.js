@@ -124,6 +124,7 @@ function olMap($rootScope, olExt, utl) {
     var map, featureOverlay;
 
     var dragHandler, modifyHandler, deleteHandler, drawHandler;
+    var drawGeomId = undefined;  // captured prior to enabling drawHandler
 
     var geoInfoById = {};
 
@@ -205,6 +206,7 @@ function olMap($rootScope, olExt, utl) {
         olExt.setMouseListener(map,
           function mouseEnter(feature, olEvent) {
             var tokenId = feature.get('geomId');
+            //console.log("mouseEnter tokenId=", tokenId);
             if (tokenId) {
               $rootScope.$broadcast("evtGeometryMouseEnter", tokenId, olEvent.originalEvent);
             }
@@ -227,7 +229,7 @@ function olMap($rootScope, olExt, utl) {
         dragHandler   = olExt.createDragHandler(map, featureOverlay, changeEnded);
         modifyHandler = olExt.createModifyHandler(map, featureOverlay, changeDetected);
         deleteHandler = olExt.createDeleteHandler(map, featureOverlay, changeEnded);
-        drawHandler   = olExt.createDrawHandler(map, featureOverlay, DEFAULT_DRAW_TYPE, changeEnded);
+        drawHandler   = olExt.createDrawHandler(map, featureOverlay, DEFAULT_DRAW_TYPE, featureAdded);
 
         function syncMapMove() {
             //console.log('syncMapMove', view.getCenter());
@@ -387,12 +389,17 @@ function olMap($rootScope, olExt, utl) {
         return ok;
     }
 
+    /**
+     * Sets interaction according to given edit mode
+     */
     function enterEditMode(mode) {
         if (tokenSelection.length != 1) {
             return false;
         }
 
-        if (!startEditing(tokenSelection[0])) {
+        var token = tokenSelection[0];
+
+        if (!startEditing(token)) {
             return false;
         }
 
@@ -406,6 +413,7 @@ function olMap($rootScope, olExt, utl) {
             deleteHandler.setInteraction();
         }
         else if (mode === "Add") {
+            drawGeomId = token.id;
             drawHandler.setInteraction();
         }
         else throw new Error("unexpected mode='" + mode + "'");
@@ -617,6 +625,15 @@ function olMap($rootScope, olExt, utl) {
      */
     function setDrawInteraction(type) {
         drawHandler.setDrawType(type);
+    }
+
+    /**
+     * Callback for when a draw action (i.e., new feature) completes.
+     */
+    function featureAdded(feature) {
+        //console.log("featureAdded drawGeomId=", drawGeomId, "feature=", feature);
+        feature.set('geomId', drawGeomId);
+        changeEnded();
     }
 
     /**
