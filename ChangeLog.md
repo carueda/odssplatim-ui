@@ -1,6 +1,8 @@
 ## change log ##
 
 - 2015-05-19: (0.7.4)
+  - add filter input in platform selection
+  
   - change refresh sequence, in particular, to first get the selected period
     and then only consider the tokens intersecting that period.
 

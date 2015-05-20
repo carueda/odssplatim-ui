@@ -4,11 +4,27 @@
 <div class="modal-body">
     <form name="form" novalidate="">
         <div style="height: 400px">
+
+            <table>
+                <tr>
+                    <td style="width: 250px; text-align: right">
+                        <i class="fa fa-search"></i>
+                    </td>
+                    <td>
+                        <input placeholder="Name filter"
+                               type="text" class="form-control platformSelectionFilter"
+                               ng-model="plaformNameFilter"
+                               focus-on="platform_selection_activation"
+                        >
+                    </td>
+                </tr>
+            </table>
+
             <ul>
                 <li ng-repeat="(pt, tmls) in platformOptions.byPlatformType">
                     <span style="font-style: italic; font-size: large">{{pt}}:</span>
                     <ul style="margin-left: 30px">
-                        <li ng-repeat="tml in tmls">
+                        <li ng-repeat="tml in tmls | filter:plaformNameFilter">
                             <span class="checkbox" title="{{tml.platform_name}} - (trackingDBID={{tml.trackingDBID}})">
                                 <label>
                                     <input type="checkbox" ng-model="platformOptions.selectedPlatforms[tml.platform_name]"

@@ -24,6 +24,7 @@ function PlatformCtrl($scope, $modal, timelineWidget, platimModel, platforms, fo
         }
 
         function dispatch() {
+          $scope.plaformNameFilter = '';
           $scope.platformOptions = platimModel.platformOptions;
           //console.log("$scope.platformOptions:", $scope.platformOptions);
 
@@ -44,6 +45,8 @@ function PlatformCtrl($scope, $modal, timelineWidget, platimModel, platforms, fo
           }, function () {
               focus('focusTimeline');
           });
+
+          focus('platform_selection_activation', 700);
         }
     };
 }
