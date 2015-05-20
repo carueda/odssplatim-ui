@@ -1,5 +1,9 @@
 ## change log ##
 
+- 2015-05-20: (0.7.4)
+  - add geometry coordinate viewing and editing: double-clicking a geometry component opens
+    a dialog window with a ui-grid table with the coordinates. 
+  
 - 2015-05-19: (0.7.4)
   - add filter input in platform selection
   

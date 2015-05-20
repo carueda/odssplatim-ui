@@ -11,7 +11,8 @@
     "lodash": "~2.4.1",
     "font-awesome": "~4.3.0",
     "vis": "~3.11.0",
-    "ol3": "~3.4.0"
+    "ol3": "~3.4.0",
+    "angular-ui-grid": "~3.0.0-rc.21"
   },
   "devDependencies": {}
 }

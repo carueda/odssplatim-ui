@@ -272,3 +272,8 @@ input.platformSelectionFilter {
     padding-top: 0;
     font-size: smaller;
 }
+
+.geomEditGrid {
+    width: 100%;
+    height: 270px;
+}

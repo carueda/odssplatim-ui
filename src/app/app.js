@@ -11,7 +11,8 @@ angular.module('odssPlatimApp', [
     'odssPlatimApp.util',
     'odssPlatimApp.templates',
     'odssPlatimApp.main',
-    'odssPlatimApp.olmap'
+    'odssPlatimApp.olmap',
+    'odssPlatimApp.geom'
 ]);
 
 angular.module("odssPlatimApp.templates", []);

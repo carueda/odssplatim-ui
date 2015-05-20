@@ -495,7 +495,7 @@ function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMa
 
         platimModel.addToken(item);
 
-        olMap.addGeometry(item.id, item.geometry);
+        olMap.addGeometry(item);
 
         $timeout(function() {setTokenMouseListener(item.id);});
 

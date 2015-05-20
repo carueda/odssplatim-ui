@@ -19,9 +19,11 @@ function MapCtrl($scope, olMap, timelineWidget) {
                 {
                     name: "View",
                     tooltip: "<div class='tooltip190'>" +
-                        "View-only mode.<br/>" +
-                        "Select (click) a timeline token above to enable edit options" +
-                        " for corresponding geometries" +
+                        "View-only mode<br/>" +
+                        "<ul>" +
+                        "<li>Double-click component to view coordinates</li>" +
+                        "<li>Select token or geometry to enable edit options</li>" +
+                        "</ul>" +
                         "</div>"
                 },
                 {
@@ -30,6 +32,7 @@ function MapCtrl($scope, olMap, timelineWidget) {
                         "<ul>" +
                         "<li>Hover pointer over component</li>" +
                         "<li>Drag to desired position</li>" +
+                        "<li>Double-click component to directly edit coordinates</li>" +
                         "</ul>" +
                         "</div>"
                 },
@@ -45,6 +48,7 @@ function MapCtrl($scope, olMap, timelineWidget) {
                                 "<li>Shift-click to remove a vertex</li>" +
                             "</ul>" +
                         "</li>" +
+                        "<li>Double-click component to directly edit coordinates</li>" +
                         "</div>"
                 },
                 {
@@ -148,6 +152,7 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
         ,addGeometry:        addGeometry
         ,removeGeometry:     removeGeometry
         ,getTokenSelection:  getTokenSelection
+        ,changeDetected:     changeDetected
         ,setTokenMouseEnter: setTokenMouseEnter
         ,setTokenMouseLeave: setTokenMouseLeave
         ,setTokenSelection:  setTokenSelection
@@ -228,6 +233,26 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
             if (tokenId) {
               //console.log("mouseClick tokenId=", tokenId);
               $rootScope.$broadcast("evtGeometryMouseClick", tokenId, olEvent.originalEvent);
+            }
+          },
+          function mouseDoubleClick(feature, olEvent) {
+            var tokenId = feature.get('geomId');
+            if (tokenId && geoInfoById[tokenId]) {
+              var item = geoInfoById[tokenId].item;
+              //console.log("mouseDoubleClick tokenId=", tokenId, "feature=", feature, "item=", item);
+              if (currentMode === "View" || currentMode === "Modify" || currentMode === "Move") {
+                // NOTE: including "Move" as an alternative for the geometry edit dialog because
+                // it makes possible to receive the double-click event here in particular for
+                // LineStrings and Points; that is, the default double-click zoom behavior is
+                // taking precedence and then not seen here when the modifyHandler is in place.
+                // TODO there's probably a way to disable the default zoom behavior for modifyHandler.
+
+                // prevent the default zoom in/out:
+                olEvent.preventDefault();
+
+                var edit = currentMode !== "View";
+                $rootScope.$broadcast("evtViewOrEditGeometry", edit, item, feature);
+              }
             }
           }
         );
@@ -317,13 +342,13 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
 
     /**
      * Adds a geometry to the map.
-     * @param geomId    ID of geometry
-     * @param geometry  GeoJSON object
+     * @param item      Item whose geometry is to be added
      */
-    function addGeometry(geomId, geometry) {
-        //console.log("addGeometry geomId=", geomId, "geometry=", geometry);
+    function addGeometry(item) {
+        var geomId = item.id;
+        //console.log("addGeometry geomId=", geomId, "geometry=", item.geometry);
 
-        var object = geometry;
+        var object = item.geometry;
         if (!object.crs) {
             // TODO perhaps force crs to always be stored.
             // for now, just manually assigning our "well-known" crs.
@@ -348,7 +373,7 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
             style:  styles.styleNormal
         });
         map.addLayer(vectorLayer);
-        geoInfoById[geomId] = {layer: vectorLayer};
+        geoInfoById[geomId] = {layer: vectorLayer, item: item};
     }
 
     /**

@@ -1,0 +1,37 @@
+<div class="modal-header">
+    <span class="modalTitle">
+        <span style="font-size: smaller">
+            <span style="font-weight: bold">{{item.platform_name}}</span>: {{item.content}}
+<!--
+the date range corresponds to the whole token, so do not show it
+to avoid confusion as this dialog is to edit only a particular
+geometry component out of possible several ones for the token.
+            <br/>
+            <span style="font-size: small"> {{item | tokenDateRange}} </span>
+-->
+        </span>
+    </span>
+</div>
+<div class="modal-body">
+    <span ng-show="edit">Editing</span> {{geomName}} component
+    <div ui-grid="gridOptions" ui-grid-edit class="geomEditGrid"></div>
+</div>
+<div class="modal-footer">
+    <div ng-show="edit">
+        <button class="btn btn-primary"
+                ng-click="set()"
+                tooltip="Applies the changes"
+                ng-disabled="isUnchanged()">Apply</button>
+        <button class="btn btn-primary"
+                ng-click="reset()"
+                tooltip="Reverts the changes"
+                ng-disabled="isUnchanged()">Reset</button>
+        <button class="btn btn-default" ng-click="cancel()"
+                >Cancel</button>
+    </div>
+    <div ng-hide="edit">
+        <button class="btn btn-primary"
+                ng-click="cancel()"
+                >OK</button>
+    </div>
+</div>

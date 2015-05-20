@@ -26,7 +26,7 @@ function olExt() {
         createDrawHandler:      createDrawHandler
     };
 
-    function setMouseListener(map, mouseEnter, mouseLeave, mouseClick) {
+    function setMouseListener(map, mouseEnter, mouseLeave, mouseClick, mouseDoubleClick) {
       map.on('pointermove', function(olEvent) {
         //console.log("pointermove pixel=", olEvent.pixel);
         if (olEvent.dragging) {
@@ -62,6 +62,16 @@ function olExt() {
         );
         if (feature) {
           mouseClick(feature, olEvent);
+        }
+      });
+
+      map.on('dblclick', function(olEvent) {
+        //console.log("dblclick pixel=", olEvent.pixel);
+        var feature = map.forEachFeatureAtPixel(olEvent.pixel,
+            function(feature, layer) { return feature; }
+        );
+        if (feature) {
+          mouseDoubleClick(feature, olEvent);
         }
       });
     }

@@ -103,6 +103,7 @@ gulp.task('vendor-js', function() {
             'vendor/angular/angular.min.js',
             'vendor/angular-sanitize/angular-sanitize.min.js',
             'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
+            'vendor/angular-ui-grid/ui-grid.min.js',
             'vendor/vis/dist/vis.min.js',
             'vendor/ol3/build/ol-debug.js' // TODO use ol.js
         ])
@@ -115,6 +116,7 @@ gulp.task('vendor-js', function() {
             'vendor/angular/angular.js',
             'vendor/angular-sanitize/angular-sanitize.js',
             'vendor/angular-bootstrap/ui-bootstrap-tpls.js',
+            'vendor/angular-ui-grid/ui-grid.js',
             'vendor/vis/dist/vis.js',
             'vendor/ol3/build/ol-debug.js'
         ])
@@ -127,6 +129,7 @@ gulp.task('vendor-css', function() {
     return gulp.src([
         'vendor/bootstrap-css/css/**/*.min.css',
         'vendor/font-awesome/css/**/*.min.css',
+        'vendor/angular-ui-grid/ui-grid.min.css',
         'vendor/vis/dist/vis.min.css',
         'vendor/ol3/css/ol.css'
     ])

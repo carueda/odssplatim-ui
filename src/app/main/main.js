@@ -141,7 +141,7 @@ function MainCtrl($scope, $timeout, $interval,
             var item = timelineWidget.addToken(token);
             //console.log("insertTimeline: item=", item.id, " geometry=", item.geometry)
             if (token.geometry) {
-                olMap.addGeometry(item.id, token.geometry);
+                olMap.addGeometry(item);
             }
         });
     };
