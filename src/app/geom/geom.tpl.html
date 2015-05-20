@@ -13,7 +13,14 @@ geometry component out of possible several ones for the token.
     </span>
 </div>
 <div class="modal-body">
-    <span ng-show="edit">Editing</span> {{geomName}} component
+    <span style="font-weight: bold">
+        <span ng-show="edit">
+            Editing
+        </span>
+        {{geomName}} component
+    </span>
+    <span ng-show="edit" style="color: darkgray">(double-click cell to edit the value)</span>
+
     <div ui-grid="gridOptions" ui-grid-edit class="geomEditGrid"></div>
 </div>
 <div class="modal-footer">
