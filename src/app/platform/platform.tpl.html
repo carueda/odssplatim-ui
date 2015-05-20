@@ -11,11 +11,18 @@
                         <i class="fa fa-search"></i>
                     </td>
                     <td>
-                        <input placeholder="Name filter"
-                               type="text" class="form-control platformSelectionFilter"
-                               ng-model="plaformNameFilter"
-                               focus-on="platform_selection_activation"
-                        >
+                        <div style="display: inline-block; position: relative">
+                            <input placeholder="Name filter"
+                                   type="text" class="form-control platformSelectionFilter"
+                                   ng-model="plaformNameFilter"
+                                   focus-on="platform_selection_activation"
+                            >
+                            <span style="position: absolute; top: 1px; right: 5px"
+                                  ng-show="plaformNameFilter"
+                                  ng-click="plaformNameFilter = ''">
+                                <span class="fa fa-times"></span>
+                            </span>
+                        </div>
                     </td>
                 </tr>
             </table>
