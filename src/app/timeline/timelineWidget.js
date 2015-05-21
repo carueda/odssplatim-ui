@@ -51,7 +51,7 @@ function timelineWidgetFactory($rootScope, $timeout, cfg, tokens, vis, utl, olMa
 
         ,padding: 1  // must correspond to css: .vis.timeline .item
 
-        ,showCurrentTime: false   // don't need this for the time being
+        ,showCurrentTime: true
 
         ,min: visRangeMin.toDate()
         ,max: visRangeMax.toDate()

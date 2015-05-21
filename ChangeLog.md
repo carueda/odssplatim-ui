@@ -1,5 +1,8 @@
 ## change log ##
 
+- 2015-05-21: (0.7.5)
+  - show current time vertical line in timeline
+  
 - 2015-05-20: (0.7.4)
   - add geometry coordinate viewing and editing: double-clicking a geometry component opens
     a dialog window with a ui-grid table with the coordinates. 
