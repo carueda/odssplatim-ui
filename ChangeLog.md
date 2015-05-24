@@ -1,6 +1,7 @@
 ## change log ##
 
 - 2015-05-23: (0.7.5)
+  - further highlight geometry selection when mouse over
   - reflect change from the coordinate table dialog in the geometry under current edit handler
   - show current time vertical line in timeline
   

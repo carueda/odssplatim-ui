@@ -502,15 +502,7 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
     function updateStyleForMouseOver(tokenId, enter) {
         var info = geoInfoById[tokenId];
         if (info && info.layer) {
-            if (enter) {
-                if (info.saveStyle !== styles.styleSelected) {
-                    info.saveStyle = info.layer.getStyle();
-                    info.layer.setStyle(styles.styleMouseEntered);
-                }
-            }
-            else {
-                info.layer.setStyle(info.saveStyle ? info.saveStyle : styles.styleNormal);
-            }
+          styles.setStyleMouseOver(info, enter);
         }
     }
 
@@ -519,10 +511,10 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
         //console.log("selectedGeomIds=", selectedGeomIds);
         _.each(geoInfoById, function(info, geomId) {
             if (_.contains(selectedGeomIds, geomId)) {
-                info.layer.setStyle(info.saveStyle = styles.styleSelected);
+                info.layer.setStyle(styles.styleSelected);
             }
             else {
-                info.layer.setStyle(info.saveStyle = styles.styleNormal);
+                info.layer.setStyle(styles.styleNormal);
             }
         });
     }
@@ -729,7 +721,9 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
     }
 
     function getStyles() {
-        return {
+        var styles = {
+            setStyleMouseOver: setStyleMouseOver,
+
             styleNormal: new ol.style.Style({
                 fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.1)'}),
                 stroke: new ol.style.Stroke({color: '#4deaf4', width: 3})
@@ -756,6 +750,14 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
                     fill: new ol.style.Fill({ color: '#f2ea00' })
                 })
             })
+            ,styleSelectedMouseEntered: new ol.style.Style({
+                fill: new ol.style.Fill({color: 'rgba(255, 255, 255, 0.2)' }),
+                stroke: new ol.style.Stroke({color: '#f2ea00', width: 6})
+                ,image: new ol.style.Circle({
+                    radius: 6,
+                    fill: new ol.style.Fill({ color: '#f2ea00' })
+                })
+            })
 
             ,styleOverlay: new ol.style.Style({
                 fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.3)' }),
@@ -766,6 +768,28 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
                 })
             })
         };
+
+        return styles;
+
+        function setStyleMouseOver(info, enter) {
+          var curStyle = info.layer.getStyle();
+          if (enter) {
+            if (curStyle === styles.styleNormal) {
+              info.layer.setStyle(styles.styleMouseEntered);
+            }
+            else if (curStyle === styles.styleSelected) {
+              info.layer.setStyle(styles.styleSelectedMouseEntered);
+            }
+          }
+          else {
+            if (curStyle === styles.styleMouseEntered) {
+              info.layer.setStyle(styles.styleNormal);
+            }
+            else if (curStyle === styles.styleSelectedMouseEntered) {
+              info.layer.setStyle(styles.styleSelected);
+            }
+          }
+        }
     }
 }
 
