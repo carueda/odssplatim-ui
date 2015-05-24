@@ -1,6 +1,7 @@
 ## change log ##
 
-- 2015-05-21: (0.7.5)
+- 2015-05-23: (0.7.5)
+  - reflect change from the coordinate table dialog in the geometry under current edit handler
   - show current time vertical line in timeline
   
 - 2015-05-20: (0.7.4)

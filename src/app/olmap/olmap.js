@@ -152,7 +152,7 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
         ,addGeometry:        addGeometry
         ,removeGeometry:     removeGeometry
         ,getTokenSelection:  getTokenSelection
-        ,changeDetected:     changeDetected
+        ,notifyExternalChange: notifyExternalChange
         ,setTokenMouseEnter: setTokenMouseEnter
         ,setTokenMouseLeave: setTokenMouseLeave
         ,setTokenSelection:  setTokenSelection
@@ -407,7 +407,7 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
     }
 
     function setTokenSelection(selectedTokens) {
-        //console.log("******* setTokenSelection=", selectedTokens, "currentMode=", currentMode);
+        //console.log("setTokenSelection=", selectedTokens, "currentMode=", currentMode);
         if (currentMode !== "View") {
             leaveEditMode(currentMode);
         }
@@ -577,6 +577,19 @@ function olMap($rootScope, $timeout, $window, olExt, cfg) {
             var vectorLayer = createLayerFromOverlay();
             updateTokenGeometryAndNotify(token, vectorLayer);
         }
+    }
+
+    /**
+     * Handles this as changeDetected plus a reset of the token selection
+     * to the same token so the updated geometry gets reflected on the map
+     * in terms of the ongoing edit mode.
+     */
+    function notifyExternalChange(item, feature) {
+      //console.log("notifyExternalChange item=", item, "feature=", feature);
+      changeDetected();
+      setTokenSelection([item]);
+      // the set of the token selection to the same token gives us the effect
+      // of having the ongoing edit handler also reflect the change.
     }
 
     function endEditing() {

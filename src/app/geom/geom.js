@@ -30,8 +30,7 @@
       });
 
       modalInstance.result.then(function(feature) {
-        //console.log('Geom dialog accepted: feature=', feature);
-        olMap.changeDetected();
+        olMap.notifyExternalChange(item, feature);
       });
     }
 
