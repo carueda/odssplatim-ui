@@ -1,6 +1,7 @@
 ## change log ##
 
 - 2015-05-28: (0.7.5)
+  - add zoom in/out and panning with key strokes on the map
   - include polygon-area/linestring-length in geometry coordinate table dialog
     (for now only shown when not editing the table)
 
@@ -8,14 +9,14 @@
   - further highlight geometry selection when mouse over
   - reflect change from the coordinate table dialog in the geometry under current edit handler
   - show current time vertical line in timeline
-  
+
 - 2015-05-20: (0.7.4)
   - add geometry coordinate viewing and editing: double-clicking a geometry component opens
-    a dialog window with a ui-grid table with the coordinates. 
-  
+    a dialog window with a ui-grid table with the coordinates.
+
 - 2015-05-19: (0.7.4)
   - add filter input in platform selection
-  
+
   - change refresh sequence, in particular, to first get the selected period
     and then only consider the tokens intersecting that period.
 
@@ -24,12 +25,12 @@
     (note that other options in the period drop-down are still enabled).
   - simply do a complete refresh upon change in platform selection
   - platform selection dispatched only if no current unsaved changes; message dialog to notify user.
-  
+
 - 2015-05-19: (0.7.3)
   - listen to window resize to adjust map height; include minimum height in config.
   - comment out additional logic to lessen \#133 misbehavior given that this
     component is again being included in ODSS via iframe.
-  
+
 - 2015-05-18: (0.7.3)
   - Escape (on timeline and map) now clears token selection
   - add icons to refresh and save buttons.
@@ -38,12 +39,12 @@
     - easier to see associated tokens while interacting with the geometries
     - selection of token can also be done by clicking associated geometry
     - so, just by clicking geometries, one can continue applying current edit mode
-  
+
 - 2015-05-15: (0.7.3)
-  - improve token tooltip 
+  - improve token tooltip
   - split tokenMouseOver event into tokenMouseEnter and tokenMouseLeave event
   - reduce timeline item padding to 1, mainly to save vertical estate
-  
+
 - 2015-05-15:
   - internal: adding some unit tests; using karma/jasmine directly (not via gulp yet)
     $ npm install karma-jasmine karma-chrome-launcher
@@ -71,7 +72,7 @@
   - NOTE: loosely using "item" to refer to timeline elements, and "token" to corresponding
     elements for database purposes. However, olMap uses a mix of both terms, but uses the 'id'
     field for identification, which applies to both saved "tokens" and brand new "items."
-  
+
   - Other: include refreshError callback in refresh sequence (immediate goal: re-enable refresh button in case of error).
     TODO: overall refresh sequence logic needs to be revisited for clean-up and eventual use of $q.
 
@@ -101,10 +102,10 @@
 - 2015-04-08: (branch: geom-ol3)
   - geometry editing testing with openlayers3
   - Enabling Google Map base layer based on http://openlayers.org/en/v3.0.0/examples/google-map.html
-  
+
 - 2015-04-08: (branch: geom-prep)
   - preliminary preparations for definition/editing of geometries associated with tokens
-  
+
 - 2015-04-07: (0.5.0)
   - internal: move platform, token, period services to their own modules
   - focus timeline upon click to save and refresh buttons
@@ -117,7 +118,7 @@
     - ability to update existing period, and delete any period (except the current "default" one)
     - reorganize buttons for the general interface
     - show period name in period selection button
-  
+
 - 2015-04-01: (0.5.0)
   - UI changes for periods: use dropdown list for selection of "default" period,
     editing, and addition.
@@ -126,7 +127,7 @@
   - significant simplification of interaction with backend, including getting rid of "platform_id"
     (recall that "platform_name" is the actual the identification key for platforms.)
   - some other code clean-up
-  
+
 - 2015-03-27:
   - 0.5.0: Initial adjustments to have two token types: deployment and mission
     - new token attribute 'ttype' to indicate the specific type; this one to be captured in database
@@ -163,7 +164,7 @@
   - adjustments in gulpfile to create minified version for final inclusion in main ODSS app.
     The default gulp task prepares the dist/ directory to be used as base path for
     inclusion of widget in ODSS.
-  
+
 - 2015-03-10: (0.4.0)
   - Fixed issue #128: "style issues when integrating platform timeline widget directly"
     Basically, the fix relied on upgrading bootstrap to 3.x, then doing several adjustments in
@@ -175,24 +176,24 @@
 
 - 2014-09-17: (0.3.1)
   - vis.js upgraded to 3.5.0, and with this, re-enable highlight of holidays and weekends.
-  - some related parameters only captured in the config (later on, some of these can put 
+  - some related parameters only captured in the config (later on, some of these can put
     in the preferences, specially when user information is incorporated).
-  - adjust status div style (now similar to that of fleet status) 
-  
+  - adjust status div style (now similar to that of fleet status)
+
 - 2014-09-15: (0.3.0)
   - (internal) change token-platform link to use platform name instead of platform mongo id
     (this supported by corresponding adjustments in "platim" backend service).
-  
+
 - 2014-08-25: (0.2.1)
   - show "last updated" info
   - set margin.item.horizontal=0
-  
+
 - 2014-08-20:
   - confirmation alert prior to refresh if there are unsaved tokens
-  - help link  
-  
-- 2014-08-12: 
-  - platform dialog now allows to individually select the platforms to be included in the widget 
+  - help link
+
+- 2014-08-12:
+  - platform dialog now allows to individually select the platforms to be included in the widget
   - platform selection is (automatically) saved so is preserved across sessions
   - selected platforms are now grouped by type and sorted alphabetically
   - token tooltip with name and description

@@ -1,41 +1,43 @@
 <div id="olmap-container" style="width: 100%; height: 100%">
-    <div ng-controller="MapCtrl" >
+  <div ng-controller="MapCtrl" >
 
-        <nav class="navbar navbar-default header-navbar">
-            <form class="navbar-form" style="display: inline-block">
-                <span>Geometries:</span>
-                <div ng-repeat="mode in vm.mode.modeList" style="display: inline-block; position: relative">
-                    <div tooltip-html-unsafe="{{mode.tooltip}}" tooltip-placement="bottom">
-                        <label class="btn btn-primary btn-xs"
-                               ng-disabled="mode.name !== 'View' && vm.viewOnly"
-                               ng-model="vm.mode.selectedMode" btn-radio="mode.name">
-                            {{mode.name}}
-                        </label>
-                        <span ng-show="vm.mode.selectedMode === mode.name" style="font-size: xx-small; position: absolute; top: -9px; right: 1px">
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </span>
-                    </div>
-                </div>
-
-                <div ng-show="vm.mode.selectedMode === 'Add'" style="display: inline-block">
-                    <div ng-repeat="drawType in vm.draw.typeList" style="display: inline-block; vertical-align: top; position: relative">
-                        <label class="btn btn-default btn-xs"
-                               ng-model="vm.draw.selectedType" btn-radio="drawType.value">
-                            {{drawType.name}}
-                        </label>
-                        <span ng-show="vm.draw.selectedType === drawType.name" style="font-size: xx-small; position: absolute; top: -3px; right: -1px">
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </span>
-                    </div>
-                </div>
-            </form>
-
-        </nav>
-
-        <div id="olmap" tabindex="0" ng-keyup="keyDown($event)" ng-controller="GeomController">
-            <div id="gmap2" class="fill"></div>
-            <div id="omap2" class="fill"></div>
+    <nav class="navbar navbar-default header-navbar">
+      <form class="navbar-form" style="display: inline-block">
+        <span>Geometries:</span>
+        <div ng-repeat="mode in vm.mode.modeList" style="display: inline-block; position: relative">
+          <div tooltip-html-unsafe="{{mode.tooltip}}" tooltip-placement="bottom">
+            <label class="btn btn-primary btn-xs"
+                   ng-disabled="mode.name !== 'View' && vm.viewOnly"
+                   ng-model="vm.mode.selectedMode" btn-radio="mode.name">
+              {{mode.name}}
+            </label>
+            <span ng-show="vm.mode.selectedMode === mode.name" style="font-size: xx-small; position: absolute; top: -9px; right: 1px">
+                <span class="glyphicon glyphicon-ok"></span>
+            </span>
+          </div>
         </div>
 
+        <div ng-show="vm.mode.selectedMode === 'Add'" style="display: inline-block">
+          <div ng-repeat="drawType in vm.draw.typeList" style="display: inline-block; vertical-align: top; position: relative">
+            <label class="btn btn-default btn-xs"
+                   ng-model="vm.draw.selectedType" btn-radio="drawType.value">
+              {{drawType.name}}
+            </label>
+            <span ng-show="vm.draw.selectedType === drawType.name" style="font-size: xx-small; position: absolute; top: -3px; right: -1px">
+                <span class="glyphicon glyphicon-ok"></span>
+            </span>
+          </div>
+        </div>
+      </form>
+
+    </nav>
+
+    <div id="olmap" tabindex="0" ng-controller="GeomController"
+         ng-keyup="keyUp($event)"
+      >
+      <div id="gmap2" class="fill"></div>
+      <div id="omap2" class="fill"></div>
     </div>
+
+  </div>
 </div>
