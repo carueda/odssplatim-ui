@@ -36,9 +36,9 @@
 
   }
 
-  GeomInstanceController.$inject = ['$scope', '$modalInstance', 'info'];
+  GeomInstanceController.$inject = ['$scope', '$modalInstance', 'info', 'utl'];
 
-  function GeomInstanceController($scope, $modalInstance, info) {
+  function GeomInstanceController($scope, $modalInstance, info, utl) {
 
     $scope.edit = info.edit;
     $scope.item = info.item;
@@ -49,6 +49,7 @@
     //console.log("feature.getGeometry()=", geometry);
 
     $scope.geomName = '';
+    $scope.geomInfo = '';
     var originalData = getOriginalData();
 
     $scope.gridOptions = {
@@ -89,6 +90,7 @@
 
       if (geometry instanceof ol.geom.Polygon) {
         $scope.geomName = 'Polygon';
+        $scope.geomInfo = '(area: ' + utl.formatArea(geometry.getArea()) + ')';
         _.each(coordinates, function(coordinates2) {
           _.each(coordinates2, addCoordinate);
         });
@@ -97,10 +99,12 @@
       }
       else if (geometry instanceof ol.geom.LineString) {
         $scope.geomName = 'LineString';
+        $scope.geomInfo = '(length: ' + utl.formatLength(geometry.getLength()) + ')';
         _.each(coordinates, addCoordinate);
       }
       else if (geometry instanceof ol.geom.Point) {
         $scope.geomName = 'Point';
+        $scope.geomInfo = '';
         addCoordinate(coordinates);
       }
       else {

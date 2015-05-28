@@ -1,5 +1,9 @@
 ## change log ##
 
+- 2015-05-28: (0.7.5)
+  - include polygon-area/linestring-length in geometry coordinate table dialog
+    (for now only shown when not editing the table)
+
 - 2015-05-23: (0.7.5)
   - further highlight geometry selection when mouse over
   - reflect change from the coordinate table dialog in the geometry under current edit handler

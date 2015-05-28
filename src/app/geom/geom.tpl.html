@@ -19,6 +19,9 @@ geometry component out of possible several ones for the token.
         </span>
         {{geomName}} component
     </span>
+    <span ng-hide="edit">
+        <span ng-bind-html="geomInfo"></span>
+    </span>
     <span ng-show="edit" style="color: darkgray">(double-click cell to edit the value)</span>
 
     <div ui-grid="gridOptions" ui-grid-edit class="geomEditGrid"></div>

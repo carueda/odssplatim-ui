@@ -228,6 +228,29 @@ function miscUtils($rootScope, $window) {
             return debug;
         },
 
+        formatLength: function(length) {
+          length = Math.round(length * 100) / 100;
+          var output;
+          if (length > 100) {
+            output = (Math.round(length / 1000 * 100) / 100) + ' ' + 'km';
+          }
+          else {
+            output = (Math.round(length * 100) / 100) + ' ' + 'm';
+          }
+          return output;
+        },
+
+        formatArea: function(area) {
+          var output;
+          if (area > 10000) {
+            output = (Math.round(area / 1000000 * 100) / 100) + ' km';
+          }
+          else {
+            output = (Math.round(area * 100) / 100) + ' m';
+          }
+          return output + '<sup>2</sup>';
+        },
+
         strip: function (html) {
             var tmp = document.createElement("DIV");
             tmp.innerHTML = html;
