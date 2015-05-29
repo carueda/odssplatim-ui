@@ -253,19 +253,16 @@
         interactions: ol.interaction.defaults({
           altShiftDragRotate: false,
           dragPan: false,
-          shiftDragZoom: false,
           rotate: false
         }).extend([
           new ol.interaction.DragPan({kinetic: null})
-          //,new ol.interaction.DragZoom({
-          //    condition: ol.events.condition.shiftKeyOnly,
-          //    style: new ol.style.Style({
-          //        stroke: new ol.style.Stroke({
-          //            color: [255, 255, 255, 2],
-          //            lineDash: [10, 10]
-          //        })
-          //    })
-          //})
+          ,new ol.interaction.DragZoom({
+            condition: ol.events.condition.shiftKeyOnly,
+            style: new ol.style.Style({
+              stroke: new ol.style.Stroke({ color: [255, 255, 255, 2], lineDash: [10, 10]}),
+              fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)'})
+            })
+          })
         ]),
         controls: ol.control.defaults({
         }).extend([
