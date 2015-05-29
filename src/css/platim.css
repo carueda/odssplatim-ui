@@ -312,4 +312,10 @@ input.platformSelectionFilter {
 .mt-tooltip-static:before {
   border-top-color: #ffcc33;
 }
+
+.mt-group {
+  /*background-color: #ffcc33;*/
+  border: 1px solid darkgray;
+  border-radius: 4px;
+}
 /* </measure tool> */

@@ -325,15 +325,13 @@
       var vector = new ol.layer.Vector({
         source: source
         ,style: new ol.style.Style({
-          stroke: new ol.style.Stroke({ color: '#c47ecf', width: 3, lineDash: [10, 4]})
+          stroke: new ol.style.Stroke({ color: '#C8FC10', width: 2, lineDash: [20, 15]})
         })
       });
 
       var measureTooltipElement;
       var measureTooltipOverlay;
       var elements = [];  // elements left after drawing so we can remove them later
-      var continuePolygonMsg = 'Click to continue drawing the polygon';
-      var continueLineMsg = 'Click to continue drawing the line';
 
       return {
         setDrawType:       setDrawType,
@@ -365,8 +363,8 @@
           source: source,
           type: drawType
           ,style: new ol.style.Style({
-            stroke: new ol.style.Stroke({ color: '#c47ecf', width: 3, lineDash: [10, 4]})
-            ,image: new ol.style.Circle({ radius: 7, fill: new ol.style.Fill({ color: '#c47ecf'})})
+            stroke: new ol.style.Stroke({ color: '#C8FC10', width: 3, lineDash: [20, 15]})
+            ,image: new ol.style.Circle({ radius: 5, fill: new ol.style.Fill({ color: '#C8FC10'})})
           })
         });
         drawInteraction.on('drawstart', drawStart);
@@ -398,11 +396,6 @@
       function clearVector() {
         drawEnd();
         source.clear();
-        //map.removeLayer(vector);
-        //map.removeOverlay(measureTooltipOverlay);
-        //removeElement(measureTooltipElement);
-        //measureTooltipElement = null;
-
         _.each(elements, removeElement);
         elements = [];
       }
