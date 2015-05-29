@@ -28,9 +28,36 @@
             </span>
           </div>
         </div>
+
+        <div tooltip="Measure tool" tooltip-placement="bottom"
+             style="display: inline-block; vertical-align: top; position: relative">
+          <button class="btn btn-default btn-xs"
+                  ng-disabled="vm.mode.selectedMode !== 'View'"
+                  btn-checkbox ng-model="vm.measureToolSelected"
+          >MT
+          </button>
+          <span ng-show="vm.measureToolSelected" style="font-size: xx-small; position: absolute; top: -9px; right: -1px">
+              <span class="glyphicon glyphicon-ok"></span>
+          </span>
+        </div>
+        <div tooltip="Remove measure elements" tooltip-placement="bottom"
+             style="display: inline-block; vertical-align: top; position: relative">
+          <button class="btn btn-default btn-xs"
+                  ng-click="clearMeasureVector()">
+            Clear
+          </button>
+        </div>
+
       </form>
 
     </nav>
+
+    <nav class="navbar navbar-default header-navbar">
+      <form class="navbar-form" style="display: inline-block">
+      </form>
+    </nav>
+
+
 
     <div id="olmap" tabindex="0" ng-controller="GeomController"
          ng-keyup="keyUp($event)"

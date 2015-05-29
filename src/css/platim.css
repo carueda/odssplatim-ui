@@ -1,14 +1,14 @@
 
 div.odssplatim {
-    /* overall defs for the widget */
+  /* overall defs for the widget */
 
-    line-height: 1; /* override bootstrap's value of 20px; which makes the
-                     * contents of the tokens to get positioned too low. */
+  line-height: 1; /* override bootstrap's value of 20px; which makes the
+                   * contents of the tokens to get positioned too low. */
 }
 
 input.text {
-    margin-bottom:12px;  padding: .4em; font-size: 10px;
-    /*width: 160px;*/
+  margin-bottom:12px;  padding: .4em; font-size: 10px;
+  /*width: 160px;*/
 }
 
 fieldset { padding:0; border:0; margin-top:10px; }
@@ -17,61 +17,61 @@ fieldset { padding:0; border:0; margin-top:10px; }
 
 
 .modal {
-    width: 700px;
+  width: 700px;
 }
 .modal-backdrop, .modal-backdrop.fade.in {
-    opacity: 0.4;
+  opacity: 0.4;
 }
 .well {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .modalTitle {        /* similar to h3 with bootstrap 2.x */
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .modal-body {
-    overflow: scroll;
-    overflow-y: auto;
+  overflow: scroll;
+  overflow-y: auto;
 }
 
 div.parent-status {
-    position:absolute;
-    top:2px;
-    width:20em;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
-    padding: 3px;
-    padding-left: 8px;
+  position:absolute;
+  top:2px;
+  width:20em;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  padding: 3px;
+  padding-left: 8px;
 }
 div.status {
-    position:absolute;
-    left:0;
-    padding: 1px 10px 1px 10px;
-    font-size: 12px;
+  position:absolute;
+  left:0;
+  padding: 1px 10px 1px 10px;
+  font-size: 12px;
 }
 
 .lastUpdated {
-    color: #d3d3d3;
-    font-size: small;
-    display: inline-block;
-    margin-left: 10px;
-    margin-right: 5px;
-    padding-top: 8px;
-    font-weight: normal !important;  /* undo bootstrap's label's bold weight */
+  color: #d3d3d3;
+  font-size: small;
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 5px;
+  padding-top: 8px;
+  font-weight: normal !important;  /* undo bootstrap's label's bold weight */
 }
 
 .version {
-    color: lightgray;
-    font-size: smaller;
-    text-align: right;
+  color: lightgray;
+  font-size: smaller;
+  text-align: right;
 }
 
 .navbar {
-    min-height: 0;        /* 50px in bootstrap */
-    margin-bottom: 4px;   /* 20px in bootstrap */
+  min-height: 0;        /* 50px in bootstrap */
+  margin-bottom: 4px;   /* 20px in bootstrap */
 }
 
 
@@ -82,31 +82,31 @@ div.vis.timeline.root {
 */
 
 div.timeaxis.foreground {
-    border-color: #5D99C3;
+  border-color: #5D99C3;
 
-    background-color: #5D99C3;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5D99C3', endColorstr='#3A6DA0'); /* for IE */
-    background: -webkit-gradient(linear, left top, left bottom, from(#5D99C3), to(#3A6DA0)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #5D99C3,  #3A6DA0); /* for firefox 3.6+ */
-    /*background-image: url(codebase/imgs_glossy/top-days-bg.png);*/
+  background-color: #5D99C3;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5D99C3', endColorstr='#3A6DA0'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#5D99C3), to(#3A6DA0)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #5D99C3,  #3A6DA0); /* for firefox 3.6+ */
+  /*background-image: url(codebase/imgs_glossy/top-days-bg.png);*/
 }
 div.text.major {
-    color: #ffffff !important;
+  color: #ffffff !important;
 }
 div.text.minor {
-    color: #ffffff !important;
+  color: #ffffff !important;
 }
 
 /*.group:hover { background-color: rgba(167, 222, 255, 0.21); }*/
 
 .groupCol0 {
-    /*background-color: #ffffff;*/
+  /*background-color: #ffffff;*/
 }
 /*.groupCol0:hover { background-color: #fff4e0; }*/
 
 .groupCol1 {
-    /*background-color: #f9f9f9;*/
-    background-color: rgba(244, 244, 244, 0.4);
+  /*background-color: #f9f9f9;*/
+  background-color: rgba(244, 244, 244, 0.4);
 }
 /*.groupCol1:hover{ background-color: rgba(178, 181, 140, 0.49); }*/
 
@@ -117,163 +117,199 @@ div.text.minor {
 */
 
 .ttdeploymentFullBg {
-    background-color: rgba(255, 255, 255, 0) !important;
+  background-color: rgba(255, 255, 255, 0) !important;
 }
 .ttmissionFullBg {
-    background-color: rgba(234, 253, 242, 0.35) !important;
+  background-color: rgba(234, 253, 242, 0.35) !important;
 }
 .ttdeployment {
-    background-color: #FDF3D5 !important;
-    border-color: blue !important;
+  background-color: #FDF3D5 !important;
+  border-color: blue !important;
 }
 .ttmission {
-    background-color: #e7ffe4 !important;
-    border-color: seagreen !important;
+  background-color: #e7ffe4 !important;
+  border-color: seagreen !important;
 }
 div.range {
-    background-color: #FDF3D5;
-    border: 1px solid #000000;
-    cursor: pointer;
-    text-align: left;  /* center not handled well by vis.js */
-    border-radius: 0px;
-    -moz-border-radius: 0px;  /* For Firefox 3.6 and older */
+  background-color: #FDF3D5;
+  border: 1px solid #000000;
+  cursor: pointer;
+  text-align: left;  /* center not handled well by vis.js */
+  border-radius: 0px;
+  -moz-border-radius: 0px;  /* For Firefox 3.6 and older */
 }.range:hover {
-     box-shadow: 0 0 8px #383380;
-}
+   box-shadow: 0 0 8px #383380;
+ }
 .direct_range_hover {
-    box-shadow: 0 0 8px #383380;
+  box-shadow: 0 0 8px #383380;
 }
 
 div.status_new {
-    font-weight: bold;
-    color: red !important;
-    /*border-color: red !important;*/
-    border-width: 2px !important;
+  font-weight: bold;
+  color: red !important;
+  /*border-color: red !important;*/
+  border-width: 2px !important;
 }
 
 div.status_saved {
-    color: mediumblue !important;
-    /*border-color: mediumblue !important;*/
+  color: mediumblue !important;
+  /*border-color: mediumblue !important;*/
 }
 
 div.status_modified {
-    font-weight: bold !important;
-    color: mediumblue !important;
-    /*border-color: mediumblue !important;*/
-    border-width: 2px !important;
+  font-weight: bold !important;
+  color: mediumblue !important;
+  /*border-color: mediumblue !important;*/
+  border-width: 2px !important;
 }
 
 
 .vis.timeline .item {
-    background-color: #FDF3D5;
-    padding: 1px;
+  background-color: #FDF3D5;
+  padding: 1px;
 }
 
 .vis.timeline .item.selected {
-    /*border-color: #FFC200 !important;*/
-    background-color: #FFF785 !important;
+  /*border-color: #FFC200 !important;*/
+  background-color: #FFF785 !important;
 }
 .vis.timeline .item.range .drag-left {
-    background: url(../img/resize_dots.png);
-    background-repeat: repeat-y;
+  background: url(../img/resize_dots.png);
+  background-repeat: repeat-y;
 }
 .vis.timeline .item.range .drag-right {
-    background: url(../img/resize_dots.png);
-    background-position: 20px 0;
-    background-repeat: repeat-y;
+  background: url(../img/resize_dots.png);
+  background-position: 20px 0;
+  background-repeat: repeat-y;
 }
 
 .vis.timeline .item.background.holiday {
-    background-color: #fffceb;
+  background-color: #fffceb;
 }
 .vis.timeline .item.background.weekend {
-    background-color: #f4f8fd;
+  background-color: #f4f8fd;
 }
 
 /* token tooltip */
 .t3 {
-    position: absolute;
-    max-width: 400px;
-    width: auto;
-    font-size: small;
-    background-color: #f6f6f6;
-    border: 1px solid #000000;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    box-shadow: 0 0 5px #383380;
-    padding: 5px;
-    z-index: 999999
+  position: absolute;
+  max-width: 400px;
+  width: auto;
+  font-size: small;
+  background-color: #f6f6f6;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  box-shadow: 0 0 5px #383380;
+  padding: 5px;
+  z-index: 999999
 }
 hr {
-    margin: 4px 4px;
-    border-color: #000000;
+  margin: 4px 4px;
+  border-color: #000000;
 }
 
 .periodSelectionItem {
-    cursor: pointer;
-    display: block;
-    padding: 3px 20px;
-    clear: both;
-    font-weight: normal;
-    line-height: 1.42857143;
-    color: #333;
-    white-space: nowrap;
+  cursor: pointer;
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
 }
 .periodSelectionItem:hover{ background-color: rgba(217, 217, 217, 0.49); }
 
 /* to reduce the datepickers a bit so it fits in the default modal size */
 .periodDatepicker .btn {
-    padding: 4px 6px;
+  padding: 4px 6px;
 }
 
 .tokenDatepicker .btn {
-    padding: 2px 6px;
+  padding: 2px 6px;
 }
 
 .btn {
-    margin-left: 3px !important;
-    margin-right: 3px !important;
+  margin-left: 3px !important;
+  margin-right: 3px !important;
 }
 
 #olmap {
-    border: 1px solid rgb(212,212,212);
-    width: 100%;
-    height: 600px;
+  border: 1px solid rgb(212,212,212);
+  width: 100%;
+  height: 600px;
 }
 div.fill {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .custom-mouse-position {
-    top: 8px;
-    right: 8px;
-    position: absolute;
-    font-family: monospace, serif;
-    font-size: 12px;
-    background-color: rgba(255, 255, 255, 0.65);
-    padding: 0 3px 0 3px;
+  top: 8px;
+  right: 8px;
+  position: absolute;
+  font-family: monospace, serif;
+  font-size: 12px;
+  background-color: rgba(255, 255, 255, 0.65);
+  padding: 0 3px 0 3px;
 }
 
 div.tooltip190 {
-    text-align: left;
-    width: 190px;
+  text-align: left;
+  width: 190px;
 }
 
 div.tooltip190 ul {
-    padding-left: 12px;
-    /*list-style-position: inside;*/
+  padding-left: 12px;
+  /*list-style-position: inside;*/
 }
 
 input.platformSelectionFilter {
-    width: 240px !important;
-    height: 24px;
-    padding-bottom: 0;
-    padding-top: 0;
-    font-size: smaller;
+  width: 240px !important;
+  height: 24px;
+  padding-bottom: 0;
+  padding-top: 0;
+  font-size: smaller;
 }
 
 .geomEditGrid {
-    width: 100%;
-    height: 270px;
+  width: 100%;
+  height: 270px;
 }
+
+/* <measure tool> */
+.mt-tooltip {
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  color: white;
+  padding: 3px 4px;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+.mt-tooltip-measure {
+  opacity: 1;
+  font-weight: bold;
+}
+.mt-tooltip-static {
+  background-color: #ffcc33;
+  color: black;
+  border: 1px solid white;
+  padding: 2px 3px;
+}
+.mt-tooltip-measure:before,
+.mt-tooltip-static:before {
+  border-top: 6px solid rgba(0, 0, 0, 0.5);
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  margin-left: -7px;
+  left: 50%;
+}
+.mt-tooltip-static:before {
+  border-top-color: #ffcc33;
+}
+/* </measure tool> */

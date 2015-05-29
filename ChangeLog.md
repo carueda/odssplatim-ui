@@ -1,6 +1,7 @@
 ## change log ##
 
 - 2015-05-28: (0.7.5)
+  - initial version of measure tool
   - add zoom in/out and panning with key strokes on the map
   - include polygon-area/linestring-length in geometry coordinate table dialog
     (for now only shown when not editing the table)

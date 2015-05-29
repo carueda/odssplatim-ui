@@ -84,7 +84,8 @@
           {name: "Point",      value: ol.geom.GeometryType.POINT}
         ],
         selectedType: DEFAULT_DRAW_TYPE
-      }
+      },
+      measureToolSelected: false
     };
     $scope.vm = vm;
 
@@ -92,7 +93,24 @@
       if (!olMap.setMode(mode)) {
         vm.mode.selectedMode = prevMode;
       }
+      else if (mode !== 'View') {
+        $scope.vm.measureToolSelected = false;
+      }
     });
+
+    $scope.$watch('vm.measureToolSelected', function(measureToolSelected) {
+      //console.log("measureToolSelected=", measureToolSelected);
+      if (measureToolSelected) {
+        olMap.measureTool.set('LineString');
+      }
+      else {
+        olMap.measureTool.unset();
+      }
+    });
+    olMap.measureTool.set('LineString');
+    $scope.clearMeasureVector = function() {
+      olMap.measureTool.clearVector();
+    };
 
     $scope.$watch('vm.draw.selectedType', olMap.setDrawInteraction);
 
@@ -116,11 +134,16 @@
       olMap.reinit();
       vm.mode.selectedMode = "View";
       vm.viewOnly = olMap.getTokenSelection().length != 1;
+      $scope.vm.measureToolSelected = false;
+      olMap.measureTool.clearVector();
     });
 
     $scope.keyUp = function($event) {
       if ($event.keyCode === 27) {
         timelineWidget.clearSelection();
+        if (!olMap.measureTool.drawing()) {
+          $scope.vm.measureToolSelected = false;
+        }
       }
       else if ($event.keyCode === 187) {
         olMap.zoom.in();
@@ -153,6 +176,7 @@
 
     var dragHandler, modifyHandler, deleteHandler, drawHandler;
     var drawGeomId = undefined;  // captured prior to enabling drawHandler
+    var measureHandler;
 
     var geoInfoById = {};
 
@@ -185,6 +209,22 @@
       }
     };
 
+    var measureTool = {
+      set: function(type) {
+        measureHandler.setInteraction();
+        measureHandler.setDrawType(type);
+      },
+      unset: function() {
+        measureHandler.unsetInteraction();
+      },
+      drawing: function() {
+        return measureHandler.drawing();
+      },
+      clearVector: function() {
+        return measureHandler.clearVector();
+      }
+    };
+
     return {
       insertMap:           insertMap
       ,reinit:             reinit
@@ -197,6 +237,7 @@
       ,setTokenSelection:  setTokenSelection
       ,setMode:            setMode
       ,setDrawInteraction: setDrawInteraction
+      ,measureTool:        measureTool
       ,center:             center
       ,pan:                pan
       ,zoom:               zoom
@@ -302,6 +343,7 @@
       modifyHandler = olExt.createModifyHandler(map, featureOverlay, changeDetected);
       deleteHandler = olExt.createDeleteHandler(map, featureOverlay, changeEnded);
       drawHandler   = olExt.createDrawHandler(map, featureOverlay, DEFAULT_DRAW_TYPE, featureAdded);
+      measureHandler= olExt.createMeasureHandler(map, 'LineString');
 
       function syncMapMove() {
         //console.log('syncMapMove', view.getCenter());
