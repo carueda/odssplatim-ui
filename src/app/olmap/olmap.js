@@ -152,16 +152,16 @@
         olMap.zoom.out();
       }
       else if ($event.keyCode === 38) {
-        olMap.pan.up();
-      }
-      else if ($event.keyCode === 40) {
         olMap.pan.down();
       }
+      else if ($event.keyCode === 40) {
+        olMap.pan.up();
+      }
       else if ($event.keyCode === 37) {
-        olMap.pan.left();
+        olMap.pan.right();
       }
       else if ($event.keyCode === 39) {
-        olMap.pan.right();
+        olMap.pan.left();
       }
     };
   }
