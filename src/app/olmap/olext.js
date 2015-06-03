@@ -382,13 +382,15 @@
         sketch = evt.feature;
       }
       function drawEnd() {
-        measureTooltipElement.className = 'mt-tooltip mt-tooltip-static';
-        measureTooltipOverlay.setOffset([0, -7]);
-        elements.push(measureTooltipElement);
+        if (measureTooltipElement) {
+          measureTooltipElement.className = 'mt-tooltip mt-tooltip-static';
+          measureTooltipOverlay.setOffset([0, -7]);
+          elements.push(measureTooltipElement);
+          measureTooltipElement = null;
+        }
         // unset sketch
         sketch = null;
         // unset tooltip so that a new one can be created
-        measureTooltipElement = null;
         createMeasureTooltip();
       }
 
