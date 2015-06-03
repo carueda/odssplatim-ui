@@ -341,12 +341,16 @@
 
       function enable() {
         map.on('pointermove', pointerMoveHandler);
-        createMeasureTooltip();
         removeElements();
+        createMeasureTooltip();
+        sketch = null;
       }
 
       function disable() {
         map.un('pointermove', pointerMoveHandler);
+        removeElements();
+        map.removeOverlay(measureTooltipOverlay);
+        sketch = null;
       }
 
       /**
@@ -386,18 +390,16 @@
 
       function drawStart(evt) {
         sketch = evt.feature;
+        createMeasureTooltip();
       }
 
       function drawEnd() {
         if (measureTooltipElement) {
           measureTooltipElement.className = 'mt-tooltip mt-tooltip-static';
           measureTooltipOverlay.setOffset([0, -7]);
-          elements.push(measureTooltipElement);
           measureTooltipElement = null;
         }
         sketch = null;
-        // unset tooltip so that a new one can be created
-        createMeasureTooltip();
       }
 
       function createMeasureTooltip() {
@@ -410,6 +412,7 @@
           positioning: 'bottom-center'
         });
         map.addOverlay(measureTooltipOverlay);
+        elements.push(measureTooltipElement);
       }
 
       function removeElements() {
