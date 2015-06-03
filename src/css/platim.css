@@ -64,7 +64,7 @@ div.status {
 }
 
 .version {
-  color: lightgray;
+  color: #909090;
   font-size: smaller;
   text-align: right;
 }
