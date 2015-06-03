@@ -276,8 +276,9 @@
 
     function createDrawHandler(map, featureOverlay, type, featureAdded) {
       var drawType = type;
-
       var drawInteraction = null;
+
+      var measureHelper = createMeasureHelper(map, false);
 
       return {
         setDrawType:       setDrawType,
@@ -297,6 +298,7 @@
         unsetInteraction();
         createDrawInteraction();
         map.addInteraction(drawInteraction);
+        measureHelper.enable();
       }
 
       function createDrawInteraction() {
@@ -305,7 +307,10 @@
           features: featureOverlay.getFeatures(),
           type: drawType
         });
+        drawInteraction.on('drawstart', measureHelper.drawStart);
         drawInteraction.on('drawend', function(e) {
+          measureHelper.drawEnd();
+          measureHelper.removeElements();
           featureAdded(e.feature);
         });
       }
@@ -315,6 +320,7 @@
           map.removeInteraction(drawInteraction);
           drawInteraction = null;
         }
+        measureHelper.disable();
       }
     }
 
@@ -336,6 +342,7 @@
       function enable() {
         map.on('pointermove', pointerMoveHandler);
         createMeasureTooltip();
+        removeElements();
       }
 
       function disable() {
@@ -353,7 +360,7 @@
         var tooltipCoord = evt.coordinate;
 
         if (sketch) {
-          var output;
+          var output = '';
           var geom = (sketch.getGeometry());
           if (geom instanceof ol.geom.Polygon) {
             var area = getPolygonArea(map, /** @type {ol.geom.Polygon} */ (geom));
@@ -363,6 +370,13 @@
           else if (geom instanceof ol.geom.LineString) {
             var length = getLineStringLength(map, /** @type {ol.geom.LineString} */ (geom));
             output = utl.formatLength(length);
+            tooltipCoord = geom.getLastCoordinate();
+          }
+          else if (geom instanceof ol.geom.Point) {
+            var c = geom.getCoordinates();
+            // convert to lat/lon
+            var ll = ol.proj.transform(c, 'EPSG:3857', 'EPSG:4326');
+            output = ll[0].toFixed(6) + ", " + ll[1].toFixed(6);
             tooltipCoord = geom.getLastCoordinate();
           }
           measureTooltipElement.innerHTML = output;

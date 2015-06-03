@@ -1,6 +1,8 @@
 ## change log ##
 
 - 2015-06-03: (0.7.6)
+  - use measureHelper also in regular draw interaction. For points, the dynamic tooltip
+    the lat/lon coordinates of the point.
   - include point location in regular token tooltip on the map
   - refactor: extract some measure tool functionality in a module
   - include length or area information in tooltip over geometry component
