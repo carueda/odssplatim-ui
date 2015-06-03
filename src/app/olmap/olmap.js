@@ -326,6 +326,12 @@
               var len = measureTool.getLineStringLength(geometry);
               extra = 'LineString component, length: ' + utl.formatLength(len);
             }
+            else if (geometry instanceof ol.geom.Point) {
+              var c = geometry.getCoordinates();
+              // convert to lat/lon
+              var ll = ol.proj.transform(c, 'EPSG:3857', 'EPSG:4326');
+              extra = 'Point component: ' + ll[0].toFixed(6) + ", " + ll[1].toFixed(6);
+            }
 
             var info = {token_id: tokenId, extra: extra};
             $rootScope.$broadcast("evtGeometryMouseEnter", info, olEvent.originalEvent);

@@ -1,8 +1,8 @@
 ## change log ##
 
 - 2015-06-03: (0.7.6)
+  - include point location in regular token tooltip on the map
   - refactor: extract some measure tool functionality in a module
-    (to then reuse it in regular draw interaction)
   - include length or area information in tooltip over geometry component
   - measure tool:
     - use geodesic measures
