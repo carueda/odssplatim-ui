@@ -1,8 +1,12 @@
 ## change log ##
 
+- 2015-06-03: (0.8.0)
+  - remove fill style that was causing incremental polygon opacity in measure tool
+  - fix regression: measure tool static tooltips are again retained
+
 - 2015-06-03: (0.7.6)
   - use measureHelper also in regular draw interaction. For points, the dynamic tooltip
-    the lat/lon coordinates of the point.
+    shows the lat/lon coordinates of the point.
   - include point location in regular token tooltip on the map
   - refactor: extract some measure tool functionality in a module
   - include length or area information in tooltip over geometry component

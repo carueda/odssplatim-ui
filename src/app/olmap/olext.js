@@ -278,7 +278,7 @@
       var drawType = type;
       var drawInteraction = null;
 
-      var measureHelper = createMeasureHelper(map, false);
+      var measureHelper = createMeasureHelper(map, true);
 
       return {
         setDrawType:       setDrawType,
@@ -324,7 +324,7 @@
       }
     }
 
-    function createMeasureHelper(map) {
+    function createMeasureHelper(map, noStaticTooltips) {
       var sketch = null;
       var measureTooltipElement;
       var measureTooltipOverlay;
@@ -341,15 +341,18 @@
 
       function enable() {
         map.on('pointermove', pointerMoveHandler);
-        removeElements();
-        createMeasureTooltip();
+        if (noStaticTooltips) {
+          removeElements();
+        }
         sketch = null;
       }
 
       function disable() {
         map.un('pointermove', pointerMoveHandler);
-        removeElements();
-        map.removeOverlay(measureTooltipOverlay);
+        if (noStaticTooltips) {
+          removeElements();
+          map.removeOverlay(measureTooltipOverlay);
+        }
         sketch = null;
       }
 
@@ -435,7 +438,6 @@
         source: source
         ,style: new ol.style.Style({
           stroke: new ol.style.Stroke({ color: '#C8FC10', width: 2, lineDash: [5, 5]})
-          ,fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.1)'})
         })
       });
 
