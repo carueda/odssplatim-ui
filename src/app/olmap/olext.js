@@ -318,95 +318,28 @@
       }
     }
 
-    /**
-     * Adapted from http://openlayers.org/en/v3.5.0/examples/measure.html
-     */
-    function createMeasureHandler(map, type) {
-      var drawType = type;
-      var drawInteraction = null;
+    function createMeasureHelper(map) {
       var sketch = null;
-
-      var source = new ol.source.Vector();
-      var vector = new ol.layer.Vector({
-        source: source
-        ,style: new ol.style.Style({
-          stroke: new ol.style.Stroke({ color: '#C8FC10', width: 2, lineDash: [5, 5]})
-          ,fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.1)'})
-        })
-      });
-
       var measureTooltipElement;
       var measureTooltipOverlay;
       var elements = [];  // elements left after drawing so we can remove them later
 
       return {
-        setDrawType:       setDrawType,
-        setInteraction:    setInteraction,
-        unsetInteraction:  unsetInteraction,
-        drawing:           function() { return sketch !== null; },
-        clearVector:       clearVector
+        enable:           enable,
+        disable:          disable,
+        drawEnd:          drawEnd,
+        drawStart:        drawStart,
+        removeElements:   removeElements,
+        drawing:   function() { return sketch !== null; }
       };
 
-      function setDrawType(type) {
-        if (!type) throw new Error("setDrawType: type required");
-        drawType = type;
-        if (drawInteraction) {
-          setInteraction();
-        }
-      }
-
-      function setInteraction() {
-        unsetInteraction();
-        createInteraction();
-        map.addLayer(vector);
-        map.addInteraction(drawInteraction);
+      function enable() {
         map.on('pointermove', pointerMoveHandler);
         createMeasureTooltip();
       }
 
-      function createInteraction() {
-        drawInteraction = new ol.interaction.Draw({
-          source: source,
-          type: drawType
-          ,style: new ol.style.Style({
-            stroke: new ol.style.Stroke({ color: '#C8FC10', width: 3, lineDash: [5, 5]})
-            ,fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)'})
-            ,image: new ol.style.Circle({ radius: 5, fill: new ol.style.Fill({ color: '#C8FC10'})})
-          })
-        });
-        drawInteraction.on('drawstart', drawStart);
-        drawInteraction.on('drawend', drawEnd);
-      }
-
-      function drawStart(evt) {
-        sketch = evt.feature;
-      }
-      function drawEnd() {
-        if (measureTooltipElement) {
-          measureTooltipElement.className = 'mt-tooltip mt-tooltip-static';
-          measureTooltipOverlay.setOffset([0, -7]);
-          elements.push(measureTooltipElement);
-          measureTooltipElement = null;
-        }
-        // unset sketch
-        sketch = null;
-        // unset tooltip so that a new one can be created
-        createMeasureTooltip();
-      }
-
-      function unsetInteraction() {
-        if (drawInteraction) {
-          map.removeInteraction(drawInteraction);
-          drawInteraction = null;
-        }
+      function disable() {
         map.un('pointermove', pointerMoveHandler);
-      }
-
-      function clearVector() {
-        drawEnd();
-        source.clear();
-        _.each(elements, removeElement);
-        elements = [];
       }
 
       /**
@@ -437,9 +370,22 @@
         }
       }
 
-      /**
-       * Creates a new measure tooltip
-       */
+      function drawStart(evt) {
+        sketch = evt.feature;
+      }
+
+      function drawEnd() {
+        if (measureTooltipElement) {
+          measureTooltipElement.className = 'mt-tooltip mt-tooltip-static';
+          measureTooltipOverlay.setOffset([0, -7]);
+          elements.push(measureTooltipElement);
+          measureTooltipElement = null;
+        }
+        sketch = null;
+        // unset tooltip so that a new one can be created
+        createMeasureTooltip();
+      }
+
       function createMeasureTooltip() {
         removeElement(measureTooltipElement);
         measureTooltipElement = document.createElement('div');
@@ -452,12 +398,81 @@
         map.addOverlay(measureTooltipOverlay);
       }
 
-      function removeElement(element) {
-        if (element &&  element.parentNode) {
-          element.parentNode.removeChild(element);
+      function removeElements() {
+        _.each(elements, removeElement);
+        elements = [];
+      }
+    }
+
+    /**
+     * Adapted from http://openlayers.org/en/v3.5.0/examples/measure.html
+     */
+    function createMeasureHandler(map, type) {
+      var drawType = type;
+      var drawInteraction = null;
+
+      var measureHelper = createMeasureHelper(map);
+
+      var source = new ol.source.Vector();
+      var vector = new ol.layer.Vector({
+        source: source
+        ,style: new ol.style.Style({
+          stroke: new ol.style.Stroke({ color: '#C8FC10', width: 2, lineDash: [5, 5]})
+          ,fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.1)'})
+        })
+      });
+
+      return {
+        setDrawType:       setDrawType,
+        setInteraction:    setInteraction,
+        unsetInteraction:  unsetInteraction,
+        drawing:           measureHelper.drawing,
+        clearVector:       clearVector
+      };
+
+      function setDrawType(type) {
+        if (!type) throw new Error("setDrawType: type required");
+        drawType = type;
+        if (drawInteraction) {
+          setInteraction();
         }
       }
 
+      function setInteraction() {
+        unsetInteraction();
+        createInteraction();
+        map.addLayer(vector);
+        map.addInteraction(drawInteraction);
+        measureHelper.enable();
+      }
+
+      function createInteraction() {
+        drawInteraction = new ol.interaction.Draw({
+          source: source,
+          type: drawType
+          ,style: new ol.style.Style({
+            stroke: new ol.style.Stroke({ color: '#C8FC10', width: 3, lineDash: [5, 5]})
+            ,fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)'})
+            ,image: new ol.style.Circle({ radius: 5, fill: new ol.style.Fill({ color: '#C8FC10'})})
+          })
+        });
+        drawInteraction.on('drawstart', measureHelper.drawStart);
+        drawInteraction.on('drawend', measureHelper.drawEnd);
+      }
+
+      function unsetInteraction() {
+        if (drawInteraction) {
+          map.removeInteraction(drawInteraction);
+          drawInteraction = null;
+        }
+        measureHelper.disable();
+      }
+
+      function clearVector() {
+        measureHelper.drawEnd();
+        source.clear();
+        measureHelper.removeElements();
+      }
     }
 
     /**
@@ -467,8 +482,7 @@
       var sourceProj = map.getView().getProjection();
       var geom = /** @type {ol.geom.Polygon} */(polygon.clone().transform(sourceProj, 'EPSG:4326'));
       var coordinates = geom.getLinearRing(0).getCoordinates();
-      var area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
-      return area;
+      return Math.abs(wgs84Sphere.geodesicArea(coordinates));
     }
 
     /**
@@ -484,6 +498,12 @@
         length += wgs84Sphere.haversineDistance(c1, c2);
       }
       return length;
+    }
+
+    function removeElement(element) {
+      if (element &&  element.parentNode) {
+        element.parentNode.removeChild(element);
+      }
     }
   }
 
