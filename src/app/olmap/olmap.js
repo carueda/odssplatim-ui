@@ -8,6 +8,8 @@
 
   var DEFAULT_DRAW_TYPE = "Polygon";
 
+  var DEFAULT_MEASURE_TYPE = "LineString";
+
   MapCtrl.$inject = ['$scope', 'olMap', 'timelineWidget'];
 
   function MapCtrl($scope, olMap, timelineWidget) {
@@ -85,7 +87,14 @@
         ],
         selectedType: DEFAULT_DRAW_TYPE
       },
-      measureToolSelected: false
+      measureTool: {
+        selected: false,
+        typeList: [
+          {name: "D", value: ol.geom.GeometryType.LINE_STRING, tooltip: "Measure distances with line strings"},
+          {name: "A", value: ol.geom.GeometryType.POLYGON, tooltip: "Measure areas with polygons"}
+        ],
+        selectedType: DEFAULT_MEASURE_TYPE
+      }
     };
     $scope.vm = vm;
 
@@ -94,23 +103,24 @@
         vm.mode.selectedMode = prevMode;
       }
       else if (mode !== 'View') {
-        $scope.vm.measureToolSelected = false;
+        $scope.vm.measureTool.selected = false;
       }
     });
 
-    $scope.$watch('vm.measureToolSelected', function(measureToolSelected) {
-      //console.log("measureToolSelected=", measureToolSelected);
-      if (measureToolSelected) {
-        olMap.measureTool.set('LineString');
+    $scope.$watch('vm.measureTool.selected', updateMeasureTool);
+    $scope.$watch('vm.measureTool.selectedType', updateMeasureTool);
+    updateMeasureTool();
+    $scope.clearMeasureVector = function() {
+      olMap.measureTool.clearVector();
+    };
+    function updateMeasureTool() {
+      if (vm.measureTool.selected) {
+        olMap.measureTool.set(vm.measureTool.selectedType);
       }
       else {
         olMap.measureTool.unset();
       }
-    });
-    olMap.measureTool.set('LineString');
-    $scope.clearMeasureVector = function() {
-      olMap.measureTool.clearVector();
-    };
+    }
 
     $scope.$watch('vm.draw.selectedType', olMap.setDrawInteraction);
 
@@ -134,7 +144,7 @@
       olMap.reinit();
       vm.mode.selectedMode = "View";
       vm.viewOnly = olMap.getTokenSelection().length != 1;
-      $scope.vm.measureToolSelected = false;
+      $scope.vm.measureTool.selected = false;
       olMap.measureTool.clearVector();
     });
 
@@ -142,7 +152,7 @@
       if ($event.keyCode === 27) {
         timelineWidget.clearSelection();
         if (!olMap.measureTool.drawing()) {
-          $scope.vm.measureToolSelected = false;
+          $scope.vm.measureTool.selected = false;
         }
       }
       else if ($event.keyCode === 187) {
@@ -223,6 +233,14 @@
       clearVector: function() {
         return measureHandler.clearVector();
       }
+
+      ,getPolygonArea:      function(geom) {
+        return measureHandler.getPolygonArea(geom);
+      }
+      ,getLineStringLength: function(geom) {
+        return measureHandler.getLineStringLength(geom);
+      }
+
     };
 
     return {

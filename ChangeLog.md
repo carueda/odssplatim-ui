@@ -1,5 +1,10 @@
 ## change log ##
 
+- 2015-06-03: (0.7.6)
+  - measure tool:
+    - use geodesic measures
+    - add area measurement
+
 - 2015-05-28: (0.7.5)
   - re-enable DragZoom (with adjusted style)
   - initial version of measure tool

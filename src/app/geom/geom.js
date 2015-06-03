@@ -36,9 +36,9 @@
 
   }
 
-  GeomInstanceController.$inject = ['$scope', '$modalInstance', 'info', 'utl'];
+  GeomInstanceController.$inject = ['$scope', '$modalInstance', 'info', 'olMap', 'utl'];
 
-  function GeomInstanceController($scope, $modalInstance, info, utl) {
+  function GeomInstanceController($scope, $modalInstance, info, olMap, utl) {
 
     $scope.edit = info.edit;
     $scope.item = info.item;
@@ -90,7 +90,9 @@
 
       if (geometry instanceof ol.geom.Polygon) {
         $scope.geomName = 'Polygon';
-        $scope.geomInfo = '(area: ' + utl.formatArea(geometry.getArea()) + ')';
+        var area = olMap.measureTool.getPolygonArea(geometry);
+        $scope.geomInfo = '(area: ' + utl.formatArea(area) + ')';
+        $scope.geomInfo = '(area: ' + utl.formatArea(area) + ')';
         _.each(coordinates, function(coordinates2) {
           _.each(coordinates2, addCoordinate);
         });
@@ -99,7 +101,8 @@
       }
       else if (geometry instanceof ol.geom.LineString) {
         $scope.geomName = 'LineString';
-        $scope.geomInfo = '(length: ' + utl.formatLength(geometry.getLength()) + ')';
+        var len = olMap.measureTool.getLineStringLength(geometry);
+        $scope.geomInfo = '(length: ' + utl.formatLength(len) + ')';
         _.each(coordinates, addCoordinate);
       }
       else if (geometry instanceof ol.geom.Point) {

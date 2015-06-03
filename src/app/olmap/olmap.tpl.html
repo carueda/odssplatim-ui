@@ -32,32 +32,47 @@
         &nbsp;&nbsp;&nbsp;
 
         <div class="btn-group mt-group">
-        <div tooltip-html-unsafe="<div class='tooltip190'>Measure tool<br/>
+          <div tooltip-html-unsafe="<div class='tooltip190'>Measure tool<br/>
           <ul>
           <li>Can be checked in view mode</li>
-          <li>Do clicks to draw measuring line string</li>
-          <li>Double-click to complete line string</li>
-          <li>Total distance per line string</li>
+          <li>Select 'D' for distances</li>
+          <li>Select 'A' for areas</li>
+          <li>Do clicks to draw measuring element</li>
+          <li>Double-click to complete element</li>
           </ul></div>"
-             tooltip-placement="bottom"
-             style="display: inline-block; vertical-align: top; position: relative; left: 3px">
-          <button class="btn btn-info btn-xs"
-                  ng-disabled="vm.mode.selectedMode !== 'View'"
-                  btn-checkbox ng-model="vm.measureToolSelected">
-            MT
-          </button>
-          <span ng-show="vm.measureToolSelected" style="font-size: xx-small; position: absolute; top: -9px; right: -1px">
+               tooltip-placement="bottom"
+               style="display: inline-block; vertical-align: top; position: relative; left: 3px">
+            <button class="btn btn-info btn-xs"
+                    ng-disabled="vm.mode.selectedMode !== 'View'"
+                    btn-checkbox ng-model="vm.measureTool.selected">
+              MT
+            </button>
+          <span ng-show="vm.measureTool.selected" style="font-size: xx-small; position: absolute; top: -9px; right: -1px">
               <span class="glyphicon glyphicon-ok"></span>
           </span>
-        </div>
-          <div tooltip-html-unsafe="<div class='tooltip190'>Removes all measuring line strings</div>"
-             tooltip-placement="bottom"
-             style="display: inline-block; vertical-align: top; position: relative; left: -3px">
-          <button class="btn btn-info btn-xs"
-                  ng-click="clearMeasureVector()">
-            <i class="fa fa-times"></i>
-          </button>
-        </div>
+          </div>
+          <div ng-show="vm.measureTool.selected" style="display: inline-block">
+            <div ng-repeat="drawType in vm.measureTool.typeList"
+                 tooltip-html-unsafe="<div class='tooltip190'>{{drawType.tooltip}}</div>"
+                 tooltip-placement="bottom"
+                 style="display: inline-block; vertical-align: top; position: relative">
+              <label class="btn btn-default btn-xs"
+                     ng-model="vm.measureTool.selectedType" btn-radio="drawType.value">
+                {{drawType.name}}
+              </label>
+              <span ng-show="vm.measureTool.selectedType === drawType.value"
+                    style="font-size: xx-small; position: absolute; top: -4px; right: 4px">
+                <span class="glyphicon glyphicon-ok"></span>
+              </span>
+            </div>
+          </div>
+          <div tooltip-html-unsafe="<div class='tooltip190'>Removes all measuring elements</div>"
+               tooltip-placement="bottom"
+               style="display: inline-block; vertical-align: top; position: relative; left: -3px">
+            <span ng-click="clearMeasureVector()" style="font-size: small; color: slategray">
+              <i class="fa fa-times"></i>
+            </span>
+          </div>
         </div>
 
       </form>

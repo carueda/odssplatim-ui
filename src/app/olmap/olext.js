@@ -325,10 +325,12 @@
       var vector = new ol.layer.Vector({
         source: source
         ,style: new ol.style.Style({
-          stroke: new ol.style.Stroke({ color: '#C8FC10', width: 2, lineDash: [20, 15]})
+          stroke: new ol.style.Stroke({ color: '#C8FC10', width: 2, lineDash: [5, 5]})
+          ,fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.1)'})
         })
       });
 
+      var wgs84Sphere = new ol.Sphere(6378137);
       var measureTooltipElement;
       var measureTooltipOverlay;
       var elements = [];  // elements left after drawing so we can remove them later
@@ -339,6 +341,9 @@
         unsetInteraction:  unsetInteraction,
         drawing:           function() { return sketch !== null; },
         clearVector:       clearVector
+
+        ,getPolygonArea:      getPolygonArea
+        ,getLineStringLength: getLineStringLength
       };
 
       function setDrawType(type) {
@@ -363,7 +368,8 @@
           source: source,
           type: drawType
           ,style: new ol.style.Style({
-            stroke: new ol.style.Stroke({ color: '#C8FC10', width: 3, lineDash: [20, 15]})
+            stroke: new ol.style.Stroke({ color: '#C8FC10', width: 3, lineDash: [5, 5]})
+            ,fill: new ol.style.Fill({ color: 'rgba(255, 255, 255, 0.2)'})
             ,image: new ol.style.Circle({ radius: 5, fill: new ol.style.Fill({ color: '#C8FC10'})})
           })
         });
@@ -414,12 +420,12 @@
           var output;
           var geom = (sketch.getGeometry());
           if (geom instanceof ol.geom.Polygon) {
-            var area = (/** @type {ol.geom.Polygon} */ (geom)).getArea();
+            var area = getPolygonArea(/** @type {ol.geom.Polygon} */ (geom));
             output = utl.formatArea(area);
             tooltipCoord = geom.getInteriorPoint().getCoordinates();
           }
           else if (geom instanceof ol.geom.LineString) {
-            var length = ( /** @type {ol.geom.LineString} */ (geom)).getLength();
+            var length = getLineStringLength(/** @type {ol.geom.LineString} */ (geom));
             output = utl.formatLength(length);
             tooltipCoord = geom.getLastCoordinate();
           }
@@ -447,6 +453,32 @@
         if (element &&  element.parentNode) {
           element.parentNode.removeChild(element);
         }
+      }
+
+      /**
+       * @param {ol.geom.Polygon} polygon
+       */
+      function getPolygonArea(polygon) {
+        var sourceProj = map.getView().getProjection();
+        var geom = /** @type {ol.geom.Polygon} */(polygon.clone().transform(sourceProj, 'EPSG:4326'));
+        var coordinates = geom.getLinearRing(0).getCoordinates();
+        var area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
+        return area;
+      }
+
+      /**
+       * @param {ol.geom.LineString} lineString
+       */
+      function getLineStringLength(lineString) {
+        var coordinates = lineString.getCoordinates();
+        var length = 0;
+        var sourceProj = map.getView().getProjection();
+        for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+          var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
+          var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
+          length += wgs84Sphere.haversineDistance(c1, c2);
+        }
+        return length;
       }
     }
   }
