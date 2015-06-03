@@ -1,67 +1,67 @@
 <div style="width: 100%" ng-controller="UtilCtrl">
-<div style="margin: 6px">
+  <div style="margin: 6px">
     <div class="navbar navbar-default">
-        <div class="pull-left">
-            <div class="btn-group">
+      <div class="pull-left">
+        <div class="btn-group">
 
-                <div class="btn-group">
-                    <period-dropdown></period-dropdown>
-                </div>
+          <div class="btn-group">
+            <period-dropdown></period-dropdown>
+          </div>
 
-                <button class="btn btn-default btn-sm" ng-controller="PlatformCtrl" ng-click="open()"
-                        tooltip="Platform selection"
-                        tooltip-placement="bottom"
-                        >Platform</button>
+          <button class="btn btn-default btn-sm" ng-controller="PlatformCtrl" ng-click="open()"
+                  tooltip="Platform selection"
+                  tooltip-placement="bottom"
+            >Platform</button>
 
-                <button class="btn btn-default btn-sm" ng-click="save()"
-                        tooltip="Saves all new and modified tokens"
-                        tooltip-placement="bottom"
-                        >
-                    <i class="fa fa-floppy-o"></i>
-                    Save
-                </button>
+          <button class="btn btn-default btn-sm" ng-click="save()"
+                  tooltip="Saves all new and modified tokens"
+                  tooltip-placement="bottom"
+            >
+            <i class="fa fa-floppy-o"></i>
+            Save
+          </button>
 
-                <button class="btn btn-default btn-sm" ng-show="showVersions" ng-click="showVersions()"
-                        tooltip="Revision history"
-                        tooltip-placement="bottom"
-                        >Versions</button>
+          <button class="btn btn-default btn-sm" ng-show="showVersions" ng-click="showVersions()"
+                  tooltip="Revision history"
+                  tooltip-placement="bottom"
+            >Versions</button>
 
                 <span class="lastUpdated" ng-show="lastUpdated" title="{{lastUpdated.onLocal}}">
                     Last updated {{lastUpdated.durHumanized}}
                     <span ng-show="lastUpdated.by">by {{lastUpdated.by}}</span>
                 </span>
-            </div>
         </div>
-        <div class="pull-right">
-            <button class="btn btn-default btn-sm" ng-click="refresh()"
-                    ng-disabled="isRefreshing"
-                    tooltip="Reloads the planning information from the database"
-                    tooltip-placement="bottom"
-                    >
-                <i class="fa fa-refresh"></i>
-                Refresh
-            </button>
+      </div>
+      <div class="pull-right">
+        <button class="btn btn-default btn-sm" ng-click="refresh()"
+                ng-disabled="isRefreshing"
+                tooltip="Reloads the planning information from the database"
+                tooltip-placement="bottom"
+          >
+          <i class="fa fa-refresh"></i>
+          Refresh
+        </button>
 
-            <a target="_blank" class="btn btn-link btn-sm" ng-href="{{cfg.helpLink}}">Help</a>
+        <a target="_blank" class="btn btn-link btn-sm" ng-href="{{cfg.helpLink}}">Help</a>
 
-            <span class="version">@@appname @@version</span>
-        </div>
+        <span class="version">@@appname @@version</span>
+      </div>
     </div>
     <div class="parent-status">
-        <alert ng-show="messages.any()"
-               class="status alert alert-info" role="alert" type="'info'">
-            <span ng-bind="messages.any()"></span>
-        </alert>
-        <alert ng-show="activities.any()"
-               class="status alert alert-info" role="alert" type="'info'">
-            <span class="fa fa-spinner fa-spin"></span>
-            <span ng-bind="activities.any()"></span>
-        </alert>
+      <alert ng-show="messages.any()"
+             class="status alert alert-info" role="alert" type="'info'">
+        <span ng-bind="messages.any()"></span>
+      </alert>
+      <alert ng-show="activities.any()"
+             class="status alert alert-info" role="alert" type="'info'">
+        <span class="fa fa-spinner fa-spin"></span>
+        <span ng-bind="activities.any()"></span>
+      </alert>
     </div>
 
     <div id="error" style="color: #CC0000" ng-show="errors.any()">
-        <div ng-bind="errors.any()"></div>
-        <br />
+      <div ng-bind="errors.any()"></div>
+      <br />
     </div>
 
     <div ng-controller="TimelineCtrl" id="timelines"
@@ -70,15 +70,19 @@
          ng-click="click()"
          ng-keypress="keyPressed($event)"
          ng-keyup="keyDown($event)"
-    ></div>
+      ></div>
     <div class="t3" ng-style="t3.style">
-        <span style="font-weight: bold">{{t3.token.platform_name}}</span>: {{t3.token.state}}
-        <br/>
-        {{t3.token | tokenDateRange}}
-        <div ng-show="t3.token.description">
-            <hr/>
-            {{t3.token.description}}
-        </div>
+      <span style="font-weight: bold">{{t3.token.platform_name}}</span>: {{t3.token.state}}
+      <br/>
+      {{t3.token | tokenDateRange}}
+      <div ng-show="t3.extra">
+        <hr/>
+        <span ng-bind-html="t3.extra" style="font-size: small"></span>
+      </div>
+      <div ng-show="t3.token.description">
+        <hr/>
+        {{t3.token.description}}
+      </div>
     </div>
 
     <br>
@@ -86,19 +90,19 @@
     <olmap></olmap>
 
     <div ng-show="debug">
-        <div>
-            useSubgroups = {{cfg.opts.useSubgroups}}
-        </div>
+      <div>
+        useSubgroups = {{cfg.opts.useSubgroups}}
+      </div>
 
-        <div id="logarea" style="color: blue; background-color: #f8fff7">
-        </div>
+      <div id="logarea" style="color: blue; background-color: #f8fff7">
+      </div>
 
-        <button class="btn btn-default btn-xs"
-                ng-click="debug.collapsed = !debug.collapsed">Model</button>
-        <div collapse="debug.collapsed">
-            <pre>{{debug.model | json}}</pre>
-        </div>
+      <button class="btn btn-default btn-xs"
+              ng-click="debug.collapsed = !debug.collapsed">Model</button>
+      <div collapse="debug.collapsed">
+        <pre>{{debug.model | json}}</pre>
+      </div>
     </div>
 
-</div>
+  </div>
 </div>

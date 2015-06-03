@@ -1,6 +1,7 @@
 ## change log ##
 
 - 2015-06-03: (0.7.6)
+  - include length or area information in tooltip over geometry component
   - measure tool:
     - use geodesic measures
     - add area measurement

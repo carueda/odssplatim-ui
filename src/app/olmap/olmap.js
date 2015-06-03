@@ -124,11 +124,11 @@
 
     $scope.$watch('vm.draw.selectedType', olMap.setDrawInteraction);
 
-    $scope.$on("tokenMouseEnter", function(e, token) {
-      olMap.setTokenMouseEnter(token.id);
+    $scope.$on("evtTokenMouseEnter", function(e, info) {
+      olMap.setTokenMouseEnter(info.token.id);
     });
-    $scope.$on("tokenMouseLeave", function(e, token) {
-      olMap.setTokenMouseLeave(token.id);
+    $scope.$on("evtTokenMouseLeave", function(e, info) {
+      olMap.setTokenMouseLeave(info.token.id);
     });
 
     $scope.$on("tokenSelection", function(e, selected) {
@@ -176,9 +176,9 @@
     };
   }
 
-  olMap.$inject = ['$rootScope', '$timeout', '$window', 'olExt', 'cfg'];
+  olMap.$inject = ['$rootScope', '$timeout', '$window', 'olExt', 'cfg', 'utl'];
 
-  function olMap($rootScope, $timeout, $window, olExt, cfg) {
+  function olMap($rootScope, $timeout, $window, olExt, cfg, utl) {
     var styles = getStyles();
 
     var gmap, view;
@@ -316,13 +316,26 @@
           var tokenId = feature.get('geomId');
           //console.log("mouseEnter tokenId=", tokenId);
           if (tokenId) {
-            $rootScope.$broadcast("evtGeometryMouseEnter", tokenId, olEvent.originalEvent);
+            var extra;
+            var geometry = feature.getGeometry();
+            if (geometry instanceof ol.geom.Polygon) {
+              var area = measureTool.getPolygonArea(geometry);
+              extra = 'Polygon component, area: ' + utl.formatArea(area);
+            }
+            else if (geometry instanceof ol.geom.LineString) {
+              var len = measureTool.getLineStringLength(geometry);
+              extra = 'LineString component, length: ' + utl.formatLength(len);
+            }
+
+            var info = {token_id: tokenId, extra: extra};
+            $rootScope.$broadcast("evtGeometryMouseEnter", info, olEvent.originalEvent);
           }
         },
         function mouseLeave(feature, olEvent) {
           var tokenId = feature.get('geomId');
           if (tokenId) {
-            $rootScope.$broadcast("evtGeometryMouseLeave", tokenId, olEvent.originalEvent);
+            var info = {token_id: tokenId};
+            $rootScope.$broadcast("evtGeometryMouseLeave", info, olEvent.originalEvent);
           }
         },
         function mouseClick(feature, olEvent) {
