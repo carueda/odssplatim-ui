@@ -235,10 +235,10 @@
       }
 
       ,getPolygonArea:      function(geom) {
-        return measureHandler.getPolygonArea(geom);
+        return olExt.getPolygonArea(map, geom);
       }
       ,getLineStringLength: function(geom) {
-        return measureHandler.getLineStringLength(geom);
+        return olExt.getLineStringLength(map, geom);
       }
 
     };
