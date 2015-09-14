@@ -1,5 +1,8 @@
 ## change log ##
 
+- 2015-09-14: (0.8.1)
+  - update README
+
 - 2015-06-03: (0.8.0)
   - version label a bit more visible; include tooltip.
   - remove fill style that was causing incremental polygon opacity in measure tool

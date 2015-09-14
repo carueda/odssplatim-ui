@@ -56,11 +56,15 @@ In a terminal:
 
 ```shell
 $ cd .../webapp/server/platim/
-# see README.md to properly configure this server
 $ node app
 ```
+Note: even though the "platim" server will run locally, it can be configured to
+use the desired MongoDB server, which could also either be local or any of the
+external ones provided there is network access to them.
+See `.../webapp/server/platim/app.js`.
 
-And in this directory:
+Once the "platim" server is running, run the following in this directory to
+launch the UI:
 
 ```shell
 $ gulp local-with-platim
