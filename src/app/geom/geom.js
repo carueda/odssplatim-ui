@@ -92,7 +92,6 @@
         $scope.geomName = 'Polygon';
         var area = olMap.measureTool.getPolygonArea(geometry);
         $scope.geomInfo = '(area: ' + utl.formatArea(area) + ')';
-        $scope.geomInfo = '(area: ' + utl.formatArea(area) + ')';
         _.each(coordinates, function(coordinates2) {
           _.each(coordinates2, addCoordinate);
         });
@@ -102,7 +101,8 @@
       else if (geometry instanceof ol.geom.LineString) {
         $scope.geomName = 'LineString';
         var len = olMap.measureTool.getLineStringLength(geometry);
-        $scope.geomInfo = '(length: ' + utl.formatLength(len) + ')';
+        var speedKmH = utl.getSpeedForPlatform(info.item.platform_name);
+        $scope.geomInfo = ' ' + utl.formatLengthAndDuration(len, speedKmH, true);
         _.each(coordinates, addCoordinate);
       }
       else if (geometry instanceof ol.geom.Point) {

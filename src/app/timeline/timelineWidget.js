@@ -136,14 +136,16 @@ var gTW = {};
 
     (function() {
       // this block to react to mouse events on the geometries so the associated tokens
-      // reflect those events.
+      // reflect those events, and to propagate via further events as needed
       var hoverClassName = 'direct_range_hover';
       $rootScope.$on("evtGeometryMouseEnter", function (e, info, jsEvent) {
         var item = items.get(info.token_id);
         //console.log("$on evtGeometryMouseEnter: token_id=", info.token_id, "item=", item);
         if (item) {
           updateClass(item, hoverClassName, true);
-          $rootScope.$broadcast("evtTokenMouseEnter", {token: item, extra: info.extra}, jsEvent);
+          // include the token object in the event info:
+          info.token = item;
+          $rootScope.$broadcast("evtTokenMouseEnter", info, jsEvent);
         }
       });
       $rootScope.$on("evtGeometryMouseLeave", function (e, info, jsEvent) {

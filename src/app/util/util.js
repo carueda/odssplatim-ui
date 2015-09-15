@@ -15,9 +15,9 @@
     .factory('utl', miscUtils)
   ;
 
-  UtilCtrl.$inject = ['$scope', '$modal'];
+  UtilCtrl.$inject = ['$scope', '$modal', 'utl'];
 
-  function UtilCtrl($scope, $modal) {
+  function UtilCtrl($scope, $modal, utl) {
     $scope.$on('evtConfirm', function(event, info) {
       $scope.info = info;
       var modalInstance = $modal.open({
@@ -53,9 +53,25 @@
     // token tooltip
     $scope.t3 = { style: {visibility: 'hidden'}, token: {} };
     $scope.$on("evtTokenMouseEnter", function(e, info, jsEvent) {
-      //console.log("on tokenMouseEnter token=" , token, "jsEvent=", jsEvent);
-      $scope.t3.extra = info.extra;
-      $scope.t3.token = _.cloneDeep(info.token);
+      //console.log("on tokenMouseEnter info=" , info, "jsEvent=", jsEvent);
+
+      var token = _.cloneDeep(info.token);
+      var extraLine;
+
+      if (info.lineStringLength) {
+        var speedKmH = utl.getSpeedForPlatform(token.platform_name);
+        extraLine = 'LineString component, ' + utl.formatLengthAndDuration(info.lineStringLength, speedKmH, true);
+      }
+      else if (info.polygonArea) {
+        extraLine = 'Polygon component, area: ' + utl.formatArea(info.polygonArea);
+      }
+      else if (info.pointLatLon) {
+        var ll = info.pointLatLon;
+        extraLine = 'Point component: ' + ll[0].toFixed(6) + ", " + ll[1].toFixed(6);
+      }
+
+      $scope.t3.extraLine = extraLine;
+      $scope.t3.token = token;
       $scope.t3.style = {
         top:  (jsEvent.pageY + 12) + 'px',
         left: (jsEvent.pageX + 1) + 'px',
@@ -229,16 +245,43 @@
         return debug;
       },
 
-      formatLength: function(length) {
-        length = Math.round(length * 100) / 100;
-        var output;
-        if (length > 100) {
-          output = (Math.round(length / 1000 * 100) / 100) + ' ' + 'km';
+      formatLength: formatLength,
+
+      formatLengthDuration: formatLengthDuration,
+
+      /**
+       * Interim utility to get the speed associated to a platform
+       * TODO replace with appropriate mechanism
+       * @returns {number} speed in km/h
+       */
+      getSpeedForPlatform: function (platformName) {
+        var pnlc = platformName ? platformName.toLowerCase() : '';
+        if (pnlc === 'dorado') return 4.6;
+        if (pnlc.startsWith('wg')) return 0.9;
+        if (pnlc.startsWith('tethys')) return 3.0;
+        if (pnlc.startsWith('daphne')) return 3.0;
+        if (pnlc.startsWith('makai')) return 3.0;
+
+        return 0; // so the time calculation is not performed
+      },
+
+      /**
+       * Returns a string like "16.52 km (~5h:30m @3km/h)"
+       * @param lengthMeters  Distance in meters
+       * @param speedKmH      Speed in km/h. If undefined or zero, only distance part (eg. "16.52 km") is returned
+       * @param includeSpeed  true to include speed part (eg. "@3km/h") in the result
+       * @returns {string}
+       */
+      formatLengthAndDuration: function (lengthMeters, speedKmH, includeSpeed) {
+        var res = ' ' + formatLength(lengthMeters);
+        if (speedKmH) {
+          res += ' (~' + formatLengthDuration(lengthMeters, speedKmH);
+          if (includeSpeed) {
+            res += ' @' +speedKmH + 'km/h'
+          }
+          res += ')';
         }
-        else {
-          output = (Math.round(length * 100) / 100) + ' ' + 'm';
-        }
-        return output;
+        return res;
       },
 
       formatArea: function(area) {
@@ -326,6 +369,36 @@
         result += '</table>';
         return result;
       }
+    };
+
+    function formatLength(lengthMeters) {
+      lengthMeters = Math.round(lengthMeters * 100) / 100;
+      var output;
+      if (lengthMeters > 100) {
+        output = (Math.round(lengthMeters / 1000 * 100) / 100) + ' ' + 'km';
+      }
+      else {
+        output = (Math.round(lengthMeters * 100) / 100) + ' ' + 'm';
+      }
+      return output;
+    }
+
+    function formatLengthDuration(lengthMeters, speedKmH) {
+      var speedMetersPerH = 1000 * speedKmH;
+      var durationHours = lengthMeters / speedMetersPerH;
+      var dur = moment.duration(durationHours, 'hours');
+
+      var totMins = Math.floor(dur.asMinutes());
+      var theMins = Math.floor(dur.minutes());
+      if (totMins < 60) return totMins + 'm';
+
+      var totHours = Math.floor(dur.asHours());
+      var theHours = Math.floor(dur.hours());
+      if (totHours < 24) return totHours + 'h' + (theMins > 0 ? ':' + theMins + 'm' : '');
+
+      var totDays = Math.floor(dur.asDays());
+      return totDays + 'd' + (theHours > 0 ? ':' + theHours + 'h' : '');
+      //return moment.duration(durationHours, 'hours').humanize();
     }
   }
 

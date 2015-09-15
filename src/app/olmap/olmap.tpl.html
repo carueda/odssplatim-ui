@@ -31,26 +31,34 @@
 
         &nbsp;&nbsp;&nbsp;
 
-        <div class="btn-group mt-group">
+        <div class="btn-group mt-group"> <!-- Measure tool -->
           <div tooltip-html-unsafe="<div class='tooltip190'>Measure tool<br/>
-          <ul>
-          <li>Can be checked in view mode</li>
-          <li>Select 'D' for distances</li>
-          <li>Select 'A' for areas</li>
-          <li>Do clicks to draw measuring element</li>
-          <li>Double-click to complete element</li>
-          </ul></div>"
+              <ul>
+              <li>Can be used in view mode</li>
+              <li>Select 'D' for distances and times</li>
+              <li>Select 'A' for areas</li>
+              <li>Do clicks to draw measuring element</li>
+              <li>Double-click to complete element</li>
+              </ul></div>"
                tooltip-placement="bottom"
                style="display: inline-block; vertical-align: top; position: relative; left: 3px">
             <button class="btn btn-info btn-xs"
                     ng-disabled="vm.mode.selectedMode !== 'View'"
                     btn-checkbox ng-model="vm.measureTool.selected">
-              MT
+              Measure tool
             </button>
           <span ng-show="vm.measureTool.selected" style="font-size: xx-small; position: absolute; top: -9px; right: -1px">
               <span class="glyphicon glyphicon-ok"></span>
           </span>
           </div>
+
+          <span tooltip-html-unsafe="<div class='tooltip190'>Remove all measuring elements</div>"
+                tooltip-placement="bottom">
+            <button class="btn btn-default btn-xs" ng-click="clearMeasureVector()">
+              <i class="fa fa-times" style="color: red"></i>
+            </button>
+          </span>
+
           <div ng-show="vm.measureTool.selected" style="display: inline-block">
             <div ng-repeat="drawType in vm.measureTool.typeList"
                  tooltip-html-unsafe="<div class='tooltip190'>{{drawType.tooltip}}</div>"
@@ -66,13 +74,18 @@
               </span>
             </div>
           </div>
-          <div tooltip-html-unsafe="<div class='tooltip190'>Removes all measuring elements</div>"
-               tooltip-placement="bottom"
-               style="display: inline-block; vertical-align: top; position: relative; left: -3px">
-            <span ng-click="clearMeasureVector()" style="font-size: small; color: slategray">
-              <i class="fa fa-times"></i>
-            </span>
-          </div>
+
+          <span ng-if="vm.measureTool.selected && vm.measureTool.selectedType === 'LineString'">
+            <label tooltip="Speed to calculate and show time along with line string distance"
+                   tooltip-placement="bottom">
+              Speed:
+              <input ng-model="vm.measureTool.speedKmH" class="form-control"
+                     type="text" style="width:5em;height: 22px"
+                     ng-keydown="vm.measureTool.ignoreEnter($event)"
+                >
+              km/h
+            </label>
+          </span>
         </div>
 
       </form>

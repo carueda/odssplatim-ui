@@ -283,7 +283,8 @@
       return {
         setDrawType:       setDrawType,
         setInteraction:    setInteraction,
-        unsetInteraction:  unsetInteraction
+        unsetInteraction:  unsetInteraction,
+        setSpeed:          function(kmH) { measureHelper.setSpeed(kmH); }
       };
 
       function setDrawType(type) {
@@ -330,6 +331,8 @@
       var measureTooltipOverlay;
       var elements = [];  // elements left after drawing so we can remove them later
 
+      var speedKmH = undefined;
+
       return {
         enable:           enable,
         disable:          disable,
@@ -337,6 +340,8 @@
         drawStart:        drawStart,
         removeElements:   removeElements,
         drawing:   function() { return sketch !== null; }
+
+        ,setSpeed:  function(kmH) { speedKmH = kmH; }
       };
 
       function enable() {
@@ -376,7 +381,7 @@
           }
           else if (geom instanceof ol.geom.LineString) {
             var length = getLineStringLength(map, /** @type {ol.geom.LineString} */ (geom));
-            output = utl.formatLength(length);
+            output = utl.formatLengthAndDuration(length, speedKmH, true);
             tooltipCoord = geom.getLastCoordinate();
           }
           else if (geom instanceof ol.geom.Point) {
@@ -447,6 +452,8 @@
         unsetInteraction:  unsetInteraction,
         drawing:           measureHelper.drawing,
         clearVector:       clearVector
+
+        ,setSpeed:          function(kmH) { measureHelper.setSpeed(kmH); }
       };
 
       function setDrawType(type) {

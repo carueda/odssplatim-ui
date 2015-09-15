@@ -90,10 +90,14 @@
       measureTool: {
         selected: false,
         typeList: [
-          {name: "D", value: ol.geom.GeometryType.LINE_STRING, tooltip: "Measure distances with line strings"},
-          {name: "A", value: ol.geom.GeometryType.POLYGON, tooltip: "Measure areas with polygons"}
+          {name: "A", value: ol.geom.GeometryType.POLYGON, tooltip: "Measure areas with polygons"},
+          {name: "D", value: ol.geom.GeometryType.LINE_STRING, tooltip: "Measure distances with line strings"}
         ],
         selectedType: DEFAULT_MEASURE_TYPE
+
+        ,speedKmH: ''
+        ,ignoreEnter: function($event) { if ($event.keyCode == '13') $event.preventDefault() ; }
+        // this ignoreEnter as a quick solution to prevent Enter from closing the measureTool section in the UI
       }
     };
     $scope.vm = vm;
@@ -109,6 +113,7 @@
 
     $scope.$watch('vm.measureTool.selected', updateMeasureTool);
     $scope.$watch('vm.measureTool.selectedType', updateMeasureTool);
+    $scope.$watch('vm.measureTool.speedKmH', updateMeasureTool);
     updateMeasureTool();
     $scope.clearMeasureVector = function() {
       olMap.measureTool.clearVector();
@@ -120,6 +125,7 @@
       else {
         olMap.measureTool.unset();
       }
+      olMap.measureTool.setSpeed(+vm.measureTool.speedKmH);
     }
 
     $scope.$watch('vm.draw.selectedType', olMap.setDrawInteraction);
@@ -241,6 +247,8 @@
         return olExt.getLineStringLength(map, geom);
       }
 
+      ,setSpeed: function(speedKmH) { measureHandler.setSpeed(speedKmH); }
+
     };
 
     return {
@@ -316,24 +324,20 @@
           var tokenId = feature.get('geomId');
           //console.log("mouseEnter tokenId=", tokenId);
           if (tokenId) {
-            var extra;
+            var info = {token_id: tokenId};
             var geometry = feature.getGeometry();
             if (geometry instanceof ol.geom.Polygon) {
-              var area = measureTool.getPolygonArea(geometry);
-              extra = 'Polygon component, area: ' + utl.formatArea(area);
+              info.polygonArea = measureTool.getPolygonArea(geometry);
             }
             else if (geometry instanceof ol.geom.LineString) {
-              var len = measureTool.getLineStringLength(geometry);
-              extra = 'LineString component, length: ' + utl.formatLength(len);
+              info.lineStringLength = measureTool.getLineStringLength(geometry);
             }
             else if (geometry instanceof ol.geom.Point) {
               var c = geometry.getCoordinates();
               // convert to lat/lon
-              var ll = ol.proj.transform(c, 'EPSG:3857', 'EPSG:4326');
-              extra = 'Point component: ' + ll[0].toFixed(6) + ", " + ll[1].toFixed(6);
+              info.pointLatLon = ol.proj.transform(c, 'EPSG:3857', 'EPSG:4326');
             }
 
-            var info = {token_id: tokenId, extra: extra};
             $rootScope.$broadcast("evtGeometryMouseEnter", info, olEvent.originalEvent);
           }
         },
@@ -593,6 +597,7 @@
       else if (mode === "Add") {
         drawGeomId = token.id;
         drawHandler.setInteraction();
+        drawHandler.setSpeed(utl.getSpeedForPlatform(token.platform_name));
       }
       else throw new Error("unexpected mode='" + mode + "'");
 

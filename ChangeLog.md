@@ -1,5 +1,15 @@
 ## change log ##
 
+- 2015-09-15: (0.8.1)
+  - initial implementation of time calculations for distances (line-strings)
+    - time shown along with the distance for both existing line-strings (on mouse-over)
+      and while drawing new ones for a token. The speed is taken from an interim
+      platform-speed association (see getSpeedForPlatform in util.js).
+      TODO capture this association properly.
+    - time also shown by the measureTool while using the distance option. A new 'speed'
+      field in the UI allows the user to indicate the associated speed prior to
+      start drawing the line-string. The field can be left empty or with 0 value to disable.
+
 - 2015-09-14: (0.8.1)
   - update README
 
